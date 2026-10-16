@@ -7,341 +7,324 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🖼️</text></svg>">
 <style>
 :root {
-    --bg: #0c0a10;
-    --panel: #17131a;
-    --panel2: #1e1820;
-    --field: #221b24;
-    --border: #3a2a30;
-    --text: #f2e9e4;
-    --muted: #a99a95;
-    --dim: #746863;
-    --accent: #d9a441;
-    --accent-soft: rgba(217, 164, 65, 0.14);
-    --garnet: #b1425a;
-    --garnet-soft: rgba(177, 66, 90, 0.16);
-    --good: #6ee7b7;
-    --good-soft: rgba(110, 231, 183, 0.12);
-    --bad: #f87171;
-    --bad-soft: rgba(248, 113, 113, 0.12);
+    --ink: #0d0908;
+    --frame: #120d0b;
+    --edge: #3a2a22;
+    --edge-hi: #5a4330;
+    --cream: #ece0c4;
+    --muted: #a8977c;
+    --dim: #6f604f;
+    --ochre: #c9a24a;
+    --blood: #b0473f;
+    --sol: #9fd3a8;
+    --serif: "Nanum Myeongjo", "Noto Serif KR", "AppleMyungjo", "Batang", "바탕", serif;
+    /* 게임 화면 폭: 화면 높이 안에 장면(16:9)과 대화창이 함께 들어오도록 */
+    --W: min(1000px, 100%, max(340px, calc((100svh - 330px) * 16 / 9)));
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body {
-    font-family: "Pretendard", -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-    background:
-        radial-gradient(900px 480px at 12% -8%, rgba(217, 164, 65, 0.08), transparent 60%),
-        radial-gradient(800px 460px at 92% 10%, rgba(177, 66, 90, 0.10), transparent 60%),
-        radial-gradient(700px 520px at 50% 115%, rgba(217, 164, 65, 0.05), transparent 60%),
-        var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 1.5rem 1rem 3rem;
-}
 [hidden] { display: none !important; }
-.wrap { max-width: 920px; margin: 0 auto; }
+body {
+    font-family: var(--serif);
+    background: radial-gradient(1200px 700px at 50% 30%, #1d1412, #070505 70%);
+    color: var(--cream);
+    min-height: 100vh;
+    padding: 14px 16px 28px;
+    display: flex; flex-direction: column; align-items: center;
+}
 a { color: inherit; }
+button { font-family: inherit; }
 
-.topbar { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1.1rem; flex-wrap: wrap; }
-.home-btn {
-    display: inline-flex; align-items: center; gap: 0.4rem;
-    font-size: 0.78rem; color: var(--muted);
-    background: var(--panel); border: 1px solid var(--border);
-    border-radius: 0.7rem; padding: 0.45rem 0.85rem;
-    text-decoration: none; transition: all 0.15s;
+/* ---- 상단 바 ---- */
+.topbar { width: var(--W); display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+.tb-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; color: var(--muted); background: transparent;
+    border: 1px solid var(--edge); border-radius: 3px; padding: 6px 12px;
+    text-decoration: none; cursor: pointer; transition: color .15s, border-color .15s;
 }
-.home-btn:hover { color: var(--text); border-color: var(--accent); }
-.legend-btn {
-    display: inline-flex; align-items: center; gap: 0.4rem;
-    font-size: 0.78rem; color: var(--accent);
-    background: var(--accent-soft); border: 1px solid rgba(217,164,65,0.35);
-    border-radius: 0.7rem; padding: 0.45rem 0.85rem; cursor: pointer;
-}
-.reset-btn {
-    margin-left: auto;
-    font-size: 0.74rem; color: var(--dim);
-    background: transparent; border: 1px solid var(--border);
-    border-radius: 0.7rem; padding: 0.45rem 0.75rem; cursor: pointer;
-}
-.reset-btn:hover { color: var(--bad); border-color: var(--bad); }
+.tb-btn:hover, .tb-btn:focus-visible { color: var(--cream); border-color: var(--ochre); }
+.tb-btn.reset { margin-left: auto; }
+.tb-btn.reset:hover { color: var(--blood); border-color: var(--blood); }
 
-/* ---- title screen ---- */
-#titleScreen { text-align: center; padding: 3rem 1rem 2rem; }
-#titleScreen .badge {
-    display: inline-flex; align-items: center; gap: 0.4rem;
-    font-size: 0.72rem; color: var(--accent);
-    background: var(--accent-soft); border: 1px solid rgba(217,164,65,0.3);
-    border-radius: 999px; padding: 0.3rem 0.9rem; margin-bottom: 1.2rem; letter-spacing: 0.06em;
+/* ---- 게임 프레임 ---- */
+.frame {
+    width: var(--W); container-type: inline-size;
+    background: var(--frame); border: 1px solid var(--edge); border-radius: 4px;
+    padding: 10px; box-shadow: 0 30px 80px rgba(0,0,0,.8), inset 0 0 0 4px #0a0706;
 }
-#titleScreen h1 {
-    font-size: clamp(2rem, 6vw, 3.1rem); font-weight: 800; letter-spacing: -0.02em;
-    background: linear-gradient(100deg, #f2e9e4 0%, #d9a441 55%, #b1425a 100%);
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-    margin-bottom: 0.9rem;
+.frame.shake { animation: shake .35s; }
+@keyframes shake { 20%,60% { transform: translateX(-6px); } 40%,80% { transform: translateX(6px); } }
+.frame-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 0 2px 9px; min-height: 46px; }
+.room-label { font-size: 15px; letter-spacing: .14em; color: var(--ochre); }
+.room-label small { color: var(--dim); letter-spacing: .06em; margin-left: 8px; font-size: 12px; }
+.inv { display: flex; gap: 6px; }
+.slot {
+    width: 36px; height: 36px; display: grid; place-items: center; font-size: 19px;
+    background: #0a0706; border: 1px solid var(--edge); border-radius: 3px;
+    position: relative; cursor: default; color: inherit; padding: 0;
 }
-#titleScreen p.lede { color: var(--muted); max-width: 560px; margin: 0 auto 1.8rem; line-height: 1.75; font-size: 0.95rem; }
-.title-actions { display: flex; gap: 0.7rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2.2rem; }
-.btn {
-    font: inherit; font-size: 0.9rem; font-weight: 700; cursor: pointer;
-    border: none; border-radius: 0.8rem; padding: 0.8rem 1.7rem;
-    background: linear-gradient(100deg, var(--accent), #c98a2f);
-    color: #1a1208; transition: transform 0.15s, box-shadow 0.15s;
+.slot.filled { border-color: var(--edge-hi); cursor: help; }
+.slot.new { animation: slotPop .9s ease-out; }
+@keyframes slotPop { 0% { transform: scale(.4); box-shadow: 0 0 0 0 rgba(201,162,74,.8); } 60% { transform: scale(1.15); box-shadow: 0 0 0 10px rgba(201,162,74,0); } 100% { transform: scale(1); } }
+.slot .tip {
+    display: none; position: absolute; top: calc(100% + 8px); right: 0; z-index: 20;
+    width: 210px; text-align: left; font-size: 12.5px; line-height: 1.6; color: var(--cream);
+    background: #0d0908; border: 1px solid var(--edge-hi); padding: 8px 10px; border-radius: 3px;
 }
-.btn:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(217,164,65,0.25); }
-.btn.ghost {
-    background: var(--panel); color: var(--text); border: 1px solid var(--border);
-}
-.btn.ghost:hover { border-color: var(--accent); box-shadow: none; }
-.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+.slot .tip b { display: block; color: var(--ochre); margin-bottom: 2px; }
+.slot.filled:hover .tip, .slot.filled:focus .tip { display: block; }
 
-.room-map { display: flex; justify-content: center; gap: 0.7rem; flex-wrap: wrap; }
-.room-chip {
-    display: flex; flex-direction: column; align-items: center; gap: 0.35rem;
-    font-size: 0.72rem; color: var(--dim);
-    background: var(--panel); border: 1px solid var(--border);
-    border-radius: 0.9rem; padding: 0.8rem 1rem; width: 96px;
+.viewport { position: relative; }
+.scene-wrap { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: #000; border-radius: 2px; }
+.scene-wrap > svg { display: block; width: 100%; height: 100%; }
+.vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 45%, transparent 50%, rgba(0,0,0,.78) 100%); }
+.grain {
+    position: absolute; inset: -40%; pointer-events: none; opacity: .1; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    animation: grain .9s steps(5) infinite;
 }
-.room-chip .emoji { font-size: 1.4rem; }
+@keyframes grain { 0% { transform: translate(0,0); } 20% { transform: translate(-3%,2%); } 40% { transform: translate(2%,-3%); } 60% { transform: translate(-2%,-1%); } 80% { transform: translate(3%,3%); } }
+.fader { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; transition: opacity .7s; display: grid; place-items: center; z-index: 6; }
+.fader.on { opacity: 1; pointer-events: auto; }
+.chapter-card { text-align: center; color: var(--cream); font-size: clamp(20px, 4.2cqw, 42px); letter-spacing: .3em; opacity: 0; transition: opacity .6s .35s; }
+.chapter-card small { display: block; font-size: .38em; letter-spacing: .4em; color: var(--ochre); margin-bottom: .8em; }
+.fader.on .chapter-card { opacity: 1; }
 
-/* ---- progress dots ---- */
-.progress { display: flex; gap: 0.5rem; align-items: center; margin: 0 0 1.2rem; flex-wrap: wrap; }
-.dot {
-    width: 30px; height: 30px; border-radius: 50%;
-    display: grid; place-items: center; font-size: 0.85rem;
-    background: var(--panel); border: 1px solid var(--border); color: var(--dim);
+.scene-title { position: absolute; left: 6%; top: 10%; pointer-events: none; text-shadow: 0 4px 24px #000; z-index: 2; }
+.scene-title .kicker { font-size: clamp(10px, 1.35cqw, 14px); letter-spacing: .4em; color: var(--ochre); margin-bottom: 1.2cqw; }
+.scene-title h1 { font-size: clamp(30px, 7cqw, 76px); font-weight: 800; letter-spacing: .08em; color: var(--cream); line-height: 1.1; }
+.scene-title.center { left: 0; right: 0; top: 38%; text-align: center; }
+
+/* 핫스팟 */
+.hs { pointer-events: none; }
+.hs.active { pointer-events: auto; cursor: pointer; outline: none; }
+.hit { fill: #fff2c8; fill-opacity: 0; stroke: #000; stroke-opacity: 0; stroke-width: 44; stroke-linejoin: round; }
+.hs.active .hit { animation: hitPulse 1.6s ease-in-out infinite; }
+@keyframes hitPulse { 50% { fill-opacity: .16; } }
+.hs-ring { fill: none; stroke: #f3d38a; stroke-width: 3; stroke-dasharray: 8 12; opacity: 0; pointer-events: none; }
+.hs.active .hs-ring { opacity: 1; animation: ring 1.4s linear infinite, ringPulse 1.4s ease-in-out infinite; }
+@keyframes ring { to { stroke-dashoffset: -40; } }
+@keyframes ringPulse { 50% { stroke-opacity: .25; } }
+.reveal { opacity: 0; transition: opacity 1.2s; }
+.reveal.active, .reveal.shown { opacity: 1; }
+
+/* 장면 애니메이션 */
+.flame { transform-box: fill-box; transform-origin: 50% 100%; animation: flick .16s infinite alternate; }
+@keyframes flick { from { transform: scale(1, 1) skewX(0); } to { transform: scale(.92, 1.08) skewX(3deg); } }
+.glow { animation: glow 2.6s ease-in-out infinite alternate; }
+@keyframes glow { from { opacity: .72; } to { opacity: 1; } }
+.twinkle { animation: twinkle 3.2s ease-in-out infinite; }
+@keyframes twinkle { 50% { opacity: .1; } }
+.pendulum { transform-box: view-box; animation: swing 1.1s ease-in-out infinite alternate; }
+@keyframes swing { from { transform: rotate(-8deg); } to { transform: rotate(8deg); } }
+.lantern { transform-box: view-box; animation: sway 3.4s ease-in-out infinite alternate; }
+@keyframes sway { from { transform: rotate(-2.2deg); } to { transform: rotate(2.2deg); } }
+.crow-head { transform-box: fill-box; transform-origin: 70% 80%; animation: crow 6s ease-in-out infinite; }
+@keyframes crow { 0%, 62%, 100% { transform: rotate(0); } 66%, 80% { transform: rotate(-16deg); } 84% { transform: rotate(6deg); } }
+.mote { animation: mote 9s ease-in-out infinite; }
+@keyframes mote { 0%, 100% { transform: translate(0, 0); opacity: .2; } 50% { transform: translate(18px, -40px); opacity: .7; } }
+.fog { animation: fog 18s ease-in-out infinite alternate; }
+@keyframes fog { to { transform: translateX(120px); } }
+.fog2 { animation-duration: 26s; animation-direction: alternate-reverse; }
+.mirror-eye { animation: eye 9s ease-in-out infinite; }
+@keyframes eye { 0%, 70%, 100% { opacity: 0; } 78%, 90% { opacity: .22; } }
+.mirror-eye { opacity: 0; }
+
+/* ---- 양피지 가계도 ---- */
+.doc {
+    position: absolute; inset: 4% 11%; z-index: 4;
+    display: flex; flex-direction: column;
+    color: #2a1c12; border-radius: 2px; padding: 1.8cqw 2.6cqw 1.4cqw;
+    background:
+        radial-gradient(circle at 85% 88%, rgba(120, 72, 30, .22), transparent 22%),
+        radial-gradient(circle at 12% 20%, rgba(120, 72, 30, .16), transparent 18%),
+        radial-gradient(ellipse at 40% 30%, #f3e7c9, #dcc89d 68%, #c4a978);
+    box-shadow: 0 22px 60px rgba(0,0,0,.75), inset 0 0 40px rgba(110, 70, 30, .35);
+    transform: rotate(-.5deg);
+    animation: docIn .55s cubic-bezier(.2, .8, .3, 1);
 }
-.dot.done { background: var(--good-soft); border-color: var(--good); color: var(--good); }
-.dot.current { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); box-shadow: 0 0 0 3px rgba(217,164,65,0.12); }
-.progress .room-name { font-size: 0.82rem; color: var(--muted); margin-left: 0.3rem; }
+.doc.quiet { animation: none; }
+@keyframes docIn { from { transform: translateY(30px) rotate(-3deg); opacity: 0; } }
+.doc-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; border-bottom: 1px solid rgba(42, 28, 18, .35); padding-bottom: 5px; margin-bottom: 6px; }
+.doc-title { font-size: clamp(14px, 1.9cqw, 20px); font-weight: 800; letter-spacing: .04em; }
+.doc-fold { font-size: 12px; color: #5b4330; background: transparent; border: 1px solid rgba(42, 28, 18, .35); border-radius: 2px; padding: 3px 9px; cursor: pointer; }
+.doc-fold:hover { background: rgba(42, 28, 18, .08); }
+.doc-legend { display: flex; flex-wrap: wrap; gap: 3px 14px; font-size: 12px; color: #5b4330; margin-bottom: 4px; }
+.doc-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.lg { width: 12px; height: 12px; border: 1.6px solid #2a1c12; display: inline-block; }
+.lg.c { border-radius: 50%; }
+.lg.f { background: #7a2a2a; border-color: #3a1010; }
+.lg.r { border-radius: 50%; border: 2px dashed #a3322a; width: 14px; height: 14px; }
+.doc svg { flex: 1; min-height: 0; width: 100%; display: block; }
+.ped-line { stroke: #3b2a1e; stroke-width: 1.8; }
+.ped-shape { fill: #f6ecd3; stroke: #2a1c12; stroke-width: 2.2; }
+.ped-shape.aff { fill: #7a2a2a; stroke: #3a1010; }
+.ped-dead { stroke: #2a1c12; stroke-width: 1.6; }
+.ped-label { fill: #2a1c12; font-size: 13px; font-weight: 800; font-family: var(--serif); }
+.ped-info { fill: #8a4a24; font-size: 12px; font-weight: 700; font-family: var(--serif); }
+.ped-ring { fill: none; stroke: #a3322a; stroke-width: 2.6; stroke-dasharray: 6 4; }
+.doc-tab { position: absolute; right: 12px; bottom: 12px; z-index: 4; font-size: 13px; color: #2a1c12; background: #dcc89d; border: none; border-radius: 2px; padding: 7px 12px; cursor: pointer; box-shadow: 0 6px 20px rgba(0,0,0,.6); }
 
-/* ---- panels ---- */
-.panel {
-    background: linear-gradient(160deg, var(--panel), #100c12);
-    border: 1px solid var(--border); border-radius: 1.1rem;
-    padding: 1.3rem 1.4rem; margin-bottom: 1.1rem;
+/* ---- 대화창 ---- */
+.dialog {
+    position: relative; margin-top: 16px; min-height: 152px;
+    padding: 20px 24px 18px; cursor: pointer; user-select: none;
+    background: linear-gradient(#0c0807, #141010);
+    border: 1px solid var(--edge); border-radius: 2px;
+    box-shadow: inset 0 0 0 4px #0a0706, inset 0 0 0 5px #2a1e18;
 }
-.panel h2 {
-    font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em;
-    color: var(--accent); margin-bottom: 0.7rem;
+.dlg-who {
+    position: absolute; top: -13px; left: 20px;
+    font-size: 13px; letter-spacing: .12em; padding: 3px 14px;
+    background: #0d0908; border: 1px solid var(--edge-hi); color: var(--cream);
 }
-.story-text { line-height: 1.85; font-size: 0.95rem; color: var(--text); white-space: pre-line; }
-.story-text.reward { color: #f4d9a8; }
-.story-art {
-    border-radius: 0.85rem; overflow: hidden; margin-bottom: 1.1rem;
-    border: 1px solid var(--border); background: #0a0710;
+.dlg-who[data-kind="gran"] { color: var(--ochre); }
+.dlg-who[data-kind="sol"] { color: var(--sol); border-color: #3f6a4a; }
+.dlg-who[data-kind="item"] { color: #f0cf7a; border-color: var(--ochre); }
+.dlg-who[data-kind="q"] { color: #e6a294; border-color: #6a3a32; }
+.dlg-text { font-size: 17px; line-height: 1.9; white-space: pre-line; }
+.dlg-text.cue { color: var(--muted); font-style: italic; }
+.dlg-text.gran { color: #f0dcae; }
+.dlg-adv { position: absolute; right: 20px; bottom: 12px; color: var(--ochre); font-size: 13px; animation: bob 1s ease-in-out infinite; }
+@keyframes bob { 50% { transform: translateY(4px); } }
+.dlg-choices { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.choice {
+    text-align: left; font-size: 16px; line-height: 1.6; color: var(--cream);
+    background: rgba(255,255,255,.02); border: 1px solid var(--edge); border-radius: 2px;
+    padding: 7px 14px; cursor: pointer; transition: background .12s, border-color .12s;
+    animation: fadeUp .35s both;
 }
-.story-art svg { display: block; width: 100%; height: auto; }
+.choice::before { content: '▸ '; color: var(--ochre); }
+.choice:hover:not(:disabled), .choice:focus-visible { background: rgba(201,162,74,.09); border-color: var(--ochre); outline: none; }
+.choice.wrong { color: #7d6363; text-decoration: line-through; cursor: default; border-color: #3a2424; }
+.choice.wrong::before { content: '✗ '; color: #8a4a44; }
+.choice.right { color: var(--sol); border-color: var(--sol); background: rgba(159,211,168,.07); }
+.choice.right::before { content: '✔ '; color: var(--sol); }
+.choice:disabled { cursor: default; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } }
+.dlg-tools { display: flex; align-items: center; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
+.hint-btn { font-size: 13px; color: var(--muted); background: transparent; border: 1px dashed var(--edge-hi); border-radius: 2px; padding: 4px 10px; cursor: pointer; }
+.hint-btn:hover { color: var(--cream); border-color: var(--ochre); }
+.dlg-note { font-size: 14.5px; line-height: 1.7; }
+.dlg-note.bad { color: #e09a8c; }
+.dlg-note.hint { color: #d9c48e; }
+.recap { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; margin-bottom: 4px; }
+.recap span { font-size: 13px; color: var(--sol); border: 1px solid #3f6a4a; padding: 3px 10px; border-radius: 2px; }
 
-.ped-legend { display: flex; flex-wrap: wrap; gap: 0.9rem; font-size: 0.72rem; color: var(--muted); margin-bottom: 0.9rem; }
-.ped-legend .item { display: flex; align-items: center; gap: 0.35rem; }
-.leg-shape { width: 13px; height: 13px; border: 1.5px solid var(--muted); flex: none; }
-.leg-shape.circle { border-radius: 50%; }
-.leg-shape.filled { background: var(--garnet); border-color: var(--garnet); }
-.leg-shape.dead { position: relative; }
-.leg-line { width: 22px; height: 0; border-top: 1.5px solid var(--muted); }
+footer { width: var(--W); margin-top: 16px; text-align: center; color: var(--dim); font-size: 12px; line-height: 1.8; }
+.kbd-help { color: var(--dim); }
 
-.ped-scroll { overflow-x: auto; }
-svg.pedigree { display: block; margin: 0 auto; width: 100%; max-width: 480px; height: auto; }
-.ped-line { stroke: var(--muted); stroke-width: 1.6; }
-.ped-shape { fill: var(--panel2); stroke: var(--text); stroke-width: 2; }
-.ped-shape.aff { fill: var(--garnet); stroke: var(--garnet); }
-.ped-dead { stroke: var(--dim); stroke-width: 1.4; }
-.ped-label { fill: var(--text); font-size: 12px; font-weight: 700; }
-.ped-info { fill: var(--muted); font-size: 10.5px; }
-.ped-person.hl .ped-shape { stroke: var(--accent); stroke-width: 3.5; filter: drop-shadow(0 0 6px rgba(217,164,65,0.55)); }
-.ped-person { cursor: default; }
-
-.q-prompt { font-size: 0.98rem; line-height: 1.7; margin-bottom: 1rem; }
-.choices { display: flex; flex-direction: column; gap: 0.55rem; margin-bottom: 0.9rem; }
-.choice-btn {
-    text-align: left; font: inherit; font-size: 0.88rem; cursor: pointer;
-    background: var(--field); color: var(--text);
-    border: 1px solid var(--border); border-radius: 0.7rem;
-    padding: 0.75rem 1rem; transition: all 0.12s;
+/* ---- 기호 참고표 ---- */
+.modal-backdrop { position: fixed; inset: 0; z-index: 50; padding: 16px; display: flex; align-items: center; justify-content: center; background: rgba(5, 3, 3, .78); }
+.modal-paper {
+    max-width: 420px; width: 100%; color: #2a1c12; padding: 22px 24px;
+    background: radial-gradient(ellipse at 40% 30%, #f3e7c9, #dcc89d 70%, #c4a978);
+    box-shadow: 0 22px 60px rgba(0,0,0,.75); transform: rotate(-.6deg);
 }
-.choice-btn:hover { border-color: var(--accent); }
-.choice-btn.correct { background: var(--good-soft); border-color: var(--good); color: var(--good); }
-.choice-btn.wrong-tried { border-color: var(--bad); color: var(--bad); }
-.choice-btn:disabled { cursor: default; }
+.modal-paper h3 { font-size: 18px; margin-bottom: 14px; }
+.modal-paper ul { list-style: none; display: grid; gap: 10px; font-size: 15px; }
+.modal-paper li { display: flex; align-items: center; gap: 10px; }
+.modal-paper .lg { width: 18px; height: 18px; flex: none; }
+.modal-paper button { margin-top: 18px; font-size: 14px; background: #2a1c12; color: #f3e7c9; border: none; padding: 7px 18px; cursor: pointer; }
 
-.feedback { border-radius: 0.7rem; padding: 0.75rem 1rem; font-size: 0.85rem; line-height: 1.65; margin-bottom: 0.9rem; }
-.feedback.good { background: var(--good-soft); border: 1px solid rgba(110,231,183,0.35); color: #d7f9ea; }
-.feedback.bad { background: var(--bad-soft); border: 1px solid rgba(248,113,113,0.35); color: #fbdada; }
-.hint-box { background: var(--field); border: 1px dashed var(--border); border-radius: 0.7rem; padding: 0.7rem 1rem; font-size: 0.83rem; color: var(--muted); margin-bottom: 0.9rem; }
-
-.row-actions { display: flex; justify-content: flex-end; gap: 0.6rem; flex-wrap: wrap; }
-
-/* legend modal */
-.modal-backdrop {
-    position: fixed; inset: 0; background: rgba(5,4,7,0.72); backdrop-filter: blur(2px);
-    display: flex; align-items: center; justify-content: center; z-index: 50; padding: 1rem;
+@media (max-width: 720px) {
+    .frame { padding: 7px; }
+    .frame-head { min-height: 40px; }
+    .room-label { font-size: 13px; letter-spacing: .08em; }
+    .room-label small { display: none; }
+    .slot { width: 30px; height: 30px; font-size: 16px; }
+    .viewport.doc-open .scene-wrap { display: none; }
+    .doc { position: relative; inset: auto; padding: 12px 12px 10px; transform: none; }
+    .doc svg { flex: none; height: auto; max-height: 48vh; }
+    .topbar { gap: 6px; }
+    .tb-btn { font-size: 12px; padding: 5px 9px; }
+    .tb-btn .long { display: none; }
+    .doc-tab { position: static; margin-top: 8px; width: 100%; }
+    .dialog { padding: 18px 16px 16px; min-height: 140px; }
+    .dlg-text { font-size: 15.5px; line-height: 1.8; }
+    .choice { font-size: 15px; padding: 7px 10px; }
 }
-.modal-box {
-    background: var(--panel); border: 1px solid var(--border); border-radius: 1rem;
-    padding: 1.4rem; max-width: 420px; width: 100%;
-}
-.modal-box h3 { color: var(--accent); font-size: 1rem; margin-bottom: 0.9rem; }
-
-.answer-box { text-align: center; max-width: 440px; animation: pop-in 0.2s ease-out; }
-@keyframes pop-in { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-.answer-icon {
-    width: 52px; height: 52px; margin: 0 auto 0.7rem; border-radius: 50%;
-    display: grid; place-items: center; font-size: 1.6rem;
-    background: var(--good-soft); color: var(--good); border: 1px solid rgba(110,231,183,0.4);
-}
-.answer-box h3 { color: var(--good); font-size: 1.15rem; }
-.answer-explain { text-align: left; font-size: 0.87rem; line-height: 1.75; color: var(--muted); margin-top: 0.8rem; }
-
-.setup-box { text-align: center; max-width: 460px; animation: pop-in 0.2s ease-out; }
-.setup-icon {
-    width: 52px; height: 52px; margin: 0 auto 0.7rem; border-radius: 50%;
-    display: grid; place-items: center; font-size: 1.4rem;
-    background: var(--accent-soft); color: var(--accent); border: 1px solid rgba(217,164,65,0.4);
-}
-.setup-box h3 { color: var(--accent); font-size: 1.05rem; }
-.setup-text { text-align: left; font-size: 0.88rem; line-height: 1.8; color: var(--text); margin-top: 0.8rem; white-space: pre-line; }
-
-#endScreen { text-align: center; padding: 3rem 1rem; }
-#endScreen h1 {
-    font-size: clamp(1.7rem, 5vw, 2.4rem); font-weight: 800;
-    background: linear-gradient(100deg, #f2e9e4, var(--accent));
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-    margin-bottom: 1.1rem;
-}
-.recap { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; margin: 1.6rem 0 2rem; }
-.recap span {
-    font-size: 0.78rem; color: var(--good); background: var(--good-soft);
-    border: 1px solid rgba(110,231,183,0.3); border-radius: 999px; padding: 0.4rem 0.9rem;
-}
-
-footer { margin-top: 2.4rem; text-align: center; color: var(--dim); font-size: 0.76rem; line-height: 1.9; }
-
-@media (max-width: 640px) {
-    .room-chip { width: 78px; padding: 0.6rem 0.5rem; }
-    .panel { padding: 1rem; }
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 </style>
 </head>
 <body>
-<div class="wrap">
-    <div class="topbar">
-        <a href="https://sonyoungguk.github.io/sciencelab/" class="home-btn">🏠 과학 시뮬레이션 실험실</a>
-        <button class="legend-btn" id="legendBtn">🧬 가계도 기호</button>
-        <button class="reset-btn" id="resetBtn" hidden>처음부터 다시</button>
-    </div>
-
-    <!-- 타이틀 화면 -->
-    <div id="titleScreen">
-        <div class="badge">🖼️ MYSTERY · 유전 가계도</div>
-        <h1>가문의 초상</h1>
-        <p class="lede">엄마는 할머니의 장례식에 끝내 오지 않았다. 이유는 한 번도 말해주지 않았다.<br>할머니가 남긴 편지 한 장이 나에게만 이 저택의 열쇠를 건넨다. 4대에 걸친 가족의 유전 이야기를 하나씩 풀어나가며, 두 사람 사이에 무슨 일이 있었는지 알아내야 한다.</p>
-        <div class="title-actions">
-            <button class="btn" id="startNewBtn">저택으로 들어가기</button>
-            <button class="btn ghost" id="continueBtn" hidden>이어서 하기</button>
-        </div>
-        <div class="room-map" id="roomMap"></div>
-    </div>
-
-    <!-- 게임 화면 -->
-    <div id="gameScreen" hidden>
-        <div class="progress" id="progressBar"></div>
-
-        <div class="panel" id="storyPanel">
-            <h2 id="storyLabel">이야기</h2>
-            <div class="story-art" id="storyArt"></div>
-            <div class="story-text" id="storyText"></div>
-        </div>
-
-        <div class="panel" id="pedPanel">
-            <h2>가계도</h2>
-            <div class="ped-legend">
-                <span class="item"><span class="leg-shape"></span>남자</span>
-                <span class="item"><span class="leg-shape circle"></span>여자</span>
-                <span class="item"><span class="leg-shape filled"></span>형질 발현</span>
-                <span class="item"><span class="leg-line" style="border-top-style:dashed;"></span>사망(대각선)</span>
-                <span class="item"><span class="leg-line"></span>부부 · 자녀 관계</span>
-            </div>
-            <div class="ped-scroll"><svg class="pedigree" id="pedSvg" viewBox="0 0 400 200"></svg></div>
-        </div>
-
-        <div class="panel" id="qPanel">
-            <h2 id="qLabel">문제</h2>
-            <div class="q-prompt" id="qPrompt"></div>
-            <div class="choices" id="qChoices"></div>
-            <div class="feedback" id="qFeedback" hidden></div>
-            <div class="hint-box" id="qHint" hidden></div>
-            <div class="row-actions">
-                <button class="btn ghost" id="hintBtn">힌트 보기</button>
-                <button class="btn" id="nextBtn" hidden>다음</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 엔딩 -->
-    <div id="endScreen" hidden>
-        <div class="badge" style="display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;color:var(--accent);background:var(--accent-soft);border:1px solid rgba(217,164,65,0.3);border-radius:999px;padding:.3rem .9rem;margin-bottom:1.2rem;">🖼️ EPILOGUE</div>
-        <h1>가문의 초상 — 완료</h1>
-        <div class="story-text" id="endText" style="max-width:600px;margin:0 auto;text-align:left;"></div>
-        <div class="recap">
-            <span>✔ 우성 · 열성 판별</span>
-            <span>✔ 유전자형 추론</span>
-            <span>✔ ABO식 혈액형 유전</span>
-            <span>✔ 반성유전 구별</span>
-            <span>✔ 4세대 가계도 종합 분석</span>
-        </div>
-        <button class="btn" id="restartBtn">처음부터 다시 플레이</button>
-    </div>
-
-    <footer>
-        가상의 형질과 인물로 구성된 교육용 이야기입니다 · 순수 HTML · CSS · JavaScript로 만들어졌습니다.
-    </footer>
+<div class="topbar">
+    <a href="https://sonyoungguk.github.io/sciencelab/" class="tb-btn">🏠 <span class="long">과학 시뮬레이션 </span>실험실</a>
+    <button class="tb-btn" id="legendBtn">🧬 가계도 기호</button>
+    <button class="tb-btn reset" id="resetBtn" hidden>처음부터 다시</button>
 </div>
 
-<!-- 가계도 기호 참고 모달 -->
+<main class="frame" id="frame">
+    <div class="frame-head">
+        <div class="room-label" id="roomLabel">가문의 초상</div>
+        <div class="inv" id="inv" aria-label="소지품"></div>
+    </div>
+    <div class="viewport" id="viewport">
+        <div class="scene-wrap" id="sceneWrap">
+            <div id="scene"></div>
+            <div class="scene-title" id="sceneTitle" hidden></div>
+            <div class="vignette"></div>
+            <div class="grain"></div>
+            <div class="fader" id="fader"><div class="chapter-card" id="chapterCard"></div></div>
+        </div>
+        <section class="doc" id="doc" hidden aria-label="가계도">
+            <div class="doc-head">
+                <div class="doc-title" id="docTitle"></div>
+                <button class="doc-fold" id="docFold">접어 두기</button>
+            </div>
+            <div class="doc-legend">
+                <span><i class="lg"></i>남자</span>
+                <span><i class="lg c"></i>여자</span>
+                <span><i class="lg f"></i>형질 발현</span>
+                <span>⟋ 사망</span>
+                <span><i class="lg r"></i>살펴볼 사람</span>
+            </div>
+            <svg id="pedSvg" viewBox="0 0 400 200" role="img" aria-label="가계도 그림"></svg>
+        </section>
+        <button class="doc-tab" id="docTab" hidden>📜 가계도 다시 펼치기</button>
+    </div>
+
+    <div class="dialog" id="dialog" aria-live="polite">
+        <div class="dlg-who" id="dlgWho" hidden></div>
+        <div class="dlg-text" id="dlgText"></div>
+        <div class="dlg-choices" id="dlgChoices"></div>
+        <div class="dlg-tools" id="dlgTools" hidden>
+            <button class="hint-btn" id="hintBtn">💡 힌트</button>
+            <span class="dlg-note" id="dlgNote"></span>
+        </div>
+        <div class="dlg-adv" id="dlgAdv" hidden>▼</div>
+    </div>
+</main>
+
+<footer>
+    <span class="kbd-help">클릭 또는 스페이스로 대화를 넘기고, 빛나는 물건을 눌러 살펴보세요.</span><br>
+    가상의 형질과 인물로 구성된 교육용 이야기입니다 · 순수 HTML · CSS · JavaScript로 만들어졌습니다.
+</footer>
+
 <div class="modal-backdrop" id="legendModal" hidden>
-    <div class="modal-box">
+    <div class="modal-paper" role="dialog" aria-label="가계도 기호 참고표">
         <h3>🧬 가계도 기호 참고표</h3>
-        <div class="ped-legend" style="flex-direction:column;gap:0.7rem;font-size:0.82rem;">
-            <span class="item"><span class="leg-shape" style="width:18px;height:18px;"></span>남자 (□)</span>
-            <span class="item"><span class="leg-shape circle" style="width:18px;height:18px;"></span>여자 (○)</span>
-            <span class="item"><span class="leg-shape filled" style="width:18px;height:18px;"></span>형질이 발현된 사람 (색칠)</span>
-            <span class="item">⟍ 도형을 가로지르는 대각선 — 사망</span>
-            <span class="item">— 가로선: 부부 관계 · 세로선/가지선: 자녀 관계</span>
-        </div>
-        <div class="row-actions" style="margin-top:1.1rem;">
-            <button class="btn" id="legendCloseBtn">닫기</button>
-        </div>
-    </div>
-</div>
-
-<!-- 정답 팝업 -->
-<div class="modal-backdrop" id="answerModal" hidden>
-    <div class="modal-box answer-box">
-        <div class="answer-icon" id="answerIcon">✔</div>
-        <h3 id="answerTitle">정답입니다!</h3>
-        <div class="answer-explain" id="answerExplain"></div>
-        <div class="row-actions" style="margin-top:1.1rem; justify-content:center;">
-            <button class="btn" id="answerNextBtn">다음 →</button>
-        </div>
-    </div>
-</div>
-
-<!-- 상황 설명 팝업 -->
-<div class="modal-backdrop" id="setupModal" hidden>
-    <div class="modal-box setup-box">
-        <div class="setup-icon">🔍</div>
-        <h3>자세히 살펴보니…</h3>
-        <div class="setup-text" id="setupText"></div>
-        <div class="row-actions" style="margin-top:1.1rem; justify-content:center;">
-            <button class="btn" id="setupContinueBtn">계속하기 →</button>
-        </div>
+        <ul>
+            <li><i class="lg"></i>남자 (□)</li>
+            <li><i class="lg c"></i>여자 (○)</li>
+            <li><i class="lg f"></i>형질이 발현된 사람 (색칠)</li>
+            <li>⟋ 도형을 가로지르는 대각선 — 사망</li>
+            <li>— 가로선: 부부 관계 · 세로선/가지선: 자녀 관계</li>
+            <li><i class="lg r"></i>빨간 점선 동그라미 — 지금 문제에서 살펴볼 사람</li>
+        </ul>
+        <button id="legendCloseBtn">닫기</button>
     </div>
 </div>
 
 <script>
 'use strict';
-const SAVE_KEY = 'pedigree-mystery-v1';
+const SAVE_KEY = 'pedigree-mystery-v2';
+const $ = id => document.getElementById(id);
+const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/* ============ SVG 가계도 렌더러 ============ */
+/* ============ 가계도 렌더러 ============ */
 const NS = 'http://www.w3.org/2000/svg';
 function svgEl(tag, attrs) {
     const el = document.createElementNS(NS, tag);
@@ -354,56 +337,43 @@ function renderPedigree(svg, data, highlight) {
     const COLW = 110, ROWH = 118, MARGIN = 46, SHAPE = 42;
     const byId = {};
     data.people.forEach(p => byId[p.id] = p);
-    function pos(p) { return { x: MARGIN + (p.col - 1) * COLW, y: MARGIN + (p.gen - 1) * ROWH }; }
-
+    const pos = p => ({ x: MARGIN + (p.col - 1) * COLW, y: MARGIN + (p.gen - 1) * ROWH });
     const maxCol = Math.max(...data.people.map(p => p.col));
     const maxGen = Math.max(...data.people.map(p => p.gen));
-    const width = MARGIN * 2 + (maxCol - 1) * COLW + SHAPE;
-    const height = MARGIN * 2 + (maxGen - 1) * ROWH + SHAPE + 34;
-    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    svg.setAttribute('viewBox', `0 0 ${MARGIN * 2 + (maxCol - 1) * COLW + SHAPE} ${MARGIN * 2 + (maxGen - 1) * ROWH + SHAPE + 44}`);
 
     (data.marriages || []).forEach(([aId, bId]) => {
-        const a = byId[aId], b = byId[bId];
-        const pa = pos(a), pb = pos(b);
+        const pa = pos(byId[aId]), pb = pos(byId[bId]);
         const y = pa.y + SHAPE / 2;
-        const x1 = Math.min(pa.x, pb.x) + SHAPE, x2 = Math.max(pa.x, pb.x);
-        svg.appendChild(svgEl('line', { x1, y1: y, x2, y2: y, class: 'ped-line' }));
+        svg.appendChild(svgEl('line', { x1: Math.min(pa.x, pb.x) + SHAPE, y1: y, x2: Math.max(pa.x, pb.x), y2: y, class: 'ped-line' }));
     });
-
     (data.childLinks || []).forEach(link => {
         const [pAId, pBId] = link.parents;
         const posA = pos(byId[pAId]), posB = pos(byId[pBId]);
         const midX = (posA.x + posB.x) / 2 + SHAPE / 2;
-        const marriageY = posA.y + SHAPE / 2;
-        const childGenY = pos(byId[link.children[0]]).y;
-        const dropY = childGenY - 26;
-        svg.appendChild(svgEl('line', { x1: midX, y1: marriageY, x2: midX, y2: dropY, class: 'ped-line' }));
+        const dropY = pos(byId[link.children[0]]).y - 26;
+        svg.appendChild(svgEl('line', { x1: midX, y1: posA.y + SHAPE / 2, x2: midX, y2: dropY, class: 'ped-line' }));
         const childXs = link.children.map(cid => pos(byId[cid]).x + SHAPE / 2);
-        const xmin = Math.min(...childXs), xmax = Math.max(...childXs);
-        svg.appendChild(svgEl('line', { x1: xmin, y1: dropY, x2: xmax, y2: dropY, class: 'ped-line' }));
+        svg.appendChild(svgEl('line', { x1: Math.min(...childXs), y1: dropY, x2: Math.max(...childXs), y2: dropY, class: 'ped-line' }));
         link.children.forEach(cid => {
-            const cx = pos(byId[cid]).x + SHAPE / 2;
-            const cy = pos(byId[cid]).y;
-            svg.appendChild(svgEl('line', { x1: cx, y1: dropY, x2: cx, y2: cy, class: 'ped-line' }));
+            const c = pos(byId[cid]);
+            svg.appendChild(svgEl('line', { x1: c.x + SHAPE / 2, y1: dropY, x2: c.x + SHAPE / 2, y2: c.y, class: 'ped-line' }));
         });
     });
-
     data.people.forEach(p => {
         const { x, y } = pos(p);
-        const g = svgEl('g', { class: 'ped-person' + (highlight.includes(p.id) ? ' hl' : '') });
-        if (p.sex === 'M') {
-            g.appendChild(svgEl('rect', { x, y, width: SHAPE, height: SHAPE, class: 'ped-shape' + (p.affected ? ' aff' : '') }));
-        } else {
-            g.appendChild(svgEl('circle', { cx: x + SHAPE / 2, cy: y + SHAPE / 2, r: SHAPE / 2, class: 'ped-shape' + (p.affected ? ' aff' : '') }));
-        }
-        if (p.dead) {
-            g.appendChild(svgEl('line', { x1: x - 5, y1: y + SHAPE + 5, x2: x + SHAPE + 5, y2: y - 5, class: 'ped-dead' }));
-        }
-        const label = svgEl('text', { x: x + SHAPE / 2, y: y + SHAPE + 16, class: 'ped-label', 'text-anchor': 'middle' });
+        const hl = highlight.includes(p.id);
+        const g = svgEl('g', { class: 'ped-person' + (hl ? ' hl' : '') });
+        const cls = 'ped-shape' + (p.affected ? ' aff' : '');
+        if (p.sex === 'M') g.appendChild(svgEl('rect', { x, y, width: SHAPE, height: SHAPE, class: cls }));
+        else g.appendChild(svgEl('circle', { cx: x + SHAPE / 2, cy: y + SHAPE / 2, r: SHAPE / 2, class: cls }));
+        if (p.dead) g.appendChild(svgEl('line', { x1: x - 5, y1: y + SHAPE + 5, x2: x + SHAPE + 5, y2: y - 5, class: 'ped-dead' }));
+        if (hl) g.appendChild(svgEl('circle', { cx: x + SHAPE / 2, cy: y + SHAPE / 2, r: SHAPE * 0.72, class: 'ped-ring' }));
+        const label = svgEl('text', { x: x + SHAPE / 2, y: y + SHAPE + 25, class: 'ped-label', 'text-anchor': 'middle' });
         label.textContent = p.id;
         g.appendChild(label);
         if (p.info) {
-            const info = svgEl('text', { x: x + SHAPE / 2, y: y + SHAPE + 29, class: 'ped-info', 'text-anchor': 'middle' });
+            const info = svgEl('text', { x: x + SHAPE / 2, y: y + SHAPE + 39, class: 'ped-info', 'text-anchor': 'middle' });
             info.textContent = p.info;
             g.appendChild(info);
         }
@@ -411,604 +381,2014 @@ function renderPedigree(svg, data, highlight) {
     });
 }
 
-/* ============ 챕터 데이터 ============ */
-const CHAPTERS = [
-{
-    room: '서재', emoji: '📖',
-    art: `<svg viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
-<defs><radialGradient id="g1" cx="50%" cy="78%" r="55%"><stop offset="0%" stop-color="var(--accent)" stop-opacity="0.35"/><stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/></radialGradient></defs>
-<rect width="600" height="200" fill="#0a0710"/><rect width="600" height="200" fill="url(#g1)"/>
-<rect x="14" y="18" width="130" height="164" rx="4" fill="var(--panel2)" stroke="var(--border)" stroke-width="2"/>
-<g><rect x="24" y="30" width="14" height="46" fill="var(--garnet)" opacity="0.55"/><rect x="42" y="30" width="10" height="46" fill="var(--accent)" opacity="0.4"/><rect x="56" y="30" width="16" height="46" fill="var(--muted)" opacity="0.3"/><rect x="76" y="30" width="12" height="46" fill="var(--garnet)" opacity="0.45"/><rect x="92" y="30" width="10" height="46" fill="var(--accent)" opacity="0.35"/><rect x="106" y="30" width="18" height="46" fill="var(--muted)" opacity="0.3"/>
-<rect x="24" y="84" width="18" height="46" fill="var(--accent)" opacity="0.35"/><rect x="46" y="84" width="12" height="46" fill="var(--garnet)" opacity="0.5"/><rect x="62" y="84" width="10" height="46" fill="var(--muted)" opacity="0.3"/><rect x="76" y="84" width="16" height="46" fill="var(--accent)" opacity="0.4"/><rect x="96" y="84" width="14" height="46" fill="var(--garnet)" opacity="0.45"/>
-<rect x="24" y="138" width="12" height="38" fill="var(--muted)" opacity="0.3"/><rect x="40" y="138" width="16" height="38" fill="var(--garnet)" opacity="0.5"/><rect x="60" y="138" width="10" height="38" fill="var(--accent)" opacity="0.4"/><rect x="74" y="138" width="18" height="38" fill="var(--muted)" opacity="0.3"/><rect x="96" y="138" width="12" height="38" fill="var(--garnet)" opacity="0.45"/></g>
-<rect x="456" y="18" width="130" height="164" rx="4" fill="var(--panel2)" stroke="var(--border)" stroke-width="2"/>
-<g><rect x="466" y="30" width="14" height="46" fill="var(--accent)" opacity="0.4"/><rect x="484" y="30" width="10" height="46" fill="var(--garnet)" opacity="0.5"/><rect x="498" y="30" width="16" height="46" fill="var(--muted)" opacity="0.3"/><rect x="518" y="30" width="12" height="46" fill="var(--accent)" opacity="0.35"/><rect x="534" y="30" width="10" height="46" fill="var(--garnet)" opacity="0.45"/><rect x="548" y="30" width="18" height="46" fill="var(--muted)" opacity="0.3"/>
-<rect x="466" y="84" width="18" height="46" fill="var(--garnet)" opacity="0.5"/><rect x="488" y="84" width="12" height="46" fill="var(--accent)" opacity="0.4"/><rect x="504" y="84" width="10" height="46" fill="var(--muted)" opacity="0.3"/><rect x="518" y="84" width="16" height="46" fill="var(--garnet)" opacity="0.45"/><rect x="538" y="84" width="14" height="46" fill="var(--accent)" opacity="0.35"/>
-<rect x="466" y="138" width="12" height="38" fill="var(--garnet)" opacity="0.45"/><rect x="482" y="138" width="16" height="38" fill="var(--muted)" opacity="0.3"/><rect x="502" y="138" width="10" height="38" fill="var(--accent)" opacity="0.4"/><rect x="516" y="138" width="18" height="38" fill="var(--garnet)" opacity="0.5"/><rect x="538" y="138" width="12" height="38" fill="var(--muted)" opacity="0.3"/></g>
-<path d="M200 182 L260 120 L340 120 L400 182 Z" fill="var(--panel2)" stroke="var(--border)" stroke-width="2"/>
-<path d="M270 128 L300 118 L300 145 L270 152 Z" fill="var(--field)" stroke="var(--border)"/>
-<path d="M330 128 L300 118 L300 145 L330 152 Z" fill="var(--field)" stroke="var(--border)"/>
-<rect x="352" y="130" width="10" height="30" rx="2" fill="var(--muted)" opacity="0.6"/>
-<circle cx="357" cy="122" r="10" fill="var(--accent)" opacity="0.5"/>
-<path d="M357 100 Q352 112 357 120 Q362 112 357 100 Z" fill="var(--accent)"/>
-</svg>`,
-    intro: `할머니의 장례식 날, 엄마는 끝내 오지 않았다. "그 집엔 발도 들이고 싶지 않다"는 말만 남긴 채. 평생 과학 선생님이었던 할머니와 엄마 사이에 대체 무슨 일이 있었던 건지, 나는 한 번도 제대로 들은 적이 없다. 그저 어릴 때부터 어렴풋이 느꼈다 — 두 사람 사이엔 절대 건드려서는 안 되는 무언가가 있다는 것을.\n\n변호사가 건넨 유언장에는 뜻밖의 문장이 적혀 있었다. "이 집과 그 안의 모든 것은, 내 손주인 너에게만 남긴다." 그리고 봉투 하나. 겉면에 낯익은 글씨로 내 이름이 적혀 있었다.\n\n망설이다 봉투를 열었다.\n"너에게 이 편지를 쓴다. 네 엄마에게는 끝내 하지 못한 이야기가 있어. 살아서는 도저히 입이 떨어지지 않았단다. 그래서 대신, 내가 평생 믿어온 방식으로 남긴다 — 이 집 곳곳에 숨겨둔 우리 가족의 유전 이야기 속에. 하나씩 풀어나가다 보면, 언젠가 너도 알게 될 거야. 내가 왜 그런 선택을 했는지. 그리고 진실을 마주할 준비가 되면, 부디 네 엄마에게도 전해주렴."\n편지는 거기서 끝나 있었다.\n\n현관문을 열자, 낯설고도 익숙한 냄새가 훅 끼쳐왔다. 삐걱거리는 계단을 지나 서재 문을 열자, 오래된 종이와 먼지 냄새가 방 안 가득했다. 책장 한켠, 가죽으로 묶인 사진첩이 유독 눈에 띈다 — 누군가 최근까지 계속 꺼내 보았던 것처럼, 먼지가 그 부분만 얇게 앉아 있었다.\n표지를 넘기자 빛바랜 흑백 사진들과 함께, 할머니의 필체로 보이는 메모가 끼워져 있다.\n\n"이 집안 사람들은 대대로 뺨에 보조개가 있다. 그런데 아주 가끔, 보조개 없이 태어나는 아이가 있었다..." 메모는 거기서 끊겨 있었다. 나머지는 사진첩 속 가계도를 스스로 읽어내야 알 수 있을 것 같다.`,
-    pedigree: {
-        people: [
-            { id:'I-1', gen:1, col:2, sex:'M', dead:true, affected:true },
-            { id:'I-2', gen:1, col:3, sex:'F', dead:true, affected:true },
-            { id:'II-1', gen:2, col:1, sex:'M' },
-            { id:'II-2', gen:2, col:2, sex:'F', affected:true },
-            { id:'II-3', gen:2, col:3, sex:'M', affected:true },
-        ],
-        marriages: [['I-1','I-2']],
-        childLinks: [{ parents:['I-1','I-2'], children:['II-1','II-2','II-3'] }],
+/* ============ 장면 그림 (1600 × 900) ============ */
+// 정적인 배경(bg)은 질감·조명 필터를 듬뿍 써서 이미지 한 장으로 굽고,
+// 움직이는 것(불꽃·시계추·까마귀)과 누를 수 있는 곳(핫스팟)만 그 위 SVG(fg)에 둔다.
+function rng(seed) { return () => (seed = (seed * 16807) % 2147483647) / 2147483647; }
+const f1 = n => (+n).toFixed(1);
+// 한 점 투시: 소실점(VPX, VPY), 뒷벽 사각형(WL..WR, WT..WB)
+const VPX = 800, VPY = 380, WL = 140, WR = 1460, WT = 40, WB = 700;
+const ray = (xb, yb, x) => VPY + (yb - VPY) * (x - VPX) / (xb - VPX);   // 뒷벽 점에서 화면 쪽으로 뻗은 선 위, x 지점의 y
+const fx = (xb, y) => VPX + (xb - VPX) * (y - VPY) / (WB - VPY);          // 바닥: 뒷벽 밑변 xb 에서 출발한 선의 깊이 y 지점 x
+const yl = y => f1(ray(WL, y, 0)), yr = y => f1(ray(WR, y, 1600));
+const rectD = (x, y, w, h) => `M${f1(x)} ${f1(y)}h${f1(w)}v${f1(h)}h${f1(-w)}Z`;
+const hit = (id, label, ...ds) => `<g class="hs" data-hs="${id}" role="button" aria-label="${label}">${ds.map(d => `<path class="hit" d="${d}"/>`).join('')}</g>`;
+const shadow = (cx, cy, rx, ry, o = .55) => `<ellipse cx="${f1(cx)}" cy="${f1(cy)}" rx="${f1(rx)}" ry="${f1(ry)}" fill="#000" opacity="${o}" filter="url(#b12)"/>`;
+
+// 질감 필터 · 공용 그라디언트 (배경 문서 안에서만 쓰인다)
+function kit(o = {}) {
+    const grain = (id, bf, seed, k, b) => `<filter id="${id}" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+<feTurbulence type="fractalNoise" baseFrequency="${bf}" numOctaves="3" seed="${seed}" result="t"/>
+<feColorMatrix in="t" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  ${k} 0 0 0 ${b}" result="a"/>
+<feComposite in="a" in2="SourceAlpha" operator="in" result="d"/>
+<feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="d"/></feMerge></filter>`;
+    return `<defs>
+${grain('wood', '0.004 0.09', 4, 1.5, -0.5)}
+${grain('woodV', '0.09 0.004', 6, 1.5, -0.5)}
+<filter id="mottle" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+ <feTurbulence type="fractalNoise" baseFrequency="0.0032" numOctaves="4" seed="11" result="t"/>
+ <feColorMatrix in="t" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1.7 0 0 0 -0.62" result="a"/>
+ <feComposite in="a" in2="SourceAlpha" operator="in" result="d"/>
+ <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="3" result="t2"/>
+ <feColorMatrix in="t2" type="matrix" values="0 0 0 0 1  0 0 0 0 .95  0 0 0 0 .85  0.5 0 0 0 -0.3" result="a2"/>
+ <feComposite in="a2" in2="SourceAlpha" operator="in" result="d2"/>
+ <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="d"/><feMergeNode in="d2"/></feMerge></filter>
+<filter id="emboss" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+ <feGaussianBlur in="SourceAlpha" stdDeviation="1.6" result="b"/>
+ <feDiffuseLighting in="b" surfaceScale="2.6" diffuseConstant="1.1" lighting-color="#ffffff" result="l"><feDistantLight azimuth="235" elevation="50"/></feDiffuseLighting>
+ <feComposite in="SourceGraphic" in2="l" operator="arithmetic" k1="1.15" result="lit"/>
+ <feComposite in="lit" in2="SourceAlpha" operator="in"/></filter>
+<filter id="bevel" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+ <feGaussianBlur in="SourceAlpha" stdDeviation="2.4" result="b"/>
+ <feSpecularLighting in="b" surfaceScale="5" specularConstant="1" specularExponent="26" lighting-color="#fff0c8" result="s"><feDistantLight azimuth="${o.az || 225}" elevation="36"/></feSpecularLighting>
+ <feComposite in="s" in2="SourceAlpha" operator="in" result="s2"/>
+ <feComposite in="SourceGraphic" in2="s2" operator="arithmetic" k2="1" k3="0.7"/></filter>
+<filter id="noise" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" seed="5"/><feColorMatrix type="saturate" values="0"/></filter>
+<filter id="b4" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="4"/></filter>
+<filter id="b12" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="12"/></filter>
+<filter id="b30" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="30"/></filter>
+<linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f3d991"/><stop offset=".3" stop-color="#b8903f"/><stop offset=".55" stop-color="#6e4f1f"/><stop offset=".8" stop-color="#c9a24a"/><stop offset="1" stop-color="#8a6a32"/></linearGradient>
+<linearGradient id="brass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0d690"/><stop offset=".5" stop-color="#a87f36"/><stop offset="1" stop-color="#5a4018"/></linearGradient>
+<linearGradient id="iron" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a5a5e"/><stop offset=".5" stop-color="#2a2a2e"/><stop offset="1" stop-color="#161618"/></linearGradient>
+<linearGradient id="cyl" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000" stop-opacity=".5"/><stop offset=".28" stop-color="#fff" stop-opacity=".14"/><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".6"/></linearGradient>
+<linearGradient id="vshade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".14"/><stop offset=".18" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".55"/></linearGradient>
+<linearGradient id="hshade" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000" stop-opacity=".4"/><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".5"/></linearGradient>
+<linearGradient id="floorFade" x1="0" y1="700" x2="0" y2="900" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#000" stop-opacity=".35"/><stop offset=".3" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".45"/></linearGradient>
+<radialGradient id="skin" cx=".42" cy=".38" r=".7"><stop offset="0" stop-color="#f4dcbc"/><stop offset=".55" stop-color="#cfa37c"/><stop offset="1" stop-color="#7a5038"/></radialGradient>
+<radialGradient id="canvasVig" cx=".5" cy=".42" r=".75"><stop offset="0" stop-color="#fff" stop-opacity=".1"/><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".65"/></radialGradient>
+<radialGradient id="glassG" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#6a7a78"/><stop offset=".6" stop-color="#26302f"/><stop offset="1" stop-color="#0c1010"/></radialGradient>
+<radialGradient id="bottle" cx=".35" cy=".35" r=".7"><stop offset="0" stop-color="#4a6a4a"/><stop offset=".45" stop-color="#1a2a1c"/><stop offset="1" stop-color="#060a07"/></radialGradient>
+<linearGradient id="wax" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b8a888"/><stop offset=".35" stop-color="#f4ecd6"/><stop offset="1" stop-color="#9a8a6a"/></linearGradient>
+<linearGradient id="paper" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f1e5c6"/><stop offset="1" stop-color="#c9b48a"/></linearGradient>
+<pattern id="damask" width="120" height="160" patternUnits="userSpaceOnUse">
+ <g fill="${o.pat || '#4b352c'}">
+  <path d="M60 14 C74 34 88 40 92 58 C96 72 84 84 72 80 C80 70 74 60 64 62 C70 72 68 86 60 96 C52 86 50 72 56 62 C46 60 40 70 48 80 C36 84 24 72 28 58 C32 40 46 34 60 14Z"/>
+  <path d="M60 98 C68 110 72 120 60 142 C48 120 52 110 60 98Z"/><circle cx="60" cy="152" r="4"/>
+  <path d="M0 66 C9 80 9 92 0 106 C-9 92 -9 80 0 66Z M120 66 C129 80 129 92 120 106 C111 92 111 80 120 66Z"/>
+  <circle cx="0" cy="12" r="3.5"/><circle cx="120" cy="12" r="3.5"/><circle cx="30" cy="120" r="2.5"/><circle cx="90" cy="120" r="2.5"/>
+ </g></pattern>
+${o.defs || ''}
+</defs>`;
+}
+
+// 원근이 있는 방 껍데기: 천장 · 뒷벽 · 옆벽 · 걸레받이 · 징두리 판벽 · 마루
+function roomShell(o) {
+    const p = Object.assign({ wall: '#3b2a24', side: .4, trim: '#3a2216', trimHi: '#5a3a24', floor: '#4a2e1e', ceil: '#120b09',
+        paper: 'damask', wains: true, floorType: 'wood', seed: 3 }, o);
+    const r = rng(p.seed);
+    const L = `0,${yl(WT)} ${WL},${WT} ${WL},${WB} 0,${yl(WB)}`, R = `1600,${yr(WT)} ${WR},${WT} ${WR},${WB} 1600,${yr(WB)}`;
+    let s = `<rect width="1600" height="900" fill="${p.ceil}"/>`;
+    s += `<polygon points="0,0 1600,0 1600,${yr(WT)} ${WR},${WT} ${WL},${WT} 0,${yl(WT)}" fill="${p.ceil}"/>`;
+    for (let k = 1; k < 5; k++) {
+        const x = WL - k * 46, x2 = WR + k * 46;
+        s += `<line x1="${x}" y1="${f1(ray(WL, WT, x))}" x2="${x2}" y2="${f1(ray(WR, WT, x2))}" stroke="#000" stroke-opacity=".35" stroke-width="${6 + k * 3}"/>`;
+    }
+    // 뒷벽
+    s += `<g filter="url(#mottle)"><rect x="${WL}" y="${WT}" width="${WR - WL}" height="${WB - WT}" fill="${p.wall}"/>`;
+    if (p.paper === 'damask') {
+        s += `<rect x="${WL}" y="${WT}" width="${WR - WL}" height="${WB - WT}" fill="url(#damask)" filter="url(#emboss)"/>`;
+        for (let x = WL + 60; x < WR; x += 120) s += `<rect x="${x - 1}" y="${WT}" width="2" height="${WB - WT}" fill="#000" opacity=".12"/>`;
+    }
+    if (p.paper === 'brick') {
+        for (let y = WT, row = 0; y < WB; y += 32, row++) {
+            for (let x = WL - (row % 2) * 34; x < WR; x += 68) {
+                const v = (r() - .5) * 26, c = `rgb(${88 + v | 0},${54 + v * .7 | 0},${44 + v * .6 | 0})`;
+                const xx = Math.max(x, WL), ww = Math.min(x + 64, WR) - xx;
+                if (ww > 4) s += `<rect x="${xx + 2}" y="${y + 2}" width="${ww - 2}" height="28" rx="3" fill="${c}"/>`;
+            }
+        }
+    }
+    if (p.paper === 'planks') {
+        for (let x = WL; x < WR; x += 66) {
+            const v = (r() - .5) * 18;
+            s += `<rect x="${x}" y="${WT}" width="64" height="${WB - WT}" fill="rgb(${58 + v | 0},${42 + v * .8 | 0},${32 + v * .6 | 0})" filter="url(#woodV)"/><rect x="${x + 63}" y="${WT}" width="3" height="${WB - WT}" fill="#000" opacity=".55"/>`;
+        }
+    }
+    s += `</g>`;
+    // 옆벽
+    s += `<g filter="url(#mottle)"><polygon points="${L}" fill="${p.wall}"/><polygon points="${R}" fill="${p.wall}"/></g>`;
+    if (p.paper === 'brick') for (let y = WT + 32; y < WB; y += 32) {
+        s += `<line x1="${WL}" y1="${y}" x2="0" y2="${yl(y)}" stroke="#140c0a" stroke-width="3"/><line x1="${WR}" y1="${y}" x2="1600" y2="${yr(y)}" stroke="#140c0a" stroke-width="3"/>`;
+    }
+    s += `<polygon points="${L}" fill="#000" opacity="${p.side}"/><polygon points="${R}" fill="#000" opacity="${p.side + .06}"/>`;
+    // 몰딩
+    if (p.crown !== false) {
+        s += `<rect x="${WL}" y="${WT}" width="${WR - WL}" height="24" fill="${p.trimHi}" filter="url(#bevel)"/><rect x="${WL}" y="${WT + 24}" width="${WR - WL}" height="8" fill="#000" opacity=".4"/>`;
+        s += `<polygon points="0,${yl(WT)} ${WL},${WT} ${WL},${WT + 24} 0,${yl(WT + 24)}" fill="${p.trimHi}"/><polygon points="1600,${yr(WT)} ${WR},${WT} ${WR},${WT + 24} 1600,${yr(WT + 24)}" fill="${p.trimHi}"/>`;
+        s += `<polygon points="0,${yl(WT)} ${WL},${WT} ${WL},${WT + 24} 0,${yl(WT + 24)}" fill="#000" opacity=".45"/><polygon points="1600,${yr(WT)} ${WR},${WT} ${WR},${WT + 24} 1600,${yr(WT + 24)}" fill="#000" opacity=".5"/>`;
+    }
+    if (p.wains) {
+        s += `<rect x="${WL}" y="540" width="${WR - WL}" height="${WB - 540}" fill="${p.trim}" filter="url(#wood)"/>`;
+        const n = Math.floor((WR - WL - 24) / 150), x0 = WL + ((WR - WL) - (n * 150 - 24)) / 2;
+        for (let i = 0; i < n; i++) {
+            const x = x0 + i * 150;
+            s += `<rect x="${x}" y="566" width="126" height="102" fill="${p.trim}" filter="url(#bevel)"/><path d="M${x} 668 V566 H${x + 126}" stroke="#000" stroke-opacity=".5" stroke-width="3" fill="none"/><path d="M${x + 126} 566 V668 H${x}" stroke="${p.trimHi}" stroke-width="2" fill="none" opacity=".7"/>`;
+        }
+        s += `<rect x="${WL}" y="528" width="${WR - WL}" height="16" fill="${p.trimHi}" filter="url(#bevel)"/><rect x="${WL}" y="544" width="${WR - WL}" height="5" fill="#000" opacity=".4"/>`;
+        for (const [side, X, Y] of [['l', 0, yl], ['r', 1600, yr]]) {
+            const W = side === 'l' ? WL : WR;
+            s += `<polygon points="${X},${Y(540)} ${W},540 ${W},${WB} ${X},${Y(WB)}" fill="${p.trim}"/><polygon points="${X},${Y(528)} ${W},528 ${W},544 ${X},${Y(544)}" fill="${p.trimHi}"/>`;
+            s += `<polygon points="${X},${Y(528)} ${W},528 ${W},${WB} ${X},${Y(WB)}" fill="#000" opacity="${p.side + (side === 'r' ? .08 : 0)}"/>`;
+        }
+    }
+    s += `<rect x="${WL}" y="${WB - 20}" width="${WR - WL}" height="20" fill="#120a07"/><rect x="${WL}" y="${WB - 20}" width="${WR - WL}" height="3" fill="${p.trimHi}" opacity=".5"/>`;
+    s += `<polygon points="0,${yl(WB - 20)} ${WL},${WB - 20} ${WL},${WB} 0,${yl(WB)}" fill="#0a0604"/><polygon points="1600,${yr(WB - 20)} ${WR},${WB - 20} ${WR},${WB} 1600,${yr(WB)}" fill="#0a0604"/>`;
+    // 마루
+    const FL = `0,${yl(WB)} ${WL},${WB} ${WR},${WB} 1600,${yr(WB)} 1600,900 0,900`;
+    if (p.floorType === 'wood') {
+        s += `<polygon points="${FL}" fill="${p.floor}" filter="url(#woodV)"/>`;
+        for (let xb = WL - 300; xb <= WR + 300; xb += 62) {
+            s += `<line x1="${f1(fx(xb, WB))}" y1="${WB}" x2="${f1(fx(xb, 900))}" y2="900" stroke="#000" stroke-opacity=".5" stroke-width="2.2"/>`;
+            const y = 712 + r() * 170;
+            s += `<line x1="${f1(fx(xb, y))}" y1="${f1(y)}" x2="${f1(fx(xb + 62, y))}" y2="${f1(y)}" stroke="#000" stroke-opacity=".45" stroke-width="2"/>`;
+        }
+    } else {
+        s += `<polygon points="${FL}" fill="${p.floor}" filter="url(#mottle)"/>`;
+        const rows = [700, 724, 758, 806, 872, 960];
+        for (let i = 0; i < rows.length - 1; i++) {
+            const y0 = rows[i], y1 = rows[i + 1], off = (i % 2) * 70;
+            s += `<line x1="0" y1="${y0}" x2="1600" y2="${y0}" stroke="#0e0a08" stroke-width="${2 + i}"/>`;
+            for (let xb = WL - 420 + off; xb < WR + 420; xb += 140) {
+                s += `<line x1="${f1(fx(xb, y0))}" y1="${y0}" x2="${f1(fx(xb, Math.min(y1, 900)))}" y2="${Math.min(y1, 900)}" stroke="#0e0a08" stroke-width="${2 + i}"/>`;
+            }
+        }
+    }
+    s += `<polygon points="${FL}" fill="url(#floorFade)"/>`;
+    if (p.rug) s += rug(p.rug);
+    // 모서리 그늘(앰비언트 오클루전)
+    s += `<line x1="${WL}" y1="${WB}" x2="${WR}" y2="${WB}" stroke="#000" stroke-width="16" opacity=".6" filter="url(#b12)"/>`;
+    s += `<line x1="${WL}" y1="${WT}" x2="${WL}" y2="${WB}" stroke="#000" stroke-width="20" opacity=".5" filter="url(#b12)"/><line x1="${WR}" y1="${WT}" x2="${WR}" y2="${WB}" stroke="#000" stroke-width="20" opacity=".55" filter="url(#b12)"/>`;
+    s += `<line x1="${WL}" y1="${WT + 32}" x2="${WR}" y2="${WT + 32}" stroke="#000" stroke-width="14" opacity=".4" filter="url(#b12)"/>`;
+    return s;
+}
+
+function rug(o) {
+    const { y1, y2, x1, x2, c, c2 } = o;
+    const P = (xb, y) => `${f1(fx(xb, y))},${y}`;
+    const poly = (a, b, ya, yb) => `${P(a, ya)} ${P(b, ya)} ${P(b, yb)} ${P(a, yb)}`;
+    let s = `<polygon points="${poly(x1, x2, y1, y2)}" fill="#000" opacity=".4" filter="url(#b4)" transform="translate(0 6)"/>`;
+    s += `<g filter="url(#mottle)"><polygon points="${poly(x1, x2, y1, y2)}" fill="${c}"/>
+<polygon points="${poly(x1 + 26, x2 - 26, y1 + 7, y2 - 12)}" fill="none" stroke="${c2}" stroke-width="5"/>
+<polygon points="${poly(x1 + 48, x2 - 48, y1 + 13, y2 - 24)}" fill="${c2}" opacity=".22"/>
+<polygon points="${poly(x1 + 48, x2 - 48, y1 + 13, y2 - 24)}" fill="none" stroke="${c2}" stroke-width="2.5" opacity=".7"/></g>`;
+    const mid = (y1 + y2) / 2;
+    s += `<ellipse cx="800" cy="${mid}" rx="${f1((fx(x2, mid) - fx(x1, mid)) * .16)}" ry="${f1((y2 - y1) * .18)}" fill="none" stroke="${c2}" stroke-width="3" opacity=".6"/>`;
+    for (let x = fx(x1, y2); x < fx(x2, y2); x += 9) s += `<line x1="${f1(x)}" y1="${y2}" x2="${f1(x - 1)}" y2="${y2 + 10}" stroke="${c2}" stroke-width="2" opacity=".6"/>`;
+    return s;
+}
+
+// 광원 주변만 밝게 남기고 나머지를 어둡게 덮은 뒤, 따뜻한 빛과 그레인을 얹는다
+function lighting(lights, amb = .7, tint = '#05030a') {
+    let defs = '', mask = '', glow = '';
+    lights.forEach((l, i) => {
+        defs += `<radialGradient id="lh${i}"><stop offset="0" stop-color="#000"/><stop offset="${l.core || .25}" stop-color="#000" stop-opacity=".88"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+<radialGradient id="lg${i}"><stop offset="0" stop-color="${l.c}" stop-opacity="${l.o || .45}"/><stop offset="1" stop-color="${l.c}" stop-opacity="0"/></radialGradient>`;
+        mask += `<ellipse cx="${l.x}" cy="${l.y}" rx="${l.r}" ry="${l.ry || l.r}" fill="url(#lh${i})"/>`;
+        glow += `<ellipse cx="${l.x}" cy="${l.y}" rx="${f1(l.r * .7)}" ry="${f1((l.ry || l.r) * .7)}" fill="url(#lg${i})" style="mix-blend-mode:screen"/>`;
+    });
+    return `<defs>${defs}<mask id="lm" maskUnits="userSpaceOnUse" x="0" y="0" width="1600" height="900"><rect width="1600" height="900" fill="#fff"/>${mask}</mask></defs>
+<rect width="1600" height="900" fill="${tint}" opacity="${amb}" mask="url(#lm)"/>${glow}
+<rect width="1600" height="900" filter="url(#noise)" opacity=".2" style="mix-blend-mode:overlay"/>`;
+}
+
+/* ---- 소품 ---- */
+function bookcase(x, y, w, h, seed, gapRow) {
+    const r = rng(seed), rows = Math.max(2, Math.round((h - 70) / 118)), rh = (h - 70) / rows;
+    const pal = ['#7a2a2a', '#3d4a3a', '#8a6a32', '#2e3a52', '#5a3352', '#a08a5a', '#5a3020', '#2c2a2a', '#6a5a3a', '#40302a'];
+    let s = `<rect x="${x - 40}" y="${y}" width="${w + 20}" height="${h}" fill="#000" opacity=".45" filter="url(#b30)"/>`;
+    s += `<g filter="url(#wood)"><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#4a2c1c"/>
+<rect x="${x - 18}" y="${y - 30}" width="${w + 36}" height="34" fill="#5a3622"/><rect x="${x - 10}" y="${y + h - 36}" width="${w + 20}" height="36" fill="#40261a"/></g>
+<rect x="${x - 18}" y="${y - 30}" width="${w + 36}" height="6" fill="#8a5a36" opacity=".7"/><rect x="${x - 18}" y="${y - 2}" width="${w + 36}" height="7" fill="#000" opacity=".4"/>
+<rect x="${x + 16}" y="${y + 14}" width="${w - 32}" height="${h - 52}" fill="#110906"/>`;
+    let hot = null;
+    for (let k = 0; k < rows; k++) {
+        const top = y + 14 + k * rh, bot = top + rh;
+        let cx = x + 20;
+        const lim = gapRow === k ? x + w * .42 : x + w - 20;
+        while (cx < lim - 10) {
+            if (r() < .08 && lim - cx > 70) {
+                let sy = bot - 12;
+                const sw = 46 + r() * 18;
+                for (let j = 0; j < 3; j++) {
+                    const bh = 11 + r() * 6, c = pal[(r() * pal.length) | 0], dx = r() * 6;
+                    s += `<rect x="${f1(cx + dx)}" y="${f1(sy - bh)}" width="${f1(sw)}" height="${f1(bh)}" fill="${c}"/><rect x="${f1(cx + dx)}" y="${f1(sy - bh)}" width="${f1(sw)}" height="${f1(bh)}" fill="url(#vshade)"/>`;
+                    sy -= bh;
+                }
+                cx += sw + 12;
+                continue;
+            }
+            const bw = Math.min(13 + r() * 22, lim - cx), bh = rh * (.56 + r() * .32), c = pal[(r() * pal.length) | 0], by = bot - 12 - bh;
+            const lean = cx > lim - 50 && r() < .3 ? -6 : 0;
+            s += `<g${lean ? ` transform="rotate(${lean} ${f1(cx)} ${f1(bot - 12)})"` : ''}><rect x="${f1(cx)}" y="${f1(by)}" width="${f1(bw - 1.5)}" height="${f1(bh)}" rx="1.5" fill="${c}"/>`;
+            if (r() < .55) s += `<rect x="${f1(cx)}" y="${f1(by + 8)}" width="${f1(bw - 1.5)}" height="3" fill="#d9b860" opacity=".6"/><rect x="${f1(cx)}" y="${f1(by + bh - 12)}" width="${f1(bw - 1.5)}" height="3" fill="#d9b860" opacity=".5"/>`;
+            if (r() < .4) s += `<rect x="${f1(cx + bw * .2)}" y="${f1(by + bh * .3)}" width="${f1(bw * .55)}" height="${f1(bh * .18)}" fill="#e8dcc0" opacity=".35"/>`;
+            s += `<rect x="${f1(cx)}" y="${f1(by)}" width="${f1(bw - 1.5)}" height="${f1(bh)}" fill="url(#cyl)"/></g>`;
+            cx += bw + (lean ? 6 : 0);
+        }
+        s += `<rect x="${x + 16}" y="${f1(top)}" width="${w - 32}" height="26" fill="url(#vshade)" opacity=".0"/><rect x="${x + 16}" y="${f1(top)}" width="${w - 32}" height="18" fill="#000" opacity=".45"/>`;
+        s += `<rect x="${x + 10}" y="${f1(bot - 12)}" width="${w - 20}" height="14" fill="#5a3622" filter="url(#wood)"/><rect x="${x + 10}" y="${f1(bot - 12)}" width="${w - 20}" height="3" fill="#9a6a42" opacity=".6"/>`;
+        if (gapRow === k) {
+            const ax = x + w * .48, aw = w * .44, fy = bot - 12;
+            hot = rectD(ax - 8, fy - 62, aw + 16, 62);
+            s += `<rect x="${f1(ax + 4)}" y="${f1(fy - 48)}" width="${f1(aw - 8)}" height="16" fill="#2e3a52"/><rect x="${f1(ax + 4)}" y="${f1(fy - 48)}" width="${f1(aw - 8)}" height="16" fill="url(#vshade)"/>
+<rect x="${f1(ax - 4)}" y="${f1(fy - 32)}" width="${f1(aw + 8)}" height="32" rx="3" fill="#7a2228"/><rect x="${f1(ax - 4)}" y="${f1(fy - 32)}" width="${f1(aw + 8)}" height="32" rx="3" fill="url(#vshade)"/>
+<path d="M${f1(ax - 4)} ${f1(fy - 32)} h18 v32 h-18z M${f1(ax + aw - 14)} ${f1(fy - 32)} h18 v32 h-18z" fill="url(#gold)"/>
+<rect x="${f1(ax + 22)}" y="${f1(fy - 20)}" width="${f1(aw - 44)}" height="3" fill="#e0c070" opacity=".75"/>
+<path d="M${f1(ax + aw * .3)} ${f1(fy - 32)} l9 -18 l10 18z" fill="#efe3c4"/><path d="M${f1(ax + aw * .58)} ${f1(fy - 32)} l4 -12 l9 12z" fill="#d9ccaa"/>`;
+        }
+    }
+    s += `<rect x="${x - 18}" y="${y - 30}" width="${w + 36}" height="${h + 30}" fill="url(#hshade)"/>`;
+    return { s, hot };
+}
+
+function door(x, y, w, h, o = {}) {
+    const c = o.c || '#5a3422';
+    let s = `<rect x="${x - 24}" y="${y - 30}" width="${w + 48}" height="${h + 30}" fill="${o.frame || '#4a2c1c'}" filter="url(#bevel)"/>
+<rect x="${x - 6}" y="${y - 8}" width="${w + 12}" height="${h + 8}" fill="#0c0705"/>
+<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}" filter="url(#woodV)"/>`;
+    if (o.iron) {
+        for (let xx = x; xx < x + w; xx += w / 5) s += `<rect x="${f1(xx)}" y="${y}" width="2" height="${h}" fill="#000" opacity=".5"/>`;
+        for (const yy of [y + h * .18, y + h * .78]) {
+            s += `<rect x="${x - 4}" y="${f1(yy)}" width="${w * .82}" height="16" fill="url(#iron)"/>`;
+            for (let xx = x + 8; xx < x + w * .8; xx += 26) s += `<circle cx="${f1(xx)}" cy="${f1(yy + 8)}" r="3" fill="#8a8a90"/>`;
+        }
+    } else {
+        const pw = (w - 54) / 2;
+        for (const [px, py, ph] of [[x + 18, y + 22, h * .36], [x + 36 + pw, y + 22, h * .36], [x + 18, y + h * .47, h * .45], [x + 36 + pw, y + h * .47, h * .45]]) {
+            s += `<rect x="${f1(px)}" y="${f1(py)}" width="${f1(pw)}" height="${f1(ph)}" fill="${c}" filter="url(#bevel)"/><rect x="${f1(px)}" y="${f1(py)}" width="${f1(pw)}" height="${f1(ph)}" fill="none" stroke="#000" stroke-opacity=".45" stroke-width="3"/>`;
+        }
+    }
+    s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#hshade)"/>
+<rect x="${x + w - 40}" y="${f1(y + h * .5 - 26)}" width="18" height="56" rx="6" fill="url(#brass)"/>
+<circle cx="${x + w - 31}" cy="${f1(y + h * .5 - 6)}" r="11" fill="url(#brass)"/><circle cx="${x + w - 34}" cy="${f1(y + h * .5 - 9)}" r="3.5" fill="#fff4c8" opacity=".7"/>
+<path d="M${x + w - 31} ${f1(y + h * .5 + 12)} m-3 0 a3 3 0 1 1 6 0 l-1 10 h-4z" fill="#0c0705"/>
+<line x1="${x + 6}" y1="${y + h - 2}" x2="${x + w - 6}" y2="${y + h - 2}" stroke="#ffcf7a" stroke-width="3" opacity=".55" filter="url(#b4)"/>`;
+    return { s, hot: rectD(x, y, w, h) };
+}
+
+function candleBase(x, y, s = 1) {
+    return `<g transform="translate(${x} ${y}) scale(${s})">
+<ellipse cx="0" cy="2" rx="34" ry="9" fill="url(#brass)"/><ellipse cx="0" cy="-1" rx="26" ry="6" fill="#5a4018"/>
+<rect x="-10" y="-50" width="20" height="50" fill="url(#wax)"/><ellipse cx="0" cy="-50" rx="10" ry="3" fill="#fbf4e2"/>
+<path d="M-10 -48 q4 10 1 18 q-2 5 -1 9" stroke="#e7dcc0" stroke-width="4" fill="none"/>
+<line x1="0" y1="-50" x2="0" y2="-57" stroke="#1a120c" stroke-width="2"/></g>`;
+}
+function flame(x, y, s = 1, glowR = 80) {
+    return `<g transform="translate(${x} ${y}) scale(${s})" pointer-events="none">
+<circle class="glow" cx="0" cy="-12" r="${glowR}" fill="url(#fgGlow)"/>
+<path class="flame" d="M0 -36 C10 -21 10 -9 0 -3 C-10 -9 -10 -21 0 -36Z" fill="url(#fgFlame)"/>
+<path class="flame" d="M0 -22 C4 -15 4 -9 0 -6 C-4 -9 -4 -15 0 -22Z" fill="#fff8e0"/></g>`;
+}
+const FG_DEFS = `<defs>
+<radialGradient id="fgGlow"><stop offset="0" stop-color="#ffd590" stop-opacity=".55"/><stop offset=".35" stop-color="#ffb04a" stop-opacity=".16"/><stop offset="1" stop-color="#ff9a30" stop-opacity="0"/></radialGradient>
+<linearGradient id="fgFlame" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ff7a20"/><stop offset=".45" stop-color="#ffc45a"/><stop offset="1" stop-color="#fff2c4"/></linearGradient>
+<linearGradient id="fgBrass" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6a4a1c"/><stop offset=".4" stop-color="#e8c878"/><stop offset="1" stop-color="#6a4a1c"/></linearGradient>
+<linearGradient id="crowSheen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2c3444"/><stop offset=".5" stop-color="#0c0c10"/><stop offset="1" stop-color="#050506"/></linearGradient>
+<radialGradient id="moteG"><stop offset="0" stop-color="#e6ecf8" stop-opacity=".9"/><stop offset="1" stop-color="#e6ecf8" stop-opacity="0"/></radialGradient>
+</defs>`;
+
+function crow(x, y, s = 1) {
+    return `<g transform="translate(${x} ${y}) scale(${s})" pointer-events="none">
+<ellipse cx="60" cy="64" rx="70" ry="8" fill="#000" opacity=".45"/>
+<path d="M0 0 C 26 -46, 96 -44, 126 -12 L 204 4 L 196 12 L 126 16 C 92 42, 28 42, 0 0Z" fill="url(#crowSheen)"/>
+<path d="M30 -10 C60 -34 104 -28 128 -8 C100 -14 64 -10 30 -10Z" fill="#2a3242" opacity=".7"/>
+<path d="M40 2 C70 -6 100 -4 124 4 M50 12 C76 6 100 8 120 12" stroke="#3a4458" stroke-width="2" fill="none" opacity=".6"/>
+<path d="M126 -12 L204 4 L196 12 L126 16Z" fill="#08080a"/><path d="M140 -6 L200 5 M140 6 L198 9" stroke="#2a3040" stroke-width="2"/>
+<g class="crow-head"><circle cx="-6" cy="-24" r="26" fill="url(#crowSheen)"/><path d="M-26 -32 Q-56 -26 -72 -18 Q-52 -16 -26 -14Z" fill="#1d1a17"/><path d="M-30 -24 L-66 -19" stroke="#3a3530" stroke-width="1.5"/>
+<circle cx="-14" cy="-30" r="5" fill="#e3cf86"/><circle cx="-14" cy="-30" r="2.4" fill="#120c06"/><circle cx="-15.5" cy="-31.5" r="1.2" fill="#fff"/>
+<path d="M-10 -48 C0 -54 14 -50 18 -40" stroke="#2c3444" stroke-width="3" fill="none"/></g>
+<path d="M52 30 L46 62 M78 30 L82 62" stroke="#0b0909" stroke-width="5"/><path d="M36 62 H58 M70 62 H94" stroke="#0b0909" stroke-width="4" stroke-linecap="round"/></g>`;
+}
+
+// 초상화 한 점: 금박 액자 + 유화풍 인물
+function painting(x, y, w, h, o) {
+    const cx = x + w / 2, k = w / 240, hy = y + h * .4;
+    const hairBack = o.long
+        ? `<path d="M${f1(cx - 46 * k)} ${f1(hy + 70 * k)} C${f1(cx - 62 * k)} ${f1(hy - 30 * k)} ${f1(cx - 40 * k)} ${f1(hy - 66 * k)} ${f1(cx)} ${f1(hy - 66 * k)} C${f1(cx + 40 * k)} ${f1(hy - 66 * k)} ${f1(cx + 62 * k)} ${f1(hy - 30 * k)} ${f1(cx + 46 * k)} ${f1(hy + 70 * k)}Z" fill="${o.hair}"/>` : '';
+    const hairTop = o.long
+        ? `<path d="M${f1(cx - 40 * k)} ${f1(hy - 4 * k)} C${f1(cx - 42 * k)} ${f1(hy - 62 * k)} ${f1(cx + 42 * k)} ${f1(hy - 62 * k)} ${f1(cx + 40 * k)} ${f1(hy - 4 * k)} C${f1(cx + 24 * k)} ${f1(hy - 36 * k)} ${f1(cx - 4 * k)} ${f1(hy - 40 * k)} ${f1(cx - 40 * k)} ${f1(hy - 4 * k)}Z" fill="${o.hair}"/>`
+        : `<path d="M${f1(cx - 38 * k)} ${f1(hy - 6 * k)} C${f1(cx - 40 * k)} ${f1(hy - 64 * k)} ${f1(cx + 40 * k)} ${f1(hy - 64 * k)} ${f1(cx + 38 * k)} ${f1(hy - 6 * k)} C${f1(cx + 30 * k)} ${f1(hy - 30 * k)} ${f1(cx - 20 * k)} ${f1(hy - 34 * k)} ${f1(cx - 38 * k)} ${f1(hy - 6 * k)}Z" fill="${o.hair}"/>`;
+    const eye = dx => `<path d="M${f1(cx + dx - 9 * k)} ${f1(hy)} Q${f1(cx + dx)} ${f1(hy - 8 * k)} ${f1(cx + dx + 9 * k)} ${f1(hy)} Q${f1(cx + dx)} ${f1(hy + 5 * k)} ${f1(cx + dx - 9 * k)} ${f1(hy)}Z" fill="#070505"/><circle cx="${f1(cx + dx - 2 * k)}" cy="${f1(hy - 2 * k)}" r="${f1(1.6 * k)}" fill="#fff" opacity=".75"/>`;
+    return `<g${o.tilt ? ` transform="rotate(${o.tilt} ${f1(cx)} ${y})"` : ''}>
+<rect x="${x - 6}" y="${y + 10}" width="${w + 12}" height="${h}" fill="#000" opacity=".55" filter="url(#b12)" transform="translate(8 10)"/>
+<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#gold)" filter="url(#bevel)"/>
+<rect x="${x + 12}" y="${y + 12}" width="${w - 24}" height="${h - 24}" fill="#5e4520"/><rect x="${x + 12}" y="${y + 12}" width="${w - 24}" height="${h - 24}" fill="none" stroke="#e8c878" stroke-width="2" opacity=".6"/>
+<rect x="${x + 20}" y="${y + 20}" width="${w - 40}" height="${h - 40}" fill="${o.bg}"/>
+<g clip-path="url(#clip-${o.id})">
+${hairBack}
+<path d="M${f1(x + 22)} ${f1(y + h - 20)} C${f1(x + 34)} ${f1(y + h * .7)} ${f1(cx - 40 * k)} ${f1(y + h * .64)} ${f1(cx)} ${f1(y + h * .64)} C${f1(cx + 40 * k)} ${f1(y + h * .64)} ${f1(x + w - 34)} ${f1(y + h * .7)} ${f1(x + w - 22)} ${f1(y + h - 20)}Z" fill="${o.cloth}"/>
+<path d="M${f1(cx - 60 * k)} ${f1(y + h * .8)} Q${f1(cx - 40 * k)} ${f1(y + h * .72)} ${f1(cx - 20 * k)} ${f1(y + h - 20)}" stroke="#fff" stroke-opacity=".08" stroke-width="${f1(6 * k)}" fill="none"/>
+<rect x="${f1(cx - 14 * k)}" y="${f1(hy + 36 * k)}" width="${f1(28 * k)}" height="${f1(h * .16)}" fill="#b88a64"/>
+<path d="M${f1(cx - 26 * k)} ${f1(y + h * .64)} L${f1(cx)} ${f1(y + h * .7)} L${f1(cx + 26 * k)} ${f1(y + h * .64)} L${f1(cx + 20 * k)} ${f1(y + h * .62)} L${f1(cx)} ${f1(y + h * .66)} L${f1(cx - 20 * k)} ${f1(y + h * .62)}Z" fill="${o.collar || '#e8dcc0'}" opacity=".9"/>
+${o.brooch ? `<circle cx="${f1(cx)}" cy="${f1(y + h * .71)}" r="${f1(5 * k)}" fill="url(#gold)"/>` : ''}
+<ellipse cx="${f1(cx)}" cy="${f1(hy)}" rx="${f1(34 * k)}" ry="${f1(44 * k)}" fill="url(#skin)"/>
+${eye(-15 * k)}${eye(15 * k)}
+<path d="M${f1(cx - 24 * k)} ${f1(hy - 13 * k)} q9 ${f1(-5 * k)} 17 0 M${f1(cx + 7 * k)} ${f1(hy - 13 * k)} q9 ${f1(-5 * k)} 17 0" stroke="#3a2416" stroke-width="${f1(2.4 * k)}" fill="none"/>
+<path d="M${f1(cx + 2 * k)} ${f1(hy + 2 * k)} q${f1(4 * k)} ${f1(12 * k)} ${f1(-4 * k)} ${f1(16 * k)}" stroke="#8a5a40" stroke-width="${f1(2 * k)}" fill="none" opacity=".7"/>
+<path d="M${f1(cx - 10 * k)} ${f1(hy + 27 * k)} Q${f1(cx)} ${f1(hy + 32 * k)} ${f1(cx + 10 * k)} ${f1(hy + 27 * k)} Q${f1(cx)} ${f1(hy + 25 * k)} ${f1(cx - 10 * k)} ${f1(hy + 27 * k)}Z" fill="#8a3a32"/>
+<circle cx="${f1(cx - 22 * k)}" cy="${f1(hy + 16 * k)}" r="${f1(9 * k)}" fill="#d9776a" opacity=".22"/><circle cx="${f1(cx + 22 * k)}" cy="${f1(hy + 16 * k)}" r="${f1(9 * k)}" fill="#d9776a" opacity=".22"/>
+${o.dimple ? `<path d="M${f1(cx - 25 * k)} ${f1(hy + 22 * k)} q${f1(3 * k)} ${f1(5 * k)} ${f1(6 * k)} 0 M${f1(cx + 19 * k)} ${f1(hy + 22 * k)} q${f1(3 * k)} ${f1(5 * k)} ${f1(6 * k)} 0" stroke="#7a4434" stroke-width="${f1(2.2 * k)}" fill="none"/>` : ''}
+${hairTop}
+<path d="M${f1(cx - 24 * k)} ${f1(hy - 44 * k)} Q${f1(cx)} ${f1(hy - 56 * k)} ${f1(cx + 22 * k)} ${f1(hy - 44 * k)}" stroke="#fff" stroke-opacity=".12" stroke-width="${f1(4 * k)}" fill="none"/>
+</g>
+<rect x="${x + 20}" y="${y + 20}" width="${w - 40}" height="${h - 40}" fill="url(#canvasVig)"/>
+<path d="M${x + 22} ${y + 22} L${x + w * .5} ${y + 22} L${x + 22} ${y + h * .45}Z" fill="#fff" opacity=".05"/>
+${o.label ? `<rect x="${f1(cx - 32)}" y="${y + h + 12}" width="64" height="20" fill="url(#gold)" filter="url(#bevel)"/><text x="${f1(cx)}" y="${y + h + 27}" text-anchor="middle" font-size="14" font-family="serif" fill="#2a1c12">${o.label}</text>` : ''}
+</g>`;
+}
+const paintingClip = (x, y, w, h, id) => `<clipPath id="clip-${id}"><rect x="${x + 20}" y="${y + 20}" width="${w - 40}" height="${h - 40}"/></clipPath>`;
+
+/* ---- 장면 ---- */
+const SCENES = {
+    title() {
+        const r = rng(42);
+        let stars = '';
+        for (let i = 0; i < 90; i++) stars += `<circle class="${i % 3 ? '' : 'twinkle'}" style="animation-delay:-${(r() * 4).toFixed(1)}s" cx="${(r() * 1600) | 0}" cy="${(r() * 470) | 0}" r="${f1(.7 + r() * 1.7)}" fill="#efe4c4" opacity="${f1(.25 + r() * .6)}"/>`;
+        let forest = 'M0 640', forest2 = 'M0 690';
+        for (let x = 0; x <= 1600; x += 22) forest += ` L${x} ${f1(600 + r() * 40)} L${x + 11} ${f1(560 + r() * 70)}`;
+        for (let x = 0; x <= 1600; x += 34) forest2 += ` L${x} ${f1(660 + r() * 30)} L${x + 17} ${f1(620 + r() * 60)}`;
+        forest += ' L1600 900 L0 900Z';
+        forest2 += ' L1600 900 L0 900Z';
+        let fence = '';
+        for (let x = 6; x < 1600; x += 36) fence += `<rect x="${x}" y="790" width="7" height="110" fill="#050304"/><path d="M${x - 3} 792 L${x + 3.5} 772 L${x + 10} 792Z" fill="#050304"/>`;
+        const win = (x, y, w, h, lit) => lit
+            ? `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#f2b85a"/><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#winLit)"/><path d="M${x + w / 2} ${y} V${y + h} M${x} ${y + h * .45} H${x + w}" stroke="#1a0f0a" stroke-width="4"/><rect x="${x - 4}" y="${y + h}" width="${w + 8}" height="6" fill="#1a1216"/>`
+            : `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#141320"/><path d="M${x} ${y + h} L${x + w} ${y}" stroke="#3a4060" stroke-width="10" opacity=".25"/><path d="M${x + w / 2} ${y} V${y + h} M${x} ${y + h * .45} H${x + w}" stroke="#0a080c" stroke-width="4"/><rect x="${x - 4}" y="${y + h}" width="${w + 8}" height="6" fill="#1a1216"/>`;
+        let wins = '';
+        for (const [x, y, lit] of [[600, 470, 0], [672, 470, 0], [928, 470, 1], [1000, 470, 0], [600, 590, 0], [1000, 590, 0], [490, 590, 0], [1100, 610, 1]]) wins += win(x, y, 40, 70, lit);
+        const bg = kit({ lx: 1250, ly: 190, defs: `
+<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#05060d"/><stop offset=".45" stop-color="#171424"/><stop offset=".75" stop-color="#2e1c26"/><stop offset="1" stop-color="#43281f"/></linearGradient>
+<radialGradient id="moonHalo"><stop offset="0" stop-color="#f1e6c6" stop-opacity=".5"/><stop offset=".3" stop-color="#c8c0d8" stop-opacity=".16"/><stop offset="1" stop-color="#c8c0d8" stop-opacity="0"/></radialGradient>
+<radialGradient id="moonFace" cx=".4" cy=".38" r=".7"><stop offset="0" stop-color="#fbf3dc"/><stop offset=".7" stop-color="#e2d6b4"/><stop offset="1" stop-color="#b8aa88"/></radialGradient>
+<radialGradient id="winLit" cx=".5" cy=".6" r=".7"><stop offset="0" stop-color="#fff0c0" stop-opacity=".9"/><stop offset="1" stop-color="#b8661e" stop-opacity=".6"/></radialGradient>
+<radialGradient id="winGlow"><stop offset="0" stop-color="#ffb860" stop-opacity=".5"/><stop offset="1" stop-color="#ffb860" stop-opacity="0"/></radialGradient>
+<filter id="clouds" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.0018 0.0065" numOctaves="5" seed="8"/><feColorMatrix type="matrix" values="0 0 0 0 .12  0 0 0 0 .1  0 0 0 0 .16  2.6 0 0 0 -1.2"/></filter>
+<filter id="cloudsLit" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.0018 0.0065" numOctaves="5" seed="8"/><feColorMatrix type="matrix" values="0 0 0 0 .78  0 0 0 0 .72  0 0 0 0 .8  2.6 0 0 0 -1.32"/></filter>
+<filter id="craters" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" seed="2"/><feColorMatrix type="matrix" values="0 0 0 0 .45  0 0 0 0 .4  0 0 0 0 .32  1.8 0 0 0 -0.8"/><feComposite in2="SourceAlpha" operator="in"/></filter>
+<radialGradient id="moonMask"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#000"/></radialGradient>
+<mask id="nearMoon"><rect width="1600" height="900" fill="#000"/><circle cx="1250" cy="190" r="420" fill="url(#moonMask)"/></mask>
+<linearGradient id="pathG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a2226"/><stop offset="1" stop-color="#4a3a30"/></linearGradient>
+<pattern id="shingle" width="28" height="18" patternUnits="userSpaceOnUse"><rect width="28" height="18" fill="#100c10"/><path d="M0 18 Q7 8 14 18 Q21 8 28 18" stroke="#1e1820" stroke-width="2" fill="none"/></pattern>` });
+        const house = `
+<g>
+ <rect x="560" y="420" width="520" height="360" fill="#120e12"/>
+ <polygon points="530,428 820,250 1110,428" fill="url(#shingle)"/><path d="M530 428 L820 250 L1110 428" stroke="#2a2430" stroke-width="6" fill="none"/>
+ <path d="M820 250 L1110 428" stroke="#5a5470" stroke-width="3" opacity=".7" fill="none"/>
+ <rect x="604" y="316" width="38" height="110" fill="#0e0a0e"/><rect x="598" y="308" width="50" height="12" fill="#1c161c"/>
+ <rect x="1000" y="330" width="38" height="96" fill="#0e0a0e"/><rect x="994" y="322" width="50" height="12" fill="#1c161c"/>
+ <rect x="768" y="150" width="104" height="220" fill="#100c10"/><path d="M872 150 V370" stroke="#4a4460" stroke-width="3" opacity=".6"/>
+ <polygon points="756,156 820,50 884,156" fill="url(#shingle)"/><path d="M820 50 L884 156" stroke="#5a5470" stroke-width="3" opacity=".7"/><line x1="820" y1="50" x2="820" y2="22" stroke="#100c10" stroke-width="5"/><circle cx="820" cy="20" r="6" fill="#100c10"/>
+ <rect x="450" y="520" width="132" height="260" fill="#0f0b0f"/><polygon points="438,528 516,462 594,528" fill="url(#shingle)"/>
+ <rect x="1058" y="540" width="142" height="240" fill="#0f0b0f"/><polygon points="1046,548 1129,484 1212,548" fill="url(#shingle)"/><path d="M1129 484 L1212 548" stroke="#5a5470" stroke-width="3" opacity=".6"/>
+ <rect x="560" y="530" width="520" height="10" fill="#1c161c"/>
+</g>
+<ellipse cx="820" cy="232" rx="90" ry="90" fill="url(#winGlow)"/>
+${win(800, 196, 40, 66, 1)}
+<path d="M812 262 q8 -26 16 0" fill="#1a0f0a" opacity=".85"/><circle cx="820" cy="226" r="7" fill="#1a0f0a" opacity=".85"/>
+${wins}
+<ellipse cx="948" cy="505" rx="70" ry="60" fill="url(#winGlow)"/><ellipse cx="1120" cy="645" rx="70" ry="60" fill="url(#winGlow)"/>
+<path d="M776 780 V690 Q820 640 864 690 V780Z" fill="#070506"/><path d="M790 780 V700 Q820 664 850 700 V780Z" fill="#3a2010"/><path d="M790 780 V700 Q820 664 850 700 V780Z" fill="url(#winLit)" opacity=".35"/>
+<rect x="740" y="776" width="160" height="10" fill="#1c161c"/><rect x="726" y="786" width="188" height="10" fill="#161216"/>
+<rect x="752" y="640" width="14" height="140" fill="#1c161c"/><rect x="874" y="640" width="14" height="140" fill="#1c161c"/><rect x="740" y="630" width="160" height="14" fill="#1c161c"/>`;
+        const tree = `<path d="M250 800 C266 700 238 600 272 480" stroke="#060405" stroke-width="46" fill="none" stroke-linecap="round"/>
+<path d="M272 486 C226 440 176 420 128 366 M268 560 C330 520 380 500 440 440 M278 500 C300 420 290 350 318 284 M304 360 C264 330 244 300 234 254 M440 440 C470 420 492 400 504 368 M128 366 C110 340 96 330 70 326 M318 284 C330 250 350 236 372 226" stroke="#060405" stroke-width="15" fill="none" stroke-linecap="round"/>
+<path d="M200 410 C186 396 172 394 160 380 M380 490 C392 476 410 470 426 470 M236 254 C226 236 228 220 236 206" stroke="#060405" stroke-width="7" fill="none" stroke-linecap="round"/>`;
+        const graves = `<g fill="#0c0a0c"><path d="M120 820 V770 Q140 744 160 770 V820Z"/><path d="M190 826 V786 Q206 766 222 786 V826Z"/><rect x="342" y="760" width="10" height="66"/><rect x="326" y="776" width="42" height="10"/></g>
+<path d="M146 770 Q160 752 160 770" stroke="#4a4458" stroke-width="2" fill="none" opacity=".6"/>`;
+        return {
+            bg: `${bg}<rect width="1600" height="900" fill="url(#sky)"/>
+<circle cx="1250" cy="190" r="420" fill="url(#moonHalo)"/>
+<rect width="1600" height="560" filter="url(#clouds)" opacity=".95"/>
+<rect width="1600" height="560" filter="url(#cloudsLit)" mask="url(#nearMoon)" opacity=".55"/>
+<circle cx="1250" cy="190" r="66" fill="url(#moonFace)"/><circle cx="1250" cy="190" r="66" filter="url(#craters)" fill="#fff" opacity=".55"/>
+<path d="${forest}" fill="#0d0a12"/><path d="${forest2}" fill="#09070c"/>
+<path d="M0 780 Q420 716 800 744 Q1200 714 1600 780 V900 H0Z" fill="#080607"/>
+<path d="M760 800 L880 800 L1040 900 L600 900Z" fill="url(#pathG)" opacity=".6"/>
+${house}${tree}${graves}
+${fence}<rect x="0" y="812" width="1600" height="7" fill="#050304"/><rect x="0" y="860" width="1600" height="7" fill="#050304"/>
+<rect width="1600" height="900" filter="url(#noise)" opacity=".18" style="mix-blend-mode:overlay"/>`,
+            fg: `${FG_DEFS}<defs><radialGradient id="fogG"><stop offset="0" stop-color="#cfc8de" stop-opacity=".16"/><stop offset="1" stop-color="#cfc8de" stop-opacity="0"/></radialGradient></defs>
+${stars}${crow(410, 410, .6)}
+<ellipse class="fog" cx="420" cy="800" rx="820" ry="70" fill="url(#fogG)"/><ellipse class="fog fog2" cx="1200" cy="840" rx="760" ry="60" fill="url(#fogG)"/>`,
+        };
     },
-    questions: [
-        {
-            highlight: ['I-1'],
-            setup:'사진첩 여백에는 정체 모를 기호들이 그려져 있다 — 네모, 동그라미, 그리고 그 안을 채운 색칠까지. 할머니가 직접 그려 넣은 것 같은 이 표시들을 먼저 이해해야, 사진 속 가족들의 이야기를 제대로 읽어낼 수 있을 것 같다.',
-            prompt: '사진첩 속 사각형(□) 기호는 무엇을 나타낼까?',
-            choices: [
-                { text:'여자', correct:false },
-                { text:'남자', correct:true },
-                { text:'보조개가 있는 사람', correct:false },
-            ],
-            explanation:'사각형(□)은 남자, 원(○)은 여자를 나타내요. 도형이 색칠되어 있으면 그 형질(여기서는 보조개)이 나타난 사람이라는 뜻이에요.',
-            hint:'색이 칠해져 있는지 아닌지는 성별이 아니라 형질 발현 여부를 나타내요.',
-        },
-        {
-            highlight: ['I-1','I-2','II-1'],
-            setup:'기호를 이해하고 나니 사진 속 가족이 눈에 들어오기 시작한다. 맨 위에는 근엄한 표정의 부부 — 아마도 증조부모님이다. 두 분의 뺨에는 또렷한 보조개가 있다. 그 아래로 세 자녀가 나란히 서 있는데, 그중 유독 수줍게 웃고 있는 한 아이만은 뺨이 매끈하다 — 보조개가 없다.\n메모의 다음 줄이 이어진다: "이상했다. 나도, 아이 아버지도 보조개가 있는데, 어째서 저 아이에게만 없는 걸까..."',
-            prompt:'증조부(I-1)와 증조모(I-2)는 둘 다 보조개가 있다. 그런데 자녀 II-1에게는 보조개가 없다.\n이 "보조개" 형질은 우성일까, 열성일까?',
-            choices: [
-                { text:'우성이다', correct:true },
-                { text:'열성이다', correct:false },
-                { text:'이 가계도만으로는 알 수 없다', correct:false },
-            ],
-            explanation:'부모가 모두 형질이 나타나는데(보조개 있음) 자녀에게서 형질이 나타나지 않았다면, 그 형질은 우성이다. 만약 보조개가 열성이었다면, 형질이 나타난 부모는 이미 열성 대립유전자만을 가진 상태(동형접합)이므로 자녀에게도 항상 그 형질이 나타나야 한다. 그런데 형질이 나타나지 않는 자녀가 태어났으므로, 이 형질은 우성이며 부모는 겉으로 드러나지 않는 정상 대립유전자를 하나씩 숨기고 있었던 것이다.',
-            hint:'열성 형질이라면, 그 형질을 가진 부모는 반드시 그 형질만 자녀에게 물려줄 수 있어요. 그런데 형질이 없는 자녀가 태어났다면요?',
-        },
-    ],
-    reward: '메모의 마지막 줄: "그 후로도 이 보조개는 몇 대에 걸쳐 대물림되었다. 자세한 기록은 다락방 상자 안에 있다."\n사진첩 사이에서 녹슨 열쇠 하나가 툭 떨어졌다. 다락방으로 향하는 열쇠였다.',
-},
-{
-    room:'다락방', emoji:'📦',
-    art: `<svg viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
-<defs><radialGradient id="g2" cx="72%" cy="22%" r="45%"><stop offset="0%" stop-color="var(--accent)" stop-opacity="0.3"/><stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/></radialGradient></defs>
-<rect width="600" height="200" fill="#0a0710"/>
-<path d="M0 40 L300 -10 L600 40" fill="none" stroke="var(--border)" stroke-width="6"/>
-<path d="M60 40 L300 6 L540 40" fill="none" stroke="var(--border)" stroke-width="4"/>
-<line x1="150" y1="8" x2="150" y2="60" stroke="var(--border)" stroke-width="4"/>
-<line x1="450" y1="8" x2="450" y2="60" stroke="var(--border)" stroke-width="4"/>
-<circle cx="440" cy="52" r="34" fill="url(#g2)"/>
-<circle cx="440" cy="52" r="30" fill="none" stroke="var(--muted)" stroke-width="3" opacity="0.5"/>
-<circle cx="440" cy="52" r="20" fill="var(--accent)" opacity="0.18"/>
-<rect x="60" y="120" width="100" height="60" rx="4" fill="var(--panel2)" stroke="var(--border)" stroke-width="2"/>
-<rect x="60" y="120" width="100" height="14" fill="var(--field)"/>
-<rect x="90" y="90" width="70" height="42" rx="4" fill="var(--panel2)" stroke="var(--border)" stroke-width="2"/>
-<rect x="90" y="90" width="70" height="10" fill="var(--field)"/>
-<rect x="220" y="140" width="80" height="42" rx="4" fill="var(--panel2)" stroke="var(--border)" stroke-width="2"/>
-<rect x="220" y="140" width="80" height="10" fill="var(--field)"/>
-<circle cx="340" cy="70" r="9" fill="none" stroke="var(--accent)" stroke-width="3"/>
-<line x1="340" y1="79" x2="340" y2="102" stroke="var(--accent)" stroke-width="3"/>
-<line x1="340" y1="96" x2="350" y2="96" stroke="var(--accent)" stroke-width="3"/>
-<line x1="340" y1="102" x2="348" y2="102" stroke="var(--accent)" stroke-width="3"/>
-<circle cx="400" cy="90" r="2" fill="var(--accent)" opacity="0.6"/>
-<circle cx="420" cy="120" r="1.6" fill="var(--accent)" opacity="0.5"/>
-<circle cx="380" cy="130" r="1.8" fill="var(--accent)" opacity="0.4"/>
-</svg>`,
-    intro:`다락방 문은 오랫동안 열리지 않은 듯 뻑뻑했다. 안으로 들어서자 낡은 트렁크와 상자들이 어둠 속에 쌓여 있다. 열쇠에 맞는 자물쇠를 찾아 상자 하나를 열자, 빛바랜 서류 뭉치와 함께 손으로 그린 가계도가 나타났다 — 증조부모님의 자녀들, 그리고 그 자녀들의 자녀들까지 이어지는, 훨씬 더 자세한 기록이다.\n(서재에서 알아낸 대로, 이 가계도의 "보조개" 형질은 우성이다.)`,
-    pedigree: {
-        people: [
-            { id:'I-1', gen:1, col:2, sex:'M', dead:true, affected:true },
-            { id:'I-2', gen:1, col:3, sex:'F', dead:true, affected:true },
-            { id:'II-1', gen:2, col:1, sex:'M' },
-            { id:'II-2', gen:2, col:2, sex:'F', affected:true },
-            { id:'II-3', gen:2, col:3, sex:'M', affected:true },
-            { id:'II-4', gen:2, col:4, sex:'F' },
-            { id:'III-1', gen:3, col:3, sex:'F', affected:true },
-            { id:'III-2', gen:3, col:4, sex:'M' },
-        ],
-        marriages: [['I-1','I-2'], ['II-3','II-4']],
-        childLinks: [
-            { parents:['I-1','I-2'], children:['II-1','II-2','II-3'] },
-            { parents:['II-3','II-4'], children:['III-1','III-2'] },
-        ],
+
+    study() {
+        const bc = bookcase(196, 130, 330, 570, 7, 2);
+        const dr = door(1272, 316, 160, 384);
+        let clockTicks = '';
+        for (let i = 0; i < 12; i++) {
+            const a = i * Math.PI / 6;
+            clockTicks += `<line x1="${f1(800 + Math.sin(a) * 44)}" y1="${f1(176 - Math.cos(a) * 44)}" x2="${f1(800 + Math.sin(a) * 52)}" y2="${f1(176 - Math.cos(a) * 52)}" stroke="#2a1c12" stroke-width="${i % 3 ? 2 : 4}"/>`;
+        }
+        const bg = kit({ lx: 975, ly: 540, pat: '#4c352c' }) + roomShell({ wall: '#3c2a24', trim: '#3a2216', trimHi: '#5a3a24', floor: '#4a2e1e',
+                rug: { y1: 724, y2: 868, x1: 520, x2: 1080, c: '#5a1c1e', c2: '#c9a24a' } })
+            + bc.s
+            + `<rect x="700" y="80" width="200" height="360" fill="#000" opacity=".45" filter="url(#b30)" transform="translate(-30 10)"/>
+<g filter="url(#wood)"><path d="M716 96 L800 52 L884 96Z" fill="#4a2c1c"/><rect x="726" y="94" width="148" height="340" rx="12" fill="#4a2c1c"/></g>
+<rect x="726" y="94" width="148" height="340" rx="12" fill="url(#hshade)"/>
+<circle cx="800" cy="176" r="64" fill="url(#gold)" filter="url(#bevel)"/><circle cx="800" cy="176" r="56" fill="#e6dab8"/><circle cx="800" cy="176" r="56" fill="url(#canvasVig)" opacity=".6"/>
+${clockTicks}<line x1="800" y1="176" x2="782" y2="146" stroke="#1a120c" stroke-width="5" stroke-linecap="round"/><line x1="800" y1="176" x2="806" y2="128" stroke="#1a120c" stroke-width="3" stroke-linecap="round"/><circle cx="800" cy="176" r="5" fill="#1a120c"/>
+<path d="M760 140 Q790 122 820 128" stroke="#fff" stroke-opacity=".35" stroke-width="5" fill="none"/>
+<rect x="758" y="256" width="84" height="164" fill="#0b0604"/><rect x="758" y="256" width="84" height="164" fill="none" stroke="url(#gold)" stroke-width="4"/>
+<path d="M770 262 L800 262 L770 360Z" fill="#fff" opacity=".04"/>`
+            // 할머니의 타원 초상화
+            + `<defs><clipPath id="clip-gran"><ellipse cx="1150" cy="292" rx="52" ry="72"/></clipPath></defs>
+<ellipse cx="1158" cy="302" rx="70" ry="94" fill="#000" opacity=".5" filter="url(#b12)"/>
+<ellipse cx="1150" cy="292" rx="66" ry="88" fill="url(#gold)" filter="url(#bevel)"/><ellipse cx="1150" cy="292" rx="52" ry="72" fill="#22261e"/>
+<g clip-path="url(#clip-gran)"><path d="M1096 380 C1104 336 1124 330 1150 330 C1176 330 1196 336 1204 380Z" fill="#1c1a22"/><path d="M1138 330 L1150 346 L1162 330" stroke="#e8dcc0" stroke-width="5" fill="none"/>
+<path d="M1124 300 C1118 240 1182 240 1176 300 C1180 270 1120 270 1124 300Z" fill="#c8c0b4"/><ellipse cx="1150" cy="292" rx="22" ry="29" fill="url(#skin)"/><circle cx="1150" cy="256" r="13" fill="#c8c0b4"/>
+<ellipse cx="1141" cy="290" rx="4" ry="3" fill="#070505"/><ellipse cx="1159" cy="290" rx="4" ry="3" fill="#070505"/><path d="M1144 308 q6 3 12 0" stroke="#7a3a30" stroke-width="2" fill="none"/>
+<circle cx="1142" cy="290" r="7" fill="none" stroke="#8a6a32" stroke-width="1.5"/><circle cx="1158" cy="290" r="7" fill="none" stroke="#8a6a32" stroke-width="1.5"/></g>
+<ellipse cx="1150" cy="292" rx="52" ry="72" fill="url(#canvasVig)"/>`
+            + dr.s
+            // 책상
+            + shadow(800, 792, 330, 26, .7)
+            + `<g filter="url(#wood)"><polygon points="560,598 1040,598 1066,630 534,630" fill="#5a3622"/><rect x="534" y="630" width="532" height="18" fill="#3a2216"/>
+<rect x="556" y="648" width="488" height="130" fill="#46281a"/></g>
+<polygon points="560,598 1040,598 1066,630 534,630" fill="#fff" opacity=".05"/><rect x="534" y="630" width="532" height="3" fill="#9a6a42" opacity=".6"/>
+<rect x="556" y="648" width="488" height="130" fill="url(#vshade)"/>
+<rect x="580" y="666" width="200" height="44" fill="#4a2c1c" filter="url(#bevel)"/><rect x="820" y="666" width="200" height="44" fill="#4a2c1c" filter="url(#bevel)"/>
+<rect x="660" y="684" width="40" height="9" rx="4" fill="url(#brass)"/><rect x="900" y="684" width="40" height="9" rx="4" fill="url(#brass)"/>
+<rect x="580" y="724" width="440" height="40" fill="#3a2216" filter="url(#bevel)"/>
+<path d="M612 606 L760 592 L776 612 L628 624Z" fill="url(#paper)"/><path d="M640 610 L742 600 M644 616 L716 609" stroke="#6a5440" stroke-width="2"/>
+<path d="M700 600 L850 596 L852 612 L700 618Z" fill="#e9dcbc" opacity=".9"/>
+<g><circle cx="884" cy="602" r="14" fill="none" stroke="#a87f36" stroke-width="2.5"/><circle cx="916" cy="602" r="14" fill="none" stroke="#a87f36" stroke-width="2.5"/><path d="M898 600 q2 -4 4 0" stroke="#a87f36" stroke-width="2.5" fill="none"/></g>
+<rect x="832" y="566" width="26" height="30" rx="4" fill="url(#glassG)"/><rect x="838" y="558" width="14" height="10" fill="#1a1212"/>
+<path d="M846 560 Q874 500 912 470 Q890 520 852 562Z" fill="#e8dcc0"/><path d="M846 560 Q878 506 912 470" stroke="#a89878" stroke-width="1.5" fill="none"/>`
+            + candleBase(975, 606, 1.15)
+            + lighting([{ x: 975, y: 520, r: 620, ry: 520, c: '#ffb058', o: .5, core: .15 }, { x: 360, y: 430, r: 300, c: '#ffcf8a', o: .12 }], .66);
+        return { bg, fg: `${FG_DEFS}<g class="pendulum" style="transform-origin:800px 258px"><line x1="800" y1="258" x2="800" y2="384" stroke="#a87f36" stroke-width="3"/><circle cx="800" cy="394" r="19" fill="url(#fgBrass)"/></g>
+${flame(975, 538, 1.15, 110)}${hit('album', '가죽 사진첩', bc.hot)}${hit('door', '문', dr.hot)}` };
     },
-    questions: [
-        {
-            highlight: ['I-1','I-2'],
-            setup:'서류 맨 위, 증조부모님(I-1, I-2)의 이름 옆에 붉은 잉크로 밑줄이 그어져 있다. 두 분 모두 보조개가 있었지만, 자녀 중 하나(II-1)에게는 없었다는 사실을 누군가 여러 번 확인한 흔적이 보인다. 이 부부의 정확한 유전자형을 알아내는 것이 이 상자가 내는 첫 번째 퍼즐인 듯하다.',
-            prompt:'보조개 대립유전자를 D(우성, 보조개)/d(열성, 정상)라 하자. I-1과 I-2는 둘 다 보조개가 있는데, 보조개가 없는 자녀(II-1)가 있다. 두 사람의 유전자형은?',
-            choices: [
-                { text:'DD와 DD', correct:false },
-                { text:'Dd와 Dd', correct:true },
-                { text:'확정할 수 없다', correct:false },
-            ],
-            explanation:'자녀 II-1이 dd이려면 부모 양쪽에서 각각 d를 하나씩 물려받아야 한다. 그런데 I-1, I-2는 둘 다 보조개가 있으므로(dd가 아니므로) 반드시 Dd여야 한다.',
-            hint:'자녀(dd)가 부모에게서 대립유전자를 하나씩 물려받는다는 점을 생각해보세요.',
-        },
-        {
-            highlight: ['II-2'],
-            setup:'서류를 넘기자 둘째 자녀 II-2의 사진이 나온다. 보조개가 선명하다. 사진 뒤에는 누군가 물음표를 잔뜩 적어 놓았다 — 이 아이의 유전자형이 정확히 무엇인지를 두고 오랫동안 논쟁이 있었던 모양이다.',
-            prompt:'II-2는 보조개가 있다. II-2의 유전자형을 확정할 수 있을까?',
-            choices: [
-                { text:'DD로 확정된다', correct:false },
-                { text:'Dd로 확정된다', correct:false },
-                { text:'DD 또는 Dd로, 확정할 수 없다', correct:true },
-            ],
-            explanation:'부모(Dd × Dd)에게서는 DD, Dd, dd인 자녀가 모두 나올 수 있다. II-2는 보조개가 있으니 dd는 아니지만, DD인지 Dd인지는 이 정보만으로 구분할 수 없다.',
-            hint:'Dd × Dd 사이에서 태어날 수 있는 자녀의 유전자형 종류를 모두 떠올려보세요.',
-        },
-        {
-            highlight: ['II-3','II-4','III-2'],
-            setup:'상자 바닥에서 훨씬 나중에 쓰인 편지 한 장이 나온다. II-3(둘째 II-2의 형제)이 결혼해 낳은 아이 III-2에 대한 기록이다. "우리 아이는 보조개 없이 태어났다. 남편도 나도 보조개가 있는데..." — 어딘가 익숙한 문장이다. 이 편지가 II-3의 유전자형을 확정할 결정적인 단서를 쥐고 있는 듯하다.',
-            prompt:'II-3도 보조개가 있다. 배우자 II-4는 보조개가 없다(dd). 그런데 둘 사이에서 태어난 III-2는 보조개가 없다(dd). II-3의 유전자형을 확정할 수 있을까?',
-            choices: [
-                { text:'DD로 확정된다', correct:false },
-                { text:'Dd로 확정된다', correct:true },
-                { text:'확정할 수 없다', correct:false },
-            ],
-            explanation:'배우자 II-4는 dd이므로 자녀에게 항상 d만 물려준다. 자녀 III-2가 dd이려면 아버지 II-3에게서도 d를 받아야 한다. 만약 II-3이 DD였다면, dd인 II-4와의 자녀는 모두 Dd(보조개 있음)만 나오고 dd인 자녀는 절대 나올 수 없다. 그런데 III-2가 dd로 태어났으므로, II-3은 반드시 Dd여야 한다. — 자녀의 표현형이 애매했던 조상의 유전자형을 확정해 준 것이다.',
-            hint:'배우자 II-4가 자녀에게 줄 수 있는 대립유전자는 무엇뿐인지 생각해보고, 만약 II-3이 DD였다면 이 부부의 자녀가 모두 어떤 형질을 나타낼지 떠올려보세요.',
-        },
-        {
-            highlight: ['III-1'],
-            setup:'편지의 마지막 문단에는 III-1(III-2의 형제)에 대한 이야기도 있다. "III-1에게는 나처럼 보조개가 있다. 다행이라고 해야 할지..." 이 한 줄에서, III-1의 유전자형까지 확정할 수 있을 것 같다.',
-            prompt:'III-1은 보조개가 있다(부모: II-3=Dd, II-4=dd). III-1의 유전자형은?',
-            choices: [
-                { text:'DD로 확정된다', correct:false },
-                { text:'Dd로 확정된다', correct:true },
-                { text:'확정할 수 없다', correct:false },
-            ],
-            explanation:'부모가 Dd(II-3) × dd(II-4)이므로 자녀는 Dd 또는 dd만 나올 수 있고 DD는 절대 나올 수 없다. III-1은 보조개가 있으니 dd가 아니고, 따라서 반드시 Dd이다.',
-            hint:'Dd × dd 사이에서 나올 수 있는 자녀의 유전자형에는 애초에 DD가 없다는 점에 주목하세요.',
-        },
-    ],
-    reward:'상자 맨 밑바닥, 종이들 사이에 눌려 있던 낡은 열쇠 하나를 발견했다. 빛바랜 리본이 묶여 있고, 그 끝에 작은 쪽지가 달려 있다: "핏줄은 거짓말을 하지 않는다." 어쩐지 서늘한 문장이었다.',
-},
-{
-    room:'지하 저장고', emoji:'🍷',
-    art: `<svg viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
-<defs><radialGradient id="g3" cx="50%" cy="30%" r="50%"><stop offset="0%" stop-color="var(--garnet)" stop-opacity="0.3"/><stop offset="100%" stop-color="var(--garnet)" stop-opacity="0"/></radialGradient></defs>
-<rect width="600" height="200" fill="#0a0710"/><rect width="600" height="200" fill="url(#g3)"/>
-<path d="M100 200 L100 90 Q100 30 300 30 Q500 30 500 90 L500 200" fill="none" stroke="var(--border)" stroke-width="10"/>
-<rect x="40" y="100" width="140" height="90" rx="4" fill="var(--panel2)" stroke="var(--border)" stroke-width="2"/>
-<g fill="var(--garnet)" opacity="0.55"><circle cx="65" cy="118" r="8"/><circle cx="95" cy="118" r="8"/><circle cx="125" cy="118" r="8"/><circle cx="155" cy="118" r="8"/><circle cx="65" cy="145" r="8"/><circle cx="95" cy="145" r="8"/><circle cx="125" cy="145" r="8"/><circle cx="155" cy="145" r="8"/><circle cx="65" cy="172" r="8"/><circle cx="95" cy="172" r="8"/><circle cx="125" cy="172" r="8"/><circle cx="155" cy="172" r="8"/></g>
-<rect x="420" y="100" width="140" height="90" rx="4" fill="var(--panel2)" stroke="var(--border)" stroke-width="2"/>
-<g fill="var(--garnet)" opacity="0.55"><circle cx="445" cy="118" r="8"/><circle cx="475" cy="118" r="8"/><circle cx="505" cy="118" r="8"/><circle cx="535" cy="118" r="8"/><circle cx="445" cy="145" r="8"/><circle cx="475" cy="145" r="8"/><circle cx="505" cy="145" r="8"/><circle cx="535" cy="145" r="8"/><circle cx="445" cy="172" r="8"/><circle cx="475" cy="172" r="8"/><circle cx="505" cy="172" r="8"/><circle cx="535" cy="172" r="8"/></g>
-<line x1="300" y1="30" x2="300" y2="70" stroke="var(--border)" stroke-width="3"/>
-<circle cx="300" cy="86" r="16" fill="var(--accent)" opacity="0.3"/>
-<rect x="290" y="76" width="20" height="24" rx="4" fill="var(--field)" stroke="var(--accent)" stroke-width="2"/>
-</svg>`,
-    intro:'계단을 내려갈수록 공기가 서늘해졌다. 지하 저장고 선반에는 먼지 쌓인 와인병들이 줄지어 있고, 그 뒤편 벽돌 틈으로 리본에 묶인 편지 뭉치가 삐져나와 있다. 조심스럽게 잡아당기자, 가족들의 이름과 혈액형이 빼곡히 적힌 메모가 함께 딸려 나온다.',
-    pedigree: {
-        people: [
-            { id:'I-1', gen:1, col:2, sex:'M', dead:true, affected:true, info:'A형' },
-            { id:'I-2', gen:1, col:3, sex:'F', dead:true, affected:true, info:'B형' },
-            { id:'II-1', gen:2, col:1, sex:'M', info:'O형' },
-            { id:'II-2', gen:2, col:2, sex:'F', affected:true, info:'AB형' },
-            { id:'II-3', gen:2, col:3, sex:'M', affected:true, info:'O형' },
-        ],
-        marriages: [['I-1','I-2']],
-        childLinks: [{ parents:['I-1','I-2'], children:['II-1','II-2','II-3'] }],
+
+    attic() {
+        const r = rng(9);
+        let motes = '';
+        for (let i = 0; i < 22; i++) motes += `<circle class="mote" style="animation-delay:-${(r() * 9).toFixed(1)}s;animation-duration:${(7 + r() * 6).toFixed(1)}s" cx="${(640 + r() * 360) | 0}" cy="${(300 + r() * 460) | 0}" r="${f1(2 + r() * 3)}" fill="url(#moteG)"/>`;
+        const dr = door(1272, 430, 140, 270, { c: '#4a2e1e', frame: '#3a2418' });
+        const ridge = (x, y) => { // 뒷벽 박공선 위의 점 → 화면 가장자리까지 뻗은 서까래
+            const k = Math.min(y < VPY ? (0 - VPY) / (y - VPY) : 99, x < VPX ? (0 - VPX) / (x - VPX) : (1600 - VPX) / (x - VPX));
+            return [VPX + (x - VPX) * k, VPY + (y - VPY) * k];
+        };
+        let rafters = '';
+        for (let t = 0; t <= 1.001; t += .125) {
+            for (const side of [-1, 1]) {
+                const x = 800 + side * t * (800 - WL), y = 60 + t * 270;
+                const [ex, ey] = ridge(x, y);
+                rafters += `<line x1="${f1(x)}" y1="${f1(y)}" x2="${f1(ex)}" y2="${f1(ey)}" stroke="#3e2818" stroke-width="${f1(10 + t * 10)}"/><line x1="${f1(x)}" y1="${f1(y)}" x2="${f1(ex)}" y2="${f1(ey)}" stroke="#7a5236" stroke-width="2" opacity=".35"/>`;
+            }
+        }
+        const bg = kit({ lx: 800, ly: 250 }) + roomShell({ wall: '#3a2a20', paper: 'planks', wains: false, crown: false, floor: '#4a3020', ceil: '#0e0907', side: .5 })
+            // 박공 지붕면 (뒷벽 위를 덮는다)
+            + `<polygon points="0,0 800,0 800,60 ${WL},330 0,${yl(330)}" fill="#1e140e" filter="url(#wood)"/><polygon points="1600,0 800,0 800,60 ${WR},330 1600,${yr(330)}" fill="#1a110c" filter="url(#wood)"/>
+${rafters}
+<path d="M${WL} 330 L800 60 L${WR} 330" stroke="#4a301c" stroke-width="22" fill="none"/><path d="M${WL} 330 L800 60 L${WR} 330" stroke="#000" stroke-width="30" opacity=".35" fill="none" filter="url(#b12)"/>`
+            // 둥근 창
+            + `<defs><radialGradient id="moonwin" cx=".62" cy=".38" r=".7"><stop offset="0" stop-color="#5a6a8a"/><stop offset=".5" stop-color="#26304a"/><stop offset="1" stop-color="#101424"/></radialGradient>
+<linearGradient id="beam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b8c8e8" stop-opacity=".28"/><stop offset="1" stop-color="#b8c8e8" stop-opacity="0"/></linearGradient></defs>
+<circle cx="800" cy="236" r="104" fill="#2a1a10" filter="url(#bevel)"/><circle cx="800" cy="236" r="88" fill="url(#moonwin)"/>
+<circle cx="832" cy="208" r="26" fill="#efe8d4"/><circle cx="822" cy="200" r="6" fill="#d8d0b8"/>
+<path d="M800 148 V324 M712 236 H888" stroke="#2a1a10" stroke-width="9"/><circle cx="800" cy="236" r="88" fill="none" stroke="#1a100a" stroke-width="6"/>
+<path d="M730 186 Q760 160 800 152" stroke="#fff" stroke-opacity=".12" stroke-width="10" fill="none"/>
+<path d="M712 236 Q730 214 760 212 M712 250 Q742 236 772 240" stroke="#c8c8d0" stroke-width="1" opacity=".35" fill="none"/>`
+            // 대들보와 기둥 (앞쪽)
+            + `<rect x="0" y="292" width="1600" height="30" fill="#4a301c" filter="url(#wood)"/><rect x="0" y="292" width="1600" height="4" fill="#8a5a36" opacity=".5"/><rect x="0" y="322" width="1600" height="12" fill="#000" opacity=".4" filter="url(#b4)"/>
+<rect x="364" y="322" width="34" height="440" fill="#3e2818" filter="url(#woodV)"/><rect x="364" y="322" width="34" height="440" fill="url(#hshade)"/>
+<rect x="1222" y="322" width="34" height="440" fill="#3e2818" filter="url(#woodV)"/><rect x="1222" y="322" width="34" height="440" fill="url(#hshade)"/>
+${shadow(381, 764, 40, 8)}${shadow(1239, 764, 40, 8)}`
+            // 상자 더미
+            + shadow(330, 726, 170, 18, .65)
+            + `<g filter="url(#wood)" stroke="#1d120a" stroke-width="3"><rect x="180" y="606" width="230" height="120" fill="#6a4a30"/><rect x="214" y="500" width="170" height="106" fill="#7a5638"/><rect x="246" y="432" width="104" height="68" fill="#6a4a30"/></g>
+<path d="M180 646 H410 M214 540 H384" stroke="#c8b48a" stroke-width="9" opacity=".5"/><rect x="180" y="606" width="230" height="120" fill="url(#vshade)"/><rect x="214" y="500" width="170" height="106" fill="url(#vshade)"/>
+<text x="296" y="590" text-anchor="middle" font-family="serif" font-size="18" fill="#2a1a0e" opacity=".7">1952</text>`
+            // 천을 덮은 의자
+            + shadow(540, 728, 80, 12)
+            + `<defs><linearGradient id="sheet" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a8478"/><stop offset=".4" stop-color="#d8d0bc"/><stop offset=".7" stop-color="#b0a890"/><stop offset="1" stop-color="#6a6458"/></linearGradient></defs>
+<path d="M480 726 C470 640 486 560 512 520 C530 492 560 492 576 520 C600 560 612 640 604 726 C590 716 576 728 560 718 C544 730 528 716 512 728 C498 718 490 730 480 726Z" fill="url(#sheet)"/>
+<path d="M512 560 C520 620 516 680 512 726 M552 540 C560 610 560 680 560 718" stroke="#6a6458" stroke-width="3" opacity=".5" fill="none"/>`
+            // 낡은 상자(핫스팟)
+            + shadow(800, 748, 170, 18, .75)
+            + `<defs><linearGradient id="lid" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a5a36"/><stop offset="1" stop-color="#4a2e1a"/></linearGradient></defs>
+<g filter="url(#wood)"><rect x="664" y="636" width="272" height="112" fill="#5a3a22"/><path d="M664 638 Q800 566 936 638Z" fill="url(#lid)"/></g>
+<rect x="664" y="636" width="272" height="112" fill="url(#vshade)"/><rect x="664" y="632" width="272" height="10" fill="#2a1a0e"/>
+<path d="M704 604 Q706 680 704 748 M896 604 Q894 680 896 748" stroke="url(#iron)" stroke-width="16" fill="none"/>
+<g fill="#9a9aa0">${[618, 660, 700, 736].map(y => `<circle cx="704" cy="${y}" r="3"/><circle cx="896" cy="${y}" r="3"/>`).join('')}</g>
+<rect x="782" y="630" width="36" height="44" rx="5" fill="url(#brass)"/><circle cx="800" cy="646" r="5" fill="#2a1a0e"/><rect x="798" y="648" width="4" height="13" fill="#2a1a0e"/>
+<path d="M670 638 Q800 572 930 638" stroke="#c8a070" stroke-width="2" opacity=".35" fill="none"/>`
+            // 드레스 폼
+            + shadow(1070, 766, 70, 10)
+            + `<defs><linearGradient id="form" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3a1418"/><stop offset=".45" stop-color="#8a3a40"/><stop offset="1" stop-color="#2a0e10"/></linearGradient></defs>
+<path d="M1070 384 C1026 404 1016 476 1042 528 C1016 570 1022 624 1070 652 C1118 624 1124 570 1098 528 C1124 476 1114 404 1070 384Z" fill="url(#form)"/>
+<path d="M1042 528 Q1070 544 1098 528" stroke="#2a0e10" stroke-width="4" fill="none"/><path d="M1060 400 C1050 460 1056 520 1060 640" stroke="#c87a7a" stroke-width="2" opacity=".3" fill="none"/>
+<circle cx="1070" cy="374" r="13" fill="url(#brass)"/><rect x="1066" y="652" width="8" height="90" fill="url(#iron)"/><path d="M1024 768 L1070 734 L1116 768" stroke="#1a1a1c" stroke-width="9" fill="none"/>`
+            + dr.s
+            // 거미줄
+            + `<g stroke="#bdb6aa" stroke-width="1.2" opacity=".35" fill="none"><path d="M${WL} 330 L250 330 M${WL} 330 L230 380 M${WL} 330 L180 420"/><path d="M160 344 Q190 352 196 330 M176 362 Q214 372 220 330 M190 388 Q240 396 246 330"/></g>`
+            + `<polygon points="728,320 872,320 1110,860 490,860" fill="url(#beam)" style="mix-blend-mode:screen"/>
+<ellipse cx="800" cy="806" rx="270" ry="56" fill="#9fb4dc" opacity=".12" filter="url(#b12)"/>`
+            + lighting([{ x: 800, y: 236, r: 320, c: '#a8bce0', o: .4, core: .25 }, { x: 800, y: 690, r: 420, ry: 200, c: '#8aa0c8', o: .18 }, { x: 1342, y: 694, r: 90, ry: 30, c: '#ffcf7a', o: .25 }, { x: 320, y: 600, r: 260, c: '#8aa0c8', o: .06 }], .72, '#04050c');
+        return { bg, fg: `${FG_DEFS}${motes}${hit('chest', '낡은 상자', 'M664 566 H936 V748 H664Z')}${hit('door', '문', dr.hot)}` };
     },
-    questions: [
-        {
-            highlight: ['I-1','I-2','II-1','II-2'],
-            setup:'편지 맨 위에는 증조부모님의 이름이 적혀 있다 — 증조부는 A형, 증조모는 B형. 그 아래로 세 자녀의 혈액형이 나열되어 있는데, 유독 두 개에 별표가 그려져 있다: O형과 AB형. 마치 누군가 그 조합을 이상하게 여겼던 것처럼.',
-            prompt:'ABO식 혈액형의 대립유전자를 A, B, o라 하자(A와 B 사이에는 우열이 없고, 둘 다 o에 대해서는 우성이다). 증조부(A형)와 증조모(B형) 사이에서 O형(II-1)과 AB형(II-2) 자녀가 모두 태어났다. 두 분의 유전자형은?',
-            choices: [
-                { text:'AA 와 BB', correct:false },
-                { text:'Ao 와 Bo', correct:true },
-                { text:'확정할 수 없다', correct:false },
-            ],
-            explanation:'자녀 중 O형(oo)이 있으므로 두 분 모두 o 대립유전자를 하나씩 가지고 있어야 한다. 또한 AB형(AB) 자녀가 있으므로 한 분은 A를, 다른 한 분은 B를 물려주었어야 한다. 따라서 증조부는 Ao, 증조모는 Bo로 확정된다.',
-            hint:'O형과 AB형 자녀가 각각 태어나려면 부모가 어떤 대립유전자를 가지고 있어야 하는지 따로따로 생각해보세요.',
-        },
-        {
-            highlight: ['II-1'],
-            setup:'편지 아래쪽에는 누군가 급하게 휘갈겨 쓴 듯한 메모가 있다. "만약 O형인 아이가 자라서 A형인 사람과 결혼한다면, 그 아이들도 B형일 수 있을까? 확인해봐야겠다." 글씨체가 점점 흐트러지는 게, 무언가에 쫓기듯 써 내려간 것 같았다.',
-            prompt:'만약 O형인 II-1이 A형인 사람과 결혼한다면, 그 자녀가 B형일 수 있을까?',
-            choices: [
-                { text:'가능하다', correct:false },
-                { text:'불가능하다', correct:true },
-            ],
-            explanation:'II-1(O형)의 유전자형은 oo이고, A형인 배우자는 AA 또는 Ao이다. 어느 경우든 부모 중 누구도 B 대립유전자를 갖고 있지 않으므로, B형(자녀가 B를 가져야 함) 자녀는 절대 태어날 수 없다.',
-            hint:'B형 자녀가 태어나려면 부모 중 적어도 한 명은 B 대립유전자를 가지고 있어야 해요.',
-        },
-    ],
-    reward:'편지 묶음 맨 밑에서 발견한 한 장. 잉크가 번져 있었다. "셋째 아이가 B형이라는 소식을 듣던 그날 밤, 나는 한숨도 잘 수 없었다..." 그 뒤로는 아무것도 적혀 있지 않았다.\n이게 무슨 뜻일까? 문득 엄마 생각이 났다. 답은 갤러리에 있을지도 모른다. 골동품 방으로 가는 열쇠를 발견했다.',
-},
-{
-    room:'골동품 방', emoji:'🗄️',
-    art: `<svg viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
-<defs><radialGradient id="g4" cx="30%" cy="25%" r="40%"><stop offset="0%" stop-color="var(--accent)" stop-opacity="0.28"/><stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/></radialGradient></defs>
-<rect width="600" height="200" fill="#0a0710"/><rect width="600" height="200" fill="url(#g4)"/>
-<rect x="40" y="20" width="90" height="120" rx="4" fill="var(--panel2)" stroke="var(--border)" stroke-width="3"/>
-<line x1="85" y1="20" x2="85" y2="140" stroke="var(--border)" stroke-width="2"/>
-<line x1="40" y1="80" x2="130" y2="80" stroke="var(--border)" stroke-width="2"/>
-<circle cx="85" cy="55" r="14" fill="var(--accent)" opacity="0.4"/>
-<rect x="260" y="140" width="160" height="12" fill="var(--panel2)" stroke="var(--border)"/>
-<rect x="280" y="152" width="20" height="40" fill="var(--panel2)" stroke="var(--border)"/>
-<rect x="380" y="152" width="20" height="40" fill="var(--panel2)" stroke="var(--border)"/>
-<ellipse cx="340" cy="95" rx="46" ry="60" fill="var(--field)" stroke="var(--accent)" stroke-width="4"/>
-<ellipse cx="340" cy="95" rx="36" ry="50" fill="none" stroke="var(--muted)" stroke-width="1.5" opacity="0.5"/>
-<rect x="460" y="150" width="90" height="34" rx="4" fill="var(--panel2)" stroke="var(--border)" stroke-width="2"/>
-<rect x="475" y="165" width="60" height="6" rx="3" fill="var(--border)"/>
-<rect x="470" y="110" width="70" height="40" rx="3" fill="var(--field)" stroke="var(--border)" stroke-width="2"/>
-</svg>`,
-    intro:'복도 끝, 오래된 화장대가 놓인 작은 방. 서랍을 열자 좀먹은 생물 교과서 한 권이 나온다. 표지에는 이니셜이 새겨져 있다 — 아마도 할머니가 학생이던 시절의 것이리라. 페이지 사이에 끼워진 손글씨 메모의 제목은 "반성유전 구별법"이었다.',
-    pedigree: {
-        people: [
-            { id:'A-부', gen:1, col:1, sex:'M' },
-            { id:'A-모', gen:1, col:2, sex:'F', affected:true },
-            { id:'A-아들', gen:2, col:1, sex:'M' },
-            { id:'A-딸', gen:2, col:2, sex:'F' },
-        ],
-        marriages: [['A-부','A-모']],
-        childLinks: [{ parents:['A-부','A-모'], children:['A-아들','A-딸'] }],
+
+    cellar() {
+        const dr = door(1272, 360, 160, 340, { c: '#4a2c1a', iron: true, frame: '#5a4a3e' });
+        const arch = (k, w) => {
+            const P = (x, y) => `${f1(VPX + (x - VPX) * k)} ${f1(VPY + (y - VPY) * k)}`;
+            return `<path d="M${P(WL, 340)} Q${P(WL, 40)} ${P(800, 40)} Q${P(WR, 40)} ${P(WR, 340)}" stroke="#2a1c16" stroke-width="${w}" fill="none"/><path d="M${P(WL, 340)} Q${P(WL, 40)} ${P(800, 40)} Q${P(WR, 40)} ${P(WR, 340)}" stroke="#6a5446" stroke-width="3" fill="none" opacity=".4"/>`;
+        };
+        let rack = (x, y, w, h) => {
+            let s = shadow(x + w / 2, y + h + 4, w * .55, 14, .6) + `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#3a2414" filter="url(#wood)"/><rect x="${x + 10}" y="${y + 10}" width="${w - 20}" height="${h - 20}" fill="#0e0806"/>`;
+            const rr = rng(x);
+            for (let yy = y + 34, row = 0; yy < y + h - 20; yy += 46, row++) {
+                for (let xx = x + 32 + (row % 2) * 22; xx < x + w - 24; xx += 44) {
+                    if (rr() < .12) continue;
+                    s += `<circle cx="${xx}" cy="${yy}" r="18" fill="url(#bottle)"/><circle cx="${xx}" cy="${yy}" r="7" fill="#050806"/>`;
+                    if (rr() < .25) s += `<circle cx="${xx}" cy="${yy}" r="7" fill="#7a1e1e"/>`;
+                    s += `<path d="M${xx - 12} ${yy - 8} q4 -8 12 -10" stroke="#9ab09a" stroke-width="2" opacity=".35" fill="none"/>`;
+                }
+                s += `<rect x="${x + 6}" y="${yy + 21}" width="${w - 12}" height="6" fill="#4a3020" filter="url(#wood)"/>`;
+            }
+            for (let i = 1; i < 4; i++) s += `<line x1="${x + i * w / 4}" y1="${y + 10}" x2="${x + i * w / 4 - 30}" y2="${y + 60}" stroke="#d8d0c0" stroke-width=".8" opacity=".2"/>`;
+            return s + `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#hshade)"/>`;
+        };
+        let stones = '';
+        for (let i = 0; i <= 12; i++) {
+            const a = Math.PI - i * Math.PI / 12, cx = 800, cy = 380, rx = 172, ry = 112;
+            const x1 = cx + Math.cos(a) * rx, y1 = cy - Math.sin(a) * ry, x2 = cx + Math.cos(a) * (rx + 34), y2 = cy - Math.sin(a) * (ry + 34);
+            stones += `<line x1="${f1(x1)}" y1="${f1(y1)}" x2="${f1(x2)}" y2="${f1(y2)}" stroke="#2a1e18" stroke-width="3"/>`;
+        }
+        const bg = kit({ lx: 800, ly: 200 }) + roomShell({ wall: '#4a3028', paper: 'brick', wains: false, crown: false, floorType: 'stone', floor: '#3a302a', ceil: '#0c0806', side: .45, seed: 5 })
+            + `<path d="M0 0 H1600 V${yr(340)} L${WR} 340 Q${WR} 40 800 40 Q${WL} 40 ${WL} 340 L0 ${yl(340)}Z" fill="#140d0a" filter="url(#mottle)"/>
+${arch(1, 30)}${arch(1.25, 34)}${arch(1.6, 40)}${arch(2.1, 48)}`
+            // 벽감
+            + `<defs><radialGradient id="niche" cx=".5" cy=".8" r=".8"><stop offset="0" stop-color="#3a2418"/><stop offset="1" stop-color="#0a0605"/></radialGradient></defs>
+<path d="M610 600 V380 A190 130 0 0 1 990 380 V600Z" fill="#6a5446" filter="url(#mottle)"/>
+<path d="M628 600 V380 A172 112 0 0 1 972 380 V600Z" fill="#7a6252"/>${stones}
+<path d="M646 594 V384 A154 96 0 0 1 954 384 V594Z" fill="url(#niche)"/>
+<rect x="620" y="590" width="360" height="22" fill="#7a6252" filter="url(#bevel)"/><rect x="620" y="612" width="360" height="8" fill="#000" opacity=".45"/>
+<path d="M700 420 l14 44 l-6 30 M902 432 l-12 50" stroke="#1a100c" stroke-width="2.5" fill="none"/>`
+            // 편지 뭉치
+            + shadow(788, 592, 80, 6, .7)
+            + `<rect x="716" y="552" width="136" height="40" fill="#cfbf95" transform="rotate(-6 784 572)"/>
+<rect x="726" y="542" width="128" height="40" fill="url(#paper)" transform="rotate(4 790 562)"/>
+<path d="M730 546 L790 570 L852 548" stroke="#a89670" stroke-width="2" fill="none" transform="rotate(4 790 562)"/>
+<rect x="784" y="538" width="10" height="58" fill="#8a2024"/><path d="M789 562 l-26 -18 l2 26Z M789 562 l26 -18 l-2 26Z" fill="#a0282c"/><circle cx="789" cy="563" r="6" fill="#6a1418"/>`
+            + candleBase(912, 592, .95)
+            + rack(176, 340, 380, 360) + rack(1046, 380, 206, 320)
+            + dr.s
+            // 술통
+            + shadow(240, 852, 170, 26, .7)
+            + `<defs><linearGradient id="barrel" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2a1a0e"/><stop offset=".4" stop-color="#7a5232"/><stop offset=".7" stop-color="#5a3a22"/><stop offset="1" stop-color="#1e1208"/></linearGradient></defs>
+<path d="M110 660 Q96 750 110 850 L370 850 Q384 750 370 660Z" fill="url(#barrel)" filter="url(#woodV)"/>
+${[150, 196, 240, 284, 330].map(x => `<path d="M${x} 662 Q${x + (x - 240) * .08} 755 ${x} 848" stroke="#1a1008" stroke-width="2.5" fill="none"/>`).join('')}
+${[680, 830].map(y => `<path d="M106 ${y} Q240 ${y + 14} 374 ${y}" stroke="url(#iron)" stroke-width="16" fill="none"/>`).join('')}
+<ellipse cx="240" cy="660" rx="130" ry="20" fill="#4a3020" filter="url(#wood)"/><ellipse cx="240" cy="660" rx="130" ry="20" fill="none" stroke="url(#iron)" stroke-width="8"/>`
+            + lighting([{ x: 800, y: 220, r: 640, ry: 520, c: '#ffae55', o: .45, core: .12 }, { x: 912, y: 540, r: 240, c: '#ffbe6a', o: .35 }, { x: 240, y: 740, r: 240, c: '#ffae55', o: .08 }], .68);
+        return { bg, fg: `${FG_DEFS}${flame(912, 527, .95, 90)}
+<g class="lantern" style="transform-origin:800px 40px" pointer-events="none"><line x1="800" y1="40" x2="800" y2="168" stroke="#1a120c" stroke-width="4"/>
+<path d="M786 168 H814 L826 186 H774Z" fill="#1e1610"/><path d="M776 186 H824 V236 H776Z" fill="#f3c26b" opacity=".85"/><path d="M776 186 H824 V236 H776Z M800 186 V236" stroke="#1e1610" stroke-width="4" fill="none"/>
+<path d="M770 236 H830 L820 250 H780Z" fill="#1e1610"/><circle class="glow" cx="800" cy="212" r="120" fill="url(#fgGlow)"/>${flame(800, 228, .7, 0)}</g>
+${hit('letters', '편지 뭉치', 'M712 530 H860 V600 H712Z')}${hit('door', '문', dr.hot)}` };
     },
-    questions: [
+
+    antique() {
+        const dr = door(1272, 316, 160, 384, { c: '#3e2a1c', frame: '#3a2e20' });
+        const bg = kit({ lx: 960, ly: 470, pat: '#36402f' }) + roomShell({ wall: '#2a3226', trim: '#2a2218', trimHi: '#4a3e2a', floor: '#3e2a1c',
+                rug: { y1: 730, y2: 872, x1: 560, x2: 1040, c: '#1e3a3a', c2: '#b8903f' } })
+            // 괘종시계
+            + `<rect x="190" y="160" width="160" height="540" fill="#000" opacity=".5" filter="url(#b30)" transform="translate(-30 0)"/>
+<g filter="url(#wood)"><path d="M196 196 Q266 120 336 196Z" fill="#3e2416"/><rect x="200" y="190" width="132" height="190" fill="#4a2c1c"/><rect x="214" y="380" width="104" height="250" fill="#40261a"/><rect x="196" y="630" width="140" height="70" fill="#3e2416"/></g>
+<circle cx="236" cy="152" r="7" fill="url(#brass)"/><circle cx="296" cy="152" r="7" fill="url(#brass)"/>
+<circle cx="266" cy="270" r="54" fill="url(#gold)" filter="url(#bevel)"/><circle cx="266" cy="270" r="46" fill="#e6dab8"/>
+${Array.from({ length: 12 }, (_, i) => { const a = i * Math.PI / 6; return `<line x1="${f1(266 + Math.sin(a) * 36)}" y1="${f1(270 - Math.cos(a) * 36)}" x2="${f1(266 + Math.sin(a) * 42)}" y2="${f1(270 - Math.cos(a) * 42)}" stroke="#2a1c12" stroke-width="${i % 3 ? 2 : 3.5}"/>`; }).join('')}
+<line x1="266" y1="270" x2="266" y2="236" stroke="#1a120c" stroke-width="4"/><line x1="266" y1="270" x2="292" y2="286" stroke="#1a120c" stroke-width="3"/>
+<rect x="232" y="396" width="68" height="220" fill="#0a0604"/><rect x="232" y="396" width="68" height="220" fill="none" stroke="url(#gold)" stroke-width="3"/><path d="M240 400 L264 400 L240 520Z" fill="#fff" opacity=".05"/>
+<rect x="196" y="160" width="140" height="540" fill="url(#hshade)"/>`
+            // 거울 화장대
+            + `<rect x="566" y="540" width="480" height="200" fill="#000" opacity=".5" filter="url(#b30)" transform="translate(-30 0)"/>
+<path d="M700 548 L726 470 M900 548 L874 470" stroke="#4a2c1c" stroke-width="12"/>
+<ellipse cx="800" cy="372" rx="132" ry="164" fill="url(#gold)" filter="url(#bevel)"/><ellipse cx="800" cy="372" rx="116" ry="148" fill="url(#glassG)"/>
+<path d="M720 280 Q750 240 800 232 L730 400Z" fill="#fff" opacity=".07"/><path d="M850 260 L870 270 L800 470 L786 460Z" fill="#fff" opacity=".04"/>
+<ellipse cx="800" cy="372" rx="116" ry="148" fill="none" stroke="#2a1c10" stroke-width="3"/>
+<g filter="url(#wood)"><rect x="566" y="540" width="468" height="24" fill="#5a3622"/><rect x="590" y="564" width="420" height="176" fill="#46281a"/></g>
+<rect x="566" y="540" width="468" height="4" fill="#9a6a42" opacity=".6"/><rect x="590" y="564" width="420" height="176" fill="url(#vshade)"/>
+<rect x="612" y="584" width="376" height="48" fill="#4a2c1c" filter="url(#bevel)"/><rect x="770" y="602" width="60" height="12" rx="6" fill="url(#brass)"/>
+<rect x="612" y="642" width="376" height="40" fill="#4a2c1c" filter="url(#bevel)"/><rect x="612" y="690" width="376" height="40" fill="#4a2c1c" filter="url(#bevel)"/>
+<circle cx="800" cy="662" r="6" fill="url(#brass)"/><circle cx="800" cy="710" r="6" fill="url(#brass)"/>
+${shadow(800, 744, 240, 14, .6)}
+<path d="M640 540 v-34 q0 -8 10 -8 q10 0 10 8 v34Z" fill="#6a8a8a" opacity=".8"/><circle cx="650" cy="492" r="8" fill="#8aa6a6" opacity=".85"/><path d="M644 506 v20" stroke="#fff" stroke-opacity=".35" stroke-width="3"/>
+<path d="M684 540 v-22 q0 -6 8 -6 q8 0 8 6 v22Z" fill="#8a5a6a" opacity=".8"/><circle cx="692" cy="508" r="5" fill="url(#gold)"/>
+<rect x="860" y="514" width="64" height="26" fill="#5a2a2e"/><rect x="856" y="508" width="72" height="9" fill="url(#gold)"/>`
+            // 석유등 받침
+            + `<ellipse cx="962" cy="540" rx="26" ry="6" fill="url(#brass)"/><path d="M944 540 Q940 506 962 498 Q984 506 980 540Z" fill="url(#brass)"/><path d="M948 498 Q948 450 962 440 Q976 450 976 498Z" fill="#e8f0ea" opacity=".25"/>`
+            // 표본장
+            + `<rect x="1040" y="250" width="200" height="460" fill="#000" opacity=".5" filter="url(#b30)" transform="translate(-26 0)"/>
+<g filter="url(#wood)"><rect x="1042" y="236" width="196" height="24" fill="#3e2416"/><rect x="1050" y="260" width="180" height="440" fill="#40261a"/></g>
+<rect x="1064" y="276" width="152" height="300" fill="#121a18"/>
+<defs><linearGradient id="murk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a8a4a" stop-opacity=".5"/><stop offset="1" stop-color="#3a4a2a" stop-opacity=".9"/></linearGradient></defs>
+<rect x="1078" y="320" width="34" height="52" rx="5" fill="url(#murk)"/><rect x="1076" y="312" width="38" height="10" fill="url(#iron)"/>
+<rect x="1130" y="300" width="44" height="72" rx="6" fill="url(#murk)"/><rect x="1128" y="292" width="48" height="10" fill="url(#iron)"/><circle cx="1152" cy="338" r="13" fill="#e8e0cc"/><circle cx="1155" cy="338" r="6" fill="#3a5a6a"/><circle cx="1156" cy="338" r="3" fill="#050505"/>
+<rect x="1184" y="334" width="22" height="38" rx="4" fill="url(#murk)"/>
+<rect x="1080" y="446" width="40" height="34" fill="url(#gold)"/><rect x="1132" y="420" width="26" height="60" rx="4" fill="#5a3a5a" opacity=".85"/><path d="M1176 480 q10 -40 30 -36 q-8 20 -20 36Z" fill="#c8c0a8"/>
+<path d="M1064 372 H1216 M1064 480 H1216" stroke="#3e2416" stroke-width="7"/><path d="M1140 276 V576" stroke="#3e2416" stroke-width="7"/>
+<path d="M1070 280 L1100 280 L1070 420Z M1146 280 L1170 280 L1146 400Z" fill="#fff" opacity=".07"/>
+<rect x="1064" y="592" width="152" height="94" fill="#3a2216" filter="url(#bevel)"/>
+<rect x="1042" y="236" width="196" height="464" fill="url(#hshade)"/>
+<path d="M1120 236 C1120 210 1140 196 1160 200 L1200 214 L1166 222 C1160 232 1150 236 1120 236Z" fill="#0a0a0c"/><circle cx="1150" cy="208" r="3" fill="#c8b070"/>`
+            + dr.s
+            + lighting([{ x: 962, y: 460, r: 640, ry: 520, c: '#ffc070', o: .45, core: .12 }, { x: 266, y: 300, r: 220, c: '#e8d49a', o: .1 }], .66);
+        return { bg, fg: `${FG_DEFS}<g class="pendulum" style="transform-origin:266px 398px;animation-duration:1.6s"><line x1="266" y1="398" x2="266" y2="582" stroke="#a87f36" stroke-width="3"/><circle cx="266" cy="592" r="21" fill="url(#fgBrass)"/></g>
+<g class="mirror-eye" pointer-events="none"><path d="M736 372 Q800 326 864 372 Q800 418 736 372Z" fill="#d9e4e0"/><circle cx="800" cy="372" r="22" fill="#2a4a5a"/><circle cx="800" cy="372" r="10" fill="#050606"/></g>
+${flame(962, 492, .9, 120)}<path d="M948 498 Q948 450 962 440 Q976 450 976 498Z" fill="#fff" opacity=".18" pointer-events="none"/>
+${hit('drawer', '화장대 서랍', 'M612 584 H988 V632 H612Z')}${hit('door', '문', dr.hot)}` };
+    },
+
+    gallery() {
+        const pw = 240, ph = 300, py = 150;
+        const people = [
+            { id: 'p1', x: 205, bg: '#2a3024', hair: '#2a1a12', cloth: '#1d1a24', dimple: true, label: 'Ⅰ', collar: '#e8dcc0', brooch: true },
+            { id: 'p2', x: 505, bg: '#32282a', hair: '#3a2416', cloth: '#4a1e24', dimple: true, long: true, label: 'Ⅱ' },
+            { id: 'p3', x: 855, bg: '#282a32', hair: '#20140e', cloth: '#22262e', dimple: true, long: true, label: 'Ⅲ', brooch: true },
+            { id: 'p4', x: 1155, bg: '#26302c', hair: '#5a3a1e', cloth: '#2d3a2e', dimple: false, long: true, label: 'Ⅳ', tilt: 3, collar: '#c8d0c0' },
+        ];
+        let frames = '', clips = '', lamps = '', lights = [{ x: 800, y: 80, r: 420, ry: 260, c: '#ffcf80', o: .3 }];
+        for (const p of people) {
+            const cx = p.x + pw / 2;
+            clips += paintingClip(p.x, py, pw, ph, p.id);
+            frames += painting(p.x, py, pw, ph, p);
+            lamps += `<rect x="${cx - 46}" y="${py - 34}" width="92" height="12" rx="5" fill="url(#brass)"/><rect x="${cx - 4}" y="${py - 24}" width="8" height="14" fill="url(#brass)"/>
+<path d="M${cx - 44} ${py - 22} L${cx - 130} ${py + 220} L${cx + 130} ${py + 220} L${cx + 44} ${py - 22}Z" fill="#ffe0a0" opacity=".07" filter="url(#b12)"/>`;
+            lights.push({ x: cx, y: py + 120, r: 210, ry: 270, c: '#ffd890', o: .3, core: .35 });
+        }
+        const bg = kit({ lx: 800, ly: 60, pat: '#4a2228', defs: clips }) + roomShell({ wall: '#3a1a1e', trim: '#2a1410', trimHi: '#5a2c22', floor: '#3a2016',
+                rug: { y1: 728, y2: 880, x1: 470, x2: 1130, c: '#4a1418', c2: '#b8903f' } })
+            + lamps + frames
+            // 샹들리에
+            + `<line x1="800" y1="40" x2="800" y2="92" stroke="#1a110d" stroke-width="4"/><path d="M736 92 H864 L836 124 H764Z" fill="url(#brass)"/>
+<path d="M700 120 Q800 176 900 120" stroke="url(#brass)" stroke-width="7" fill="none"/><path d="M730 124 Q800 158 870 124" stroke="url(#brass)" stroke-width="5" fill="none"/>
+${[700, 750, 800, 850, 900].map((x, i) => { const y = [120, 142, 148, 142, 120][i]; return `<rect x="${x - 5}" y="${y - 22}" width="10" height="22" fill="url(#wax)"/><ellipse cx="${x}" cy="${y}" rx="12" ry="4" fill="url(#brass)"/>`; }).join('')}
+<path d="M760 124 L770 176 L780 124 M820 124 L830 176 L840 124" stroke="#e8e0d0" stroke-width="1.5" opacity=".4" fill="none"/>`
+            // 벤치
+            + shadow(800, 784, 230, 14, .7)
+            + `<defs><linearGradient id="velvet" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9a2a30"/><stop offset="1" stop-color="#4a0e12"/></linearGradient></defs>
+<g filter="url(#wood)"><rect x="600" y="692" width="400" height="20" fill="#4a2c1c"/><rect x="618" y="712" width="20" height="68" fill="#3a2216"/><rect x="962" y="712" width="20" height="68" fill="#3a2216"/></g>
+<path d="M596 694 Q600 668 640 666 H960 Q1000 668 1004 694Z" fill="url(#velvet)"/>${[680, 760, 840, 920].map(x => `<circle cx="${x}" cy="680" r="3" fill="url(#gold)"/>`).join('')}`
+            + lighting(lights, .7);
+        return { bg, fg: `${FG_DEFS}${[700, 750, 800, 850, 900].map((x, i) => flame(x, [120, 142, 148, 142, 120][i] - 22, .55, 46)).join('')}
+${crow(740, 604, 1)}
+${hit('portraits', '초상화들', ...people.map(p => rectD(p.x, py, pw, ph)))}
+<g class="hs reveal" data-hs="letter" role="button" aria-label="액자 틈의 종이"><path d="M1378 448 L1446 424 L1462 474 L1394 494Z" fill="#ead9b0" stroke="#7a6038" stroke-width="2"/><path d="M1392 458 L1444 440 M1396 470 L1448 452" stroke="#9a8460" stroke-width="2"/></g>` };
+    },
+
+    end() {
+        const bg = kit({ lx: 800, ly: 330, pat: '#352428', defs: `
+<linearGradient id="dawn" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#f6b880"/><stop offset=".35" stop-color="#d07a6a"/><stop offset=".7" stop-color="#6a4a6a"/><stop offset="1" stop-color="#2a2238"/></linearGradient>
+<filter id="dawnClouds" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.004 0.016" numOctaves="4" seed="3"/><feColorMatrix type="matrix" values="0 0 0 0 .98  0 0 0 0 .7  0 0 0 0 .6  2.4 0 0 0 -1.25"/></filter>
+<linearGradient id="curtain" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3a0e12"/><stop offset=".25" stop-color="#7a2228"/><stop offset=".5" stop-color="#4a1418"/><stop offset=".75" stop-color="#8a2a30"/><stop offset="1" stop-color="#3a0e12"/></linearGradient>
+<linearGradient id="sunbeam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffc890" stop-opacity=".3"/><stop offset="1" stop-color="#ffc890" stop-opacity="0"/></linearGradient>
+<clipPath id="winClip"><rect x="580" y="130" width="440" height="420"/></clipPath>` })
+            + roomShell({ wall: '#2c2024', trim: '#24161a', trimHi: '#4a2c2c', floor: '#3a241c' })
+            + `<rect x="556" y="106" width="488" height="468" fill="#3a2418" filter="url(#bevel)"/>
+<g clip-path="url(#winClip)"><rect x="580" y="130" width="440" height="420" fill="url(#dawn)"/><rect x="580" y="130" width="440" height="300" filter="url(#dawnClouds)"/>
+<circle cx="700" cy="500" r="40" fill="#fff0c8"/><circle cx="700" cy="500" r="90" fill="#ffe0a0" opacity=".3" filter="url(#b12)"/>
+<path d="M580 480 Q700 440 800 462 Q900 436 1020 470 V550 H580Z" fill="#3a2430"/><path d="M580 510 Q720 488 840 506 Q940 492 1020 512 V550 H580Z" fill="#24161e"/></g>
+<path d="M800 130 V550 M580 340 H1020" stroke="#3a2418" stroke-width="16"/><rect x="566" y="550" width="468" height="18" fill="#4a2c1c" filter="url(#bevel)"/>
+<path d="M500 96 C540 260 520 460 568 610 L470 610 L460 96Z" fill="url(#curtain)"/><path d="M1100 96 C1060 260 1080 460 1032 610 L1130 610 L1140 96Z" fill="url(#curtain)"/>
+<rect x="440" y="80" width="720" height="18" rx="9" fill="url(#brass)"/>
+<polygon points="600,560 1000,560 1180,900 420,900" fill="url(#sunbeam)" style="mix-blend-mode:screen"/>`
+            + shadow(800, 790, 190, 14, .6)
+            + `<g filter="url(#wood)"><rect x="640" y="640" width="320" height="16" fill="#5a3622"/><rect x="664" y="656" width="16" height="128" fill="#3a2216"/><rect x="920" y="656" width="16" height="128" fill="#3a2216"/></g>
+<path d="M690 640 L792 624 L806 638 L704 652Z" fill="url(#paper)"/><path d="M712 636 L782 626 M716 642 L770 634" stroke="#7a6248" stroke-width="1.5"/>
+<rect x="850" y="618" width="54" height="22" rx="5" fill="#0a0a0c" transform="rotate(-6 877 629)"/>`
+            + lighting([{ x: 800, y: 340, r: 700, ry: 560, c: '#ffb88a', o: .45, core: .2 }], .66, '#0a050a');
+        return { bg, fg: `${FG_DEFS}<rect x="855" y="621" width="44" height="15" rx="2" fill="#bcd8f0" transform="rotate(-6 877 629)"/><defs><radialGradient id="phoneG"><stop offset="0" stop-color="#bfe0ff" stop-opacity=".45"/><stop offset="1" stop-color="#9fc4e8" stop-opacity="0"/></radialGradient></defs><circle class="glow" cx="877" cy="628" r="80" fill="url(#phoneG)"/>` };
+    },
+};
+
+/* ============ 이야기 데이터 ============ */
+/* 문제 · 가계도 데이터 (원본 그대로) */
+const PUZZLES = [
+  {
+    "pedigree": {
+      "people": [
         {
-            highlight: ['A-모','A-아들'],
-            setup:'첫 번째 페이지에 그려진 예시 가계도 옆에, 할머니로 추정되는 필체의 메모가 있다. "이 가계도를 보고 처음엔 헷갈렸다. 색맹인 어머니에게서 정상인 아들이 태어날 수 있을까?"',
-            prompt:'[가계도 A] 색맹인 어머니(A-모)와 정상인 아버지 사이에서 정상인 아들(A-아들)이 태어났다. 이 형질은 반성유전(X염색체 열성 유전)일 수 있을까?',
-            choices: [
-                { text:'그렇다, 반성유전일 수 있다', correct:false },
-                { text:'아니다, 반성유전일 수 없다', correct:true },
-            ],
-            explanation:'반성유전(X염색체 열성)이라면 색맹인 어머니의 유전자형은 XaXa이다. 아들은 어머니로부터 반드시 X염색체 하나를 물려받으므로, 아들의 유전자형은 항상 XaY — 즉 아들도 반드시 색맹이어야 한다. 그런데 아들이 정상이므로, 이 형질은 반성유전일 수 없고 상염색체 유전이다.',
-            hint:'아들은 어머니에게서 X염색체를 반드시 하나 물려받는다는 사실을 떠올려보세요.',
-            pedigreeOverride: null,
+          "id": "I-1",
+          "gen": 1,
+          "col": 2,
+          "sex": "M",
+          "dead": true,
+          "affected": true
         },
         {
-            highlight: [],
-            setup:'다음 페이지에는 또 다른 예시가 있다. 메모는 이렇게 이어진다: "이번엔 반대야. 부모님은 모두 정상인데, 아들만 색맹으로 태어났어. 이것만으로 반성유전인지 알 수 있을까?"',
-            prompt:'[가계도 B] 정상인 부모 사이에서 색맹인 아들과 정상인 딸이 태어났다. 이 가계도만으로 반성유전 여부를 확정할 수 있을까?',
-            choices: [
-                { text:'반성유전으로 확정된다', correct:false },
-                { text:'상염색체 유전으로 확정된다', correct:false },
-                { text:'확정할 수 없다 (둘 다 가능하다)', correct:true },
-            ],
-            explanation:'정상인 부모에게서 형질이 나타난 자녀가 태어난 경우, 상염색체 열성 유전이어도(부모가 모두 보인자 Aa), 반성유전 열성(어머니가 보인자 XAXa)이어도 똑같이 설명된다. 따라서 이 가계도 하나만으로는 어느 쪽인지 확정할 수 없다.',
-            hint:'"발현되지 않은 부모에게서 발현된 자녀"라는 패턴은 상염색체 열성과 반성유전 열성 모두에서 나타날 수 있어요.',
-            pedigreeOverride: {
-                people: [
-                    { id:'B-부', gen:1, col:1, sex:'M' },
-                    { id:'B-모', gen:1, col:2, sex:'F' },
-                    { id:'B-아들', gen:2, col:1, sex:'M', affected:true },
-                    { id:'B-딸', gen:2, col:2, sex:'F' },
-                ],
-                marriages: [['B-부','B-모']],
-                childLinks: [{ parents:['B-부','B-모'], children:['B-아들','B-딸'] }],
+          "id": "I-2",
+          "gen": 1,
+          "col": 3,
+          "sex": "F",
+          "dead": true,
+          "affected": true
+        },
+        {
+          "id": "II-1",
+          "gen": 2,
+          "col": 1,
+          "sex": "M"
+        },
+        {
+          "id": "II-2",
+          "gen": 2,
+          "col": 2,
+          "sex": "F",
+          "affected": true
+        },
+        {
+          "id": "II-3",
+          "gen": 2,
+          "col": 3,
+          "sex": "M",
+          "affected": true
+        }
+      ],
+      "marriages": [
+        [
+          "I-1",
+          "I-2"
+        ]
+      ],
+      "childLinks": [
+        {
+          "parents": [
+            "I-1",
+            "I-2"
+          ],
+          "children": [
+            "II-1",
+            "II-2",
+            "II-3"
+          ]
+        }
+      ]
+    },
+    "questions": [
+      {
+        "highlight": [
+          "I-1"
+        ],
+        "setup": "사진첩 여백에는 정체 모를 기호들이 그려져 있다 — 네모, 동그라미, 그리고 그 안을 채운 색칠까지. 할머니가 직접 그려 넣은 것 같은 이 표시들을 먼저 이해해야, 사진 속 가족들의 이야기를 제대로 읽어낼 수 있을 것 같다.",
+        "prompt": "사진첩 속 사각형(□) 기호는 무엇을 나타낼까?",
+        "choices": [
+          {
+            "text": "여자",
+            "correct": false
+          },
+          {
+            "text": "남자",
+            "correct": true
+          },
+          {
+            "text": "보조개가 있는 사람",
+            "correct": false
+          }
+        ],
+        "explanation": "사각형(□)은 남자, 원(○)은 여자를 나타내요. 도형이 색칠되어 있으면 그 형질(여기서는 보조개)이 나타난 사람이라는 뜻이에요.",
+        "hint": "색이 칠해져 있는지 아닌지는 성별이 아니라 형질 발현 여부를 나타내요."
+      },
+      {
+        "highlight": [
+          "I-1",
+          "I-2",
+          "II-1"
+        ],
+        "setup": "기호를 이해하고 나니 사진 속 가족이 눈에 들어오기 시작한다. 맨 위에는 근엄한 표정의 부부 — 아마도 증조부모님이다. 두 분의 뺨에는 또렷한 보조개가 있다. 그 아래로 세 자녀가 나란히 서 있는데, 그중 유독 수줍게 웃고 있는 한 아이만은 뺨이 매끈하다 — 보조개가 없다.\n메모의 다음 줄이 이어진다: \"이상했다. 나도, 아이 아버지도 보조개가 있는데, 어째서 저 아이에게만 없는 걸까...\"",
+        "prompt": "증조부(I-1)와 증조모(I-2)는 둘 다 보조개가 있다. 그런데 자녀 II-1에게는 보조개가 없다.\n이 \"보조개\" 형질은 우성일까, 열성일까?",
+        "choices": [
+          {
+            "text": "우성이다",
+            "correct": true
+          },
+          {
+            "text": "열성이다",
+            "correct": false
+          },
+          {
+            "text": "이 가계도만으로는 알 수 없다",
+            "correct": false
+          }
+        ],
+        "explanation": "부모가 모두 형질이 나타나는데(보조개 있음) 자녀에게서 형질이 나타나지 않았다면, 그 형질은 우성이다. 만약 보조개가 열성이었다면, 형질이 나타난 부모는 이미 열성 대립유전자만을 가진 상태(동형접합)이므로 자녀에게도 항상 그 형질이 나타나야 한다. 그런데 형질이 나타나지 않는 자녀가 태어났으므로, 이 형질은 우성이며 부모는 겉으로 드러나지 않는 정상 대립유전자를 하나씩 숨기고 있었던 것이다.",
+        "hint": "열성 형질이라면, 그 형질을 가진 부모는 반드시 그 형질만 자녀에게 물려줄 수 있어요. 그런데 형질이 없는 자녀가 태어났다면요?"
+      }
+    ]
+  },
+  {
+    "pedigree": {
+      "people": [
+        {
+          "id": "I-1",
+          "gen": 1,
+          "col": 2,
+          "sex": "M",
+          "dead": true,
+          "affected": true
+        },
+        {
+          "id": "I-2",
+          "gen": 1,
+          "col": 3,
+          "sex": "F",
+          "dead": true,
+          "affected": true
+        },
+        {
+          "id": "II-1",
+          "gen": 2,
+          "col": 1,
+          "sex": "M"
+        },
+        {
+          "id": "II-2",
+          "gen": 2,
+          "col": 2,
+          "sex": "F",
+          "affected": true
+        },
+        {
+          "id": "II-3",
+          "gen": 2,
+          "col": 3,
+          "sex": "M",
+          "affected": true
+        },
+        {
+          "id": "II-4",
+          "gen": 2,
+          "col": 4,
+          "sex": "F"
+        },
+        {
+          "id": "III-1",
+          "gen": 3,
+          "col": 3,
+          "sex": "F",
+          "affected": true
+        },
+        {
+          "id": "III-2",
+          "gen": 3,
+          "col": 4,
+          "sex": "M"
+        }
+      ],
+      "marriages": [
+        [
+          "I-1",
+          "I-2"
+        ],
+        [
+          "II-3",
+          "II-4"
+        ]
+      ],
+      "childLinks": [
+        {
+          "parents": [
+            "I-1",
+            "I-2"
+          ],
+          "children": [
+            "II-1",
+            "II-2",
+            "II-3"
+          ]
+        },
+        {
+          "parents": [
+            "II-3",
+            "II-4"
+          ],
+          "children": [
+            "III-1",
+            "III-2"
+          ]
+        }
+      ]
+    },
+    "questions": [
+      {
+        "highlight": [
+          "I-1",
+          "I-2"
+        ],
+        "setup": "서류 맨 위, 증조부모님(I-1, I-2)의 이름 옆에 붉은 잉크로 밑줄이 그어져 있다. 두 분 모두 보조개가 있었지만, 자녀 중 하나(II-1)에게는 없었다는 사실을 누군가 여러 번 확인한 흔적이 보인다. 이 부부의 정확한 유전자형을 알아내는 것이 이 상자가 내는 첫 번째 퍼즐인 듯하다.",
+        "prompt": "보조개 대립유전자를 D(우성, 보조개)/d(열성, 정상)라 하자. I-1과 I-2는 둘 다 보조개가 있는데, 보조개가 없는 자녀(II-1)가 있다. 두 사람의 유전자형은?",
+        "choices": [
+          {
+            "text": "DD와 DD",
+            "correct": false
+          },
+          {
+            "text": "Dd와 Dd",
+            "correct": true
+          },
+          {
+            "text": "확정할 수 없다",
+            "correct": false
+          }
+        ],
+        "explanation": "자녀 II-1이 dd이려면 부모 양쪽에서 각각 d를 하나씩 물려받아야 한다. 그런데 I-1, I-2는 둘 다 보조개가 있으므로(dd가 아니므로) 반드시 Dd여야 한다.",
+        "hint": "자녀(dd)가 부모에게서 대립유전자를 하나씩 물려받는다는 점을 생각해보세요."
+      },
+      {
+        "highlight": [
+          "II-2"
+        ],
+        "setup": "서류를 넘기자 둘째 자녀 II-2의 사진이 나온다. 보조개가 선명하다. 사진 뒤에는 누군가 물음표를 잔뜩 적어 놓았다 — 이 아이의 유전자형이 정확히 무엇인지를 두고 오랫동안 논쟁이 있었던 모양이다.",
+        "prompt": "II-2는 보조개가 있다. II-2의 유전자형을 확정할 수 있을까?",
+        "choices": [
+          {
+            "text": "DD로 확정된다",
+            "correct": false
+          },
+          {
+            "text": "Dd로 확정된다",
+            "correct": false
+          },
+          {
+            "text": "DD 또는 Dd로, 확정할 수 없다",
+            "correct": true
+          }
+        ],
+        "explanation": "부모(Dd × Dd)에게서는 DD, Dd, dd인 자녀가 모두 나올 수 있다. II-2는 보조개가 있으니 dd는 아니지만, DD인지 Dd인지는 이 정보만으로 구분할 수 없다.",
+        "hint": "Dd × Dd 사이에서 태어날 수 있는 자녀의 유전자형 종류를 모두 떠올려보세요."
+      },
+      {
+        "highlight": [
+          "II-3",
+          "II-4",
+          "III-2"
+        ],
+        "setup": "상자 바닥에서 훨씬 나중에 쓰인 편지 한 장이 나온다. II-3(둘째 II-2의 형제)이 결혼해 낳은 아이 III-2에 대한 기록이다. \"우리 아이는 보조개 없이 태어났다. 남편도 나도 보조개가 있는데...\" — 어딘가 익숙한 문장이다. 이 편지가 II-3의 유전자형을 확정할 결정적인 단서를 쥐고 있는 듯하다.",
+        "prompt": "II-3도 보조개가 있다. 배우자 II-4는 보조개가 없다(dd). 그런데 둘 사이에서 태어난 III-2는 보조개가 없다(dd). II-3의 유전자형을 확정할 수 있을까?",
+        "choices": [
+          {
+            "text": "DD로 확정된다",
+            "correct": false
+          },
+          {
+            "text": "Dd로 확정된다",
+            "correct": true
+          },
+          {
+            "text": "확정할 수 없다",
+            "correct": false
+          }
+        ],
+        "explanation": "배우자 II-4는 dd이므로 자녀에게 항상 d만 물려준다. 자녀 III-2가 dd이려면 아버지 II-3에게서도 d를 받아야 한다. 만약 II-3이 DD였다면, dd인 II-4와의 자녀는 모두 Dd(보조개 있음)만 나오고 dd인 자녀는 절대 나올 수 없다. 그런데 III-2가 dd로 태어났으므로, II-3은 반드시 Dd여야 한다. — 자녀의 표현형이 애매했던 조상의 유전자형을 확정해 준 것이다.",
+        "hint": "배우자 II-4가 자녀에게 줄 수 있는 대립유전자는 무엇뿐인지 생각해보고, 만약 II-3이 DD였다면 이 부부의 자녀가 모두 어떤 형질을 나타낼지 떠올려보세요."
+      },
+      {
+        "highlight": [
+          "III-1"
+        ],
+        "setup": "편지의 마지막 문단에는 III-1(III-2의 형제)에 대한 이야기도 있다. \"III-1에게는 나처럼 보조개가 있다. 다행이라고 해야 할지...\" 이 한 줄에서, III-1의 유전자형까지 확정할 수 있을 것 같다.",
+        "prompt": "III-1은 보조개가 있다(부모: II-3=Dd, II-4=dd). III-1의 유전자형은?",
+        "choices": [
+          {
+            "text": "DD로 확정된다",
+            "correct": false
+          },
+          {
+            "text": "Dd로 확정된다",
+            "correct": true
+          },
+          {
+            "text": "확정할 수 없다",
+            "correct": false
+          }
+        ],
+        "explanation": "부모가 Dd(II-3) × dd(II-4)이므로 자녀는 Dd 또는 dd만 나올 수 있고 DD는 절대 나올 수 없다. III-1은 보조개가 있으니 dd가 아니고, 따라서 반드시 Dd이다.",
+        "hint": "Dd × dd 사이에서 나올 수 있는 자녀의 유전자형에는 애초에 DD가 없다는 점에 주목하세요."
+      }
+    ]
+  },
+  {
+    "pedigree": {
+      "people": [
+        {
+          "id": "I-1",
+          "gen": 1,
+          "col": 2,
+          "sex": "M",
+          "dead": true,
+          "affected": true,
+          "info": "A형"
+        },
+        {
+          "id": "I-2",
+          "gen": 1,
+          "col": 3,
+          "sex": "F",
+          "dead": true,
+          "affected": true,
+          "info": "B형"
+        },
+        {
+          "id": "II-1",
+          "gen": 2,
+          "col": 1,
+          "sex": "M",
+          "info": "O형"
+        },
+        {
+          "id": "II-2",
+          "gen": 2,
+          "col": 2,
+          "sex": "F",
+          "affected": true,
+          "info": "AB형"
+        },
+        {
+          "id": "II-3",
+          "gen": 2,
+          "col": 3,
+          "sex": "M",
+          "affected": true,
+          "info": "O형"
+        }
+      ],
+      "marriages": [
+        [
+          "I-1",
+          "I-2"
+        ]
+      ],
+      "childLinks": [
+        {
+          "parents": [
+            "I-1",
+            "I-2"
+          ],
+          "children": [
+            "II-1",
+            "II-2",
+            "II-3"
+          ]
+        }
+      ]
+    },
+    "questions": [
+      {
+        "highlight": [
+          "I-1",
+          "I-2",
+          "II-1",
+          "II-2"
+        ],
+        "setup": "편지 맨 위에는 증조부모님의 이름이 적혀 있다 — 증조부는 A형, 증조모는 B형. 그 아래로 세 자녀의 혈액형이 나열되어 있는데, 유독 두 개에 별표가 그려져 있다: O형과 AB형. 마치 누군가 그 조합을 이상하게 여겼던 것처럼.",
+        "prompt": "ABO식 혈액형의 대립유전자를 A, B, o라 하자(A와 B 사이에는 우열이 없고, 둘 다 o에 대해서는 우성이다). 증조부(A형)와 증조모(B형) 사이에서 O형(II-1)과 AB형(II-2) 자녀가 모두 태어났다. 두 분의 유전자형은?",
+        "choices": [
+          {
+            "text": "AA 와 BB",
+            "correct": false
+          },
+          {
+            "text": "Ao 와 Bo",
+            "correct": true
+          },
+          {
+            "text": "확정할 수 없다",
+            "correct": false
+          }
+        ],
+        "explanation": "자녀 중 O형(oo)이 있으므로 두 분 모두 o 대립유전자를 하나씩 가지고 있어야 한다. 또한 AB형(AB) 자녀가 있으므로 한 분은 A를, 다른 한 분은 B를 물려주었어야 한다. 따라서 증조부는 Ao, 증조모는 Bo로 확정된다.",
+        "hint": "O형과 AB형 자녀가 각각 태어나려면 부모가 어떤 대립유전자를 가지고 있어야 하는지 따로따로 생각해보세요."
+      },
+      {
+        "highlight": [
+          "II-1"
+        ],
+        "setup": "편지 아래쪽에는 누군가 급하게 휘갈겨 쓴 듯한 메모가 있다. \"만약 O형인 아이가 자라서 A형인 사람과 결혼한다면, 그 아이들도 B형일 수 있을까? 확인해봐야겠다.\" 글씨체가 점점 흐트러지는 게, 무언가에 쫓기듯 써 내려간 것 같았다.",
+        "prompt": "만약 O형인 II-1이 A형인 사람과 결혼한다면, 그 자녀가 B형일 수 있을까?",
+        "choices": [
+          {
+            "text": "가능하다",
+            "correct": false
+          },
+          {
+            "text": "불가능하다",
+            "correct": true
+          }
+        ],
+        "explanation": "II-1(O형)의 유전자형은 oo이고, A형인 배우자는 AA 또는 Ao이다. 어느 경우든 부모 중 누구도 B 대립유전자를 갖고 있지 않으므로, B형(자녀가 B를 가져야 함) 자녀는 절대 태어날 수 없다.",
+        "hint": "B형 자녀가 태어나려면 부모 중 적어도 한 명은 B 대립유전자를 가지고 있어야 해요."
+      }
+    ]
+  },
+  {
+    "pedigree": {
+      "people": [
+        {
+          "id": "A-부",
+          "gen": 1,
+          "col": 1,
+          "sex": "M"
+        },
+        {
+          "id": "A-모",
+          "gen": 1,
+          "col": 2,
+          "sex": "F",
+          "affected": true
+        },
+        {
+          "id": "A-아들",
+          "gen": 2,
+          "col": 1,
+          "sex": "M"
+        },
+        {
+          "id": "A-딸",
+          "gen": 2,
+          "col": 2,
+          "sex": "F"
+        }
+      ],
+      "marriages": [
+        [
+          "A-부",
+          "A-모"
+        ]
+      ],
+      "childLinks": [
+        {
+          "parents": [
+            "A-부",
+            "A-모"
+          ],
+          "children": [
+            "A-아들",
+            "A-딸"
+          ]
+        }
+      ]
+    },
+    "questions": [
+      {
+        "highlight": [
+          "A-모",
+          "A-아들"
+        ],
+        "setup": "첫 번째 페이지에 그려진 예시 가계도 옆에, 할머니로 추정되는 필체의 메모가 있다. \"이 가계도를 보고 처음엔 헷갈렸다. 색맹인 어머니에게서 정상인 아들이 태어날 수 있을까?\"",
+        "prompt": "[가계도 A] 색맹인 어머니(A-모)와 정상인 아버지 사이에서 정상인 아들(A-아들)이 태어났다. 이 형질은 반성유전(X염색체 열성 유전)일 수 있을까?",
+        "choices": [
+          {
+            "text": "그렇다, 반성유전일 수 있다",
+            "correct": false
+          },
+          {
+            "text": "아니다, 반성유전일 수 없다",
+            "correct": true
+          }
+        ],
+        "explanation": "반성유전(X염색체 열성)이라면 색맹인 어머니의 유전자형은 XaXa이다. 아들은 어머니로부터 반드시 X염색체 하나를 물려받으므로, 아들의 유전자형은 항상 XaY — 즉 아들도 반드시 색맹이어야 한다. 그런데 아들이 정상이므로, 이 형질은 반성유전일 수 없고 상염색체 유전이다.",
+        "hint": "아들은 어머니에게서 X염색체를 반드시 하나 물려받는다는 사실을 떠올려보세요."
+      },
+      {
+        "highlight": [],
+        "setup": "다음 페이지에는 또 다른 예시가 있다. 메모는 이렇게 이어진다: \"이번엔 반대야. 부모님은 모두 정상인데, 아들만 색맹으로 태어났어. 이것만으로 반성유전인지 알 수 있을까?\"",
+        "prompt": "[가계도 B] 정상인 부모 사이에서 색맹인 아들과 정상인 딸이 태어났다. 이 가계도만으로 반성유전 여부를 확정할 수 있을까?",
+        "choices": [
+          {
+            "text": "반성유전으로 확정된다",
+            "correct": false
+          },
+          {
+            "text": "상염색체 유전으로 확정된다",
+            "correct": false
+          },
+          {
+            "text": "확정할 수 없다 (둘 다 가능하다)",
+            "correct": true
+          }
+        ],
+        "explanation": "정상인 부모에게서 형질이 나타난 자녀가 태어난 경우, 상염색체 열성 유전이어도(부모가 모두 보인자 Aa), 반성유전 열성(어머니가 보인자 XAXa)이어도 똑같이 설명된다. 따라서 이 가계도 하나만으로는 어느 쪽인지 확정할 수 없다.",
+        "hint": "\"발현되지 않은 부모에게서 발현된 자녀\"라는 패턴은 상염색체 열성과 반성유전 열성 모두에서 나타날 수 있어요.",
+        "pedigreeOverride": {
+          "people": [
+            {
+              "id": "B-부",
+              "gen": 1,
+              "col": 1,
+              "sex": "M"
             },
+            {
+              "id": "B-모",
+              "gen": 1,
+              "col": 2,
+              "sex": "F"
+            },
+            {
+              "id": "B-아들",
+              "gen": 2,
+              "col": 1,
+              "sex": "M",
+              "affected": true
+            },
+            {
+              "id": "B-딸",
+              "gen": 2,
+              "col": 2,
+              "sex": "F"
+            }
+          ],
+          "marriages": [
+            [
+              "B-부",
+              "B-모"
+            ]
+          ],
+          "childLinks": [
+            {
+              "parents": [
+                "B-부",
+                "B-모"
+              ],
+              "children": [
+                "B-아들",
+                "B-딸"
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "pedigree": {
+      "people": [
+        {
+          "id": "I-1",
+          "gen": 1,
+          "col": 2,
+          "sex": "M",
+          "dead": true,
+          "affected": true,
+          "info": "A형"
         },
-    ],
-    reward:'교과서를 덮으려는 순간, 마지막 페이지 여백에 적힌 글씨가 눈에 들어온다. 다른 페이지보다 훨씬 진하고, 힘주어 쓴 것처럼 보였다: "혈액형은 절대 거짓말을 하지 않는다. 갤러리의 초상화들을 다시 보라." 서랍 안쪽에서 갤러리로 통하는 열쇠를 발견했다.',
-},
-{
-    room:'초상화 갤러리', emoji:'🖼️',
-    art: `<svg viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
-<defs><radialGradient id="g5" cx="50%" cy="0%" r="60%"><stop offset="0%" stop-color="var(--accent)" stop-opacity="0.22"/><stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/></radialGradient></defs>
-<rect width="600" height="200" fill="#0a0710"/><rect width="600" height="200" fill="url(#g5)"/>
-<g stroke="var(--accent)" stroke-width="3" fill="var(--panel2)"><rect x="50" y="30" width="90" height="110" rx="4"/><rect x="180" y="30" width="90" height="110" rx="4"/><rect x="330" y="30" width="90" height="110" rx="4"/><rect x="460" y="30" width="90" height="110" rx="4"/></g>
-<g fill="var(--field)"><rect x="62" y="42" width="66" height="86" rx="2"/><rect x="192" y="42" width="66" height="86" rx="2"/><rect x="342" y="42" width="66" height="86" rx="2"/><rect x="472" y="42" width="66" height="86" rx="2"/></g>
-<g fill="var(--muted)" opacity="0.5"><circle cx="95" cy="75" r="14"/><path d="M75 122 Q95 95 115 122 Z"/><circle cx="225" cy="75" r="14"/><path d="M205 122 Q225 95 245 122 Z"/><circle cx="375" cy="75" r="14"/><path d="M355 122 Q375 95 395 122 Z"/><circle cx="505" cy="75" r="14"/><path d="M485 122 Q505 95 525 122 Z"/></g>
-<g fill="var(--accent)" opacity="0.5"><ellipse cx="95" cy="18" rx="20" ry="5"/><ellipse cx="225" cy="18" rx="20" ry="5"/><ellipse cx="375" cy="18" rx="20" ry="5"/><ellipse cx="505" cy="18" rx="20" ry="5"/></g>
-<rect x="230" y="170" width="140" height="10" rx="3" fill="var(--panel2)" stroke="var(--border)"/>
-<rect x="245" y="180" width="8" height="16" fill="var(--border)"/>
-<rect x="347" y="180" width="8" height="16" fill="var(--border)"/>
-</svg>`,
-    intro:'가장 안쪽 방의 묵직한 문을 열자, 액자들이 나를 내려다보고 있었다. 4대에 걸친 가족의 초상화가 벽을 가득 채우고 있다. 조심스럽게 액자를 하나씩 들어보니, 뒷면마다 이름과 혈액형이 잉크로 적혀 있다. 마치 누군가 이 벽 전체를 증거물로 남겨둔 것처럼.\n여기까지 오는 동안 알아낸 것들을 하나씩 되짚어본다. 이 벽 앞에 서면, 엄마에게도 마침내 제대로 설명해줄 수 있을 것 같았다.',
-    pedigree: {
-        people: [
-            { id:'I-1', gen:1, col:2, sex:'M', dead:true, affected:true, info:'A형' },
-            { id:'I-2', gen:1, col:3, sex:'F', dead:true, affected:true, info:'B형' },
-            { id:'II-1', gen:2, col:1, sex:'M', info:'O형' },
-            { id:'II-2', gen:2, col:2, sex:'F', affected:true, info:'AB형' },
-            { id:'II-3', gen:2, col:3, sex:'M', affected:true, info:'O형' },
-            { id:'II-4', gen:2, col:4, sex:'F', info:'B형' },
-            { id:'III-1', gen:3, col:3, sex:'F', affected:true, info:'B형' },
-            { id:'III-2', gen:3, col:4, sex:'M', info:'' },
-            { id:'III-3', gen:3, col:2, sex:'M', info:'O형' },
-            { id:'IV-1', gen:4, col:1, sex:'F', info:'B형' },
-            { id:'IV-2', gen:4, col:2, sex:'M', info:'O형' },
-            { id:'IV-3', gen:4, col:3, sex:'F', info:'A형?!' },
+        {
+          "id": "I-2",
+          "gen": 1,
+          "col": 3,
+          "sex": "F",
+          "dead": true,
+          "affected": true,
+          "info": "B형"
+        },
+        {
+          "id": "II-1",
+          "gen": 2,
+          "col": 1,
+          "sex": "M",
+          "info": "O형"
+        },
+        {
+          "id": "II-2",
+          "gen": 2,
+          "col": 2,
+          "sex": "F",
+          "affected": true,
+          "info": "AB형"
+        },
+        {
+          "id": "II-3",
+          "gen": 2,
+          "col": 3,
+          "sex": "M",
+          "affected": true,
+          "info": "O형"
+        },
+        {
+          "id": "II-4",
+          "gen": 2,
+          "col": 4,
+          "sex": "F",
+          "info": "B형"
+        },
+        {
+          "id": "III-1",
+          "gen": 3,
+          "col": 3,
+          "sex": "F",
+          "affected": true,
+          "info": "B형"
+        },
+        {
+          "id": "III-2",
+          "gen": 3,
+          "col": 4,
+          "sex": "M",
+          "info": ""
+        },
+        {
+          "id": "III-3",
+          "gen": 3,
+          "col": 2,
+          "sex": "M",
+          "info": "O형"
+        },
+        {
+          "id": "IV-1",
+          "gen": 4,
+          "col": 1,
+          "sex": "F",
+          "info": "B형"
+        },
+        {
+          "id": "IV-2",
+          "gen": 4,
+          "col": 2,
+          "sex": "M",
+          "info": "O형"
+        },
+        {
+          "id": "IV-3",
+          "gen": 4,
+          "col": 3,
+          "sex": "F",
+          "info": "A형?!"
+        }
+      ],
+      "marriages": [
+        [
+          "I-1",
+          "I-2"
         ],
-        marriages: [['I-1','I-2'], ['II-3','II-4'], ['III-3','III-1']],
-        childLinks: [
-            { parents:['I-1','I-2'], children:['II-1','II-2','II-3'] },
-            { parents:['II-3','II-4'], children:['III-1','III-2'] },
-            { parents:['III-3','III-1'], children:['IV-1','IV-2','IV-3'] },
+        [
+          "II-3",
+          "II-4"
         ],
+        [
+          "III-3",
+          "III-1"
+        ]
+      ],
+      "childLinks": [
+        {
+          "parents": [
+            "I-1",
+            "I-2"
+          ],
+          "children": [
+            "II-1",
+            "II-2",
+            "II-3"
+          ]
+        },
+        {
+          "parents": [
+            "II-3",
+            "II-4"
+          ],
+          "children": [
+            "III-1",
+            "III-2"
+          ]
+        },
+        {
+          "parents": [
+            "III-3",
+            "III-1"
+          ],
+          "children": [
+            "IV-1",
+            "IV-2",
+            "IV-3"
+          ]
+        }
+      ]
     },
-    questions: [
-        {
-            highlight: ['II-3','II-4','III-1'],
-            setup:'가장 최근 세대의 초상화 앞에 서기 전, 먼저 그 앞 세대부터 확인해야 할 것 같다. III-1의 액자 뒷면 — "B형"이라 적힌 글씨 밑에, 누군가 연필로 작은 계산을 끄적여 놓았다. 아버지 II-3의 혈액형이 O형이라는 사실과 겹쳐 보면, 무언가 확정할 수 있을 것 같다.',
-            prompt:'앞서 밝혀낸 대로 II-3은 O형(oo)이다. 딸 III-1은 B형인데, III-1의 유전자형은 무엇으로 확정될까?',
-            choices: [
-                { text:'BB', correct:false },
-                { text:'Bo', correct:true },
-                { text:'확정할 수 없다', correct:false },
-            ],
-            explanation:'아버지 II-3이 oo이므로, 자녀는 아버지에게서 반드시 o를 물려받는다. B형인 III-1은 어머니 II-4에게서 B를 물려받았을 것이므로, 유전자형은 Bo로 확정된다(BB라면 아버지에게서도 B를 받아야 하는데 아버지는 o만 줄 수 있다).',
-            hint:'아버지 II-3(oo)이 자녀에게 줄 수 있는 대립유전자는 o 하나뿐이라는 점을 생각해보세요.',
-        },
-        {
-            highlight: ['III-1','III-3'],
-            setup:'III-1과 그 남편 III-3의 초상화 밑에는 나란히 걸린 세 개의 작은 액자가 있다 — 세 자녀의 초상화다. 그런데 그 앞에 서기 전, 이 부부에게서 대체 어떤 혈액형의 자녀가 태어날 수 있었는지부터 계산해두는 편이 좋을 것 같다.',
-            prompt:'III-1(Bo, B형)과 남편 III-3(oo, O형) 사이에서 나올 수 있는 자녀의 혈액형은 모두 몇 가지이며 무엇일까?',
-            choices: [
-                { text:'A형, AB형 두 가지', correct:false },
-                { text:'B형, O형 두 가지', correct:true },
-                { text:'A형, B형, O형, AB형 네 가지 모두', correct:false },
-            ],
-            explanation:'III-3(oo)은 자녀에게 항상 o만 물려준다. III-1(Bo)은 자녀에게 B 또는 o를 물려준다. 따라서 자녀의 유전자형은 Bo(B형) 또는 oo(O형)만 가능하며, A형이나 AB형은 절대 나올 수 없다.',
-            hint:'아버지 III-3이 줄 수 있는 대립유전자와 어머니 III-1이 줄 수 있는 대립유전자를 각각 나열해서 조합해보세요.',
-        },
-        {
-            highlight: ['III-1','III-3','IV-3'],
-            setup:'드디어 세 번째 액자, 셋째 아이 IV-3의 초상화 앞에 섰다. 다른 두 초상화와 달리 이 액자의 뒷면은 다른 색 잉크로, 마치 나중에 다시 확인하듯 적혀 있다: "A형." 손끝이 떨렸다. 방금 계산한 것과 맞지 않는다.',
-            prompt:'그런데 셋째 IV-3의 초상화 뒷면에는 "A형"이라고 또렷이 적혀 있었다. IV-3은 III-1과 III-3의 생물학적 친자녀일 수 있을까?',
-            choices: [
-                { text:'있다, 친자녀일 수 있다', correct:false },
-                { text:'없다, 친자녀일 수 없다', correct:true },
-            ],
-            explanation:'앞서 확인했듯 III-1과 III-3 사이에서는 B형 또는 O형 자녀만 나올 수 있다. A형은 부모 중 누구도 물려줄 수 없는 A 대립유전자를 필요로 하므로, IV-3은 이 두 사람의 생물학적 친자녀일 수 없다.',
-            hint:'두 번째 문제에서 이미 이 부부의 자녀가 가질 수 있는 혈액형을 모두 구해두었어요.',
-        },
-    ],
-    reward:'가슴이 쿵쾅거렸다. 이 모든 걸 어떻게 받아들여야 할지 알 수 없었다. 그때, 갤러리 구석 액자 틀 사이로 무언가 삐져나와 있는 게 보였다.',
-},
+    "questions": [
+      {
+        "highlight": [
+          "II-3",
+          "II-4",
+          "III-1"
+        ],
+        "setup": "가장 최근 세대의 초상화 앞에 서기 전, 먼저 그 앞 세대부터 확인해야 할 것 같다. III-1의 액자 뒷면 — \"B형\"이라 적힌 글씨 밑에, 누군가 연필로 작은 계산을 끄적여 놓았다. 아버지 II-3의 혈액형이 O형이라는 사실과 겹쳐 보면, 무언가 확정할 수 있을 것 같다.",
+        "prompt": "앞서 밝혀낸 대로 II-3은 O형(oo)이다. 딸 III-1은 B형인데, III-1의 유전자형은 무엇으로 확정될까?",
+        "choices": [
+          {
+            "text": "BB",
+            "correct": false
+          },
+          {
+            "text": "Bo",
+            "correct": true
+          },
+          {
+            "text": "확정할 수 없다",
+            "correct": false
+          }
+        ],
+        "explanation": "아버지 II-3이 oo이므로, 자녀는 아버지에게서 반드시 o를 물려받는다. B형인 III-1은 어머니 II-4에게서 B를 물려받았을 것이므로, 유전자형은 Bo로 확정된다(BB라면 아버지에게서도 B를 받아야 하는데 아버지는 o만 줄 수 있다).",
+        "hint": "아버지 II-3(oo)이 자녀에게 줄 수 있는 대립유전자는 o 하나뿐이라는 점을 생각해보세요."
+      },
+      {
+        "highlight": [
+          "III-1",
+          "III-3"
+        ],
+        "setup": "III-1과 그 남편 III-3의 초상화 밑에는 나란히 걸린 세 개의 작은 액자가 있다 — 세 자녀의 초상화다. 그런데 그 앞에 서기 전, 이 부부에게서 대체 어떤 혈액형의 자녀가 태어날 수 있었는지부터 계산해두는 편이 좋을 것 같다.",
+        "prompt": "III-1(Bo, B형)과 남편 III-3(oo, O형) 사이에서 나올 수 있는 자녀의 혈액형은 모두 몇 가지이며 무엇일까?",
+        "choices": [
+          {
+            "text": "A형, AB형 두 가지",
+            "correct": false
+          },
+          {
+            "text": "B형, O형 두 가지",
+            "correct": true
+          },
+          {
+            "text": "A형, B형, O형, AB형 네 가지 모두",
+            "correct": false
+          }
+        ],
+        "explanation": "III-3(oo)은 자녀에게 항상 o만 물려준다. III-1(Bo)은 자녀에게 B 또는 o를 물려준다. 따라서 자녀의 유전자형은 Bo(B형) 또는 oo(O형)만 가능하며, A형이나 AB형은 절대 나올 수 없다.",
+        "hint": "아버지 III-3이 줄 수 있는 대립유전자와 어머니 III-1이 줄 수 있는 대립유전자를 각각 나열해서 조합해보세요."
+      },
+      {
+        "highlight": [
+          "III-1",
+          "III-3",
+          "IV-3"
+        ],
+        "setup": "드디어 세 번째 액자, 셋째 아이 IV-3의 초상화 앞에 섰다. 다른 두 초상화와 달리 이 액자의 뒷면은 다른 색 잉크로, 마치 나중에 다시 확인하듯 적혀 있다: \"A형.\" 손끝이 떨렸다. 방금 계산한 것과 맞지 않는다.",
+        "prompt": "그런데 셋째 IV-3의 초상화 뒷면에는 \"A형\"이라고 또렷이 적혀 있었다. IV-3은 III-1과 III-3의 생물학적 친자녀일 수 있을까?",
+        "choices": [
+          {
+            "text": "있다, 친자녀일 수 있다",
+            "correct": false
+          },
+          {
+            "text": "없다, 친자녀일 수 없다",
+            "correct": true
+          }
+        ],
+        "explanation": "앞서 확인했듯 III-1과 III-3 사이에서는 B형 또는 O형 자녀만 나올 수 있다. A형은 부모 중 누구도 물려줄 수 없는 A 대립유전자를 필요로 하므로, IV-3은 이 두 사람의 생물학적 친자녀일 수 없다.",
+        "hint": "두 번째 문제에서 이미 이 부부의 자녀가 가질 수 있는 혈액형을 모두 구해두었어요."
+      }
+    ]
+  }
 ];
 
-const END_TEXT = `조심스럽게 액자 틀을 들추자, 빛바랜 편지 한 장이 나왔다. 할머니가 남긴, 이 저택에서 가장 오래되고 가장 낡은 글씨였다.\n\n"전쟁이 끝나갈 무렵, 부모를 잃고 홀로 남겨진 이웃집 아이를 우리는 우리 아이로 받아들이기로 했단다. 핏줄은 이어지지 않았지만, 그 아이는 누구보다 이 가족을 사랑했고 우리도 그랬어."\n\n그 아래, 다른 날짜로 덧붙여진 짧은 문장이 있었다. 잉크 색이 달랐다.\n\n"언젠가 이 이야기가 잘못된 방식으로 네 엄마에게 전해졌다는 걸 알았을 때, 나는 그 아이를 지키려다 정작 가장 가까운 사람의 마음을 놓쳐버렸다는 걸 깨달았다. 그걸 어떻게 다시 말해야 할지 몰라서, 나는 그만 입을 닫아버렸어. 미안하다는 말조차, 제때 하지 못한 채로."\n\n가슴 한쪽이 저릿했다. 엄마가 왜 그토록 이 집을, 할머니를 밀어냈는지 — 이제는 알 것 같았다. 상처받은 건 엄마였고, 그 상처를 어떻게 풀어야 할지 몰랐던 건 할머니였다.\n\n휴대폰을 꺼내 엄마의 번호를 눌렀다. 무슨 말부터 해야 할지는 아직 모르겠다. 하지만 이제는 알고 있는 것이 하나 있었다 — 가족을 만드는 것은 핏줄이 아니라 함께 나눈 시간과 사랑이라는 것, 그리고 그 말을 제때 전하지 못한 후회가 얼마나 오래 사람을 붙잡아 둘 수 있는지도.\n\n전화 연결음이 울리기 시작했다.`;
+/* 방마다 바뀌는 장면 · 대사 · 단서 */
+const ROOMS = [
+{
+    room: '서재', scene: 'study', voice: '할머니의 메모', hotspot: 'album', docTitle: '사진첩 속 가계도',
+    script: [
+        ['나', '할머니의 장례식 날, 엄마는 끝내 오지 않았다. "그 집엔 발도 들이고 싶지 않다"는 말만 남긴 채.'],
+        ['나', '평생 과학 선생님이었던 할머니와 엄마 사이에 대체 무슨 일이 있었던 건지, 나는 한 번도 제대로 들은 적이 없다. 그저 어릴 때부터 어렴풋이 느꼈다 — 두 사람 사이엔 절대 건드려서는 안 되는 무언가가 있다는 것을.'],
+        ['나', '변호사가 건넨 유언장에는 뜻밖의 문장이 적혀 있었다. "이 집과 그 안의 모든 것은, 내 손주인 너에게만 남긴다." 그리고 봉투 하나. 겉면에 낯익은 글씨로 내 이름이 적혀 있었다.'],
+        ['나', '망설이다 봉투를 열었다.'],
+        ['할머니의 편지', '너에게 이 편지를 쓴다. 네 엄마에게는 끝내 하지 못한 이야기가 있어. 살아서는 도저히 입이 떨어지지 않았단다.'],
+        ['할머니의 편지', '그래서 대신, 내가 평생 믿어온 방식으로 남긴다 — 이 집 곳곳에 숨겨둔 우리 가족의 유전 이야기 속에. 하나씩 풀어나가다 보면, 언젠가 너도 알게 될 거야. 내가 왜 그런 선택을 했는지.'],
+        ['할머니의 편지', '그리고 진실을 마주할 준비가 되면, 부디 네 엄마에게도 전해주렴.'],
+        ['나', '편지는 거기서 끝나 있었다.'],
+        ['나', '현관문을 열자, 낯설고도 익숙한 냄새가 훅 끼쳐왔다. 삐걱거리는 계단을 지나 서재 문을 열자, 오래된 종이와 먼지 냄새가 방 안 가득했다.'],
+        ['나', '책장 한켠, 가죽으로 묶인 사진첩이 유독 눈에 띈다 — 누군가 최근까지 계속 꺼내 보았던 것처럼, 먼지가 그 부분만 얇게 앉아 있었다.'],
+    ],
+    cue: '(책장 한켠의 가죽 사진첩을 눌러 꺼내 보자.)',
+    afterOpen: [
+        ['나', '표지를 넘기자 빛바랜 흑백 사진들과 함께, 할머니의 필체로 보이는 메모가 끼워져 있다.'],
+        ['할머니의 메모', '이 집안 사람들은 대대로 뺨에 보조개가 있다. 그런데 아주 가끔, 보조개 없이 태어나는 아이가 있었다...'],
+        ['나', '메모는 거기서 끊겨 있었다. 나머지는 사진첩 속 가계도를 스스로 읽어내야 알 수 있을 것 같다.'],
+    ],
+    reward: [
+        ['할머니의 메모', '그 후로도 이 보조개는 몇 대에 걸쳐 대물림되었다. 자세한 기록은 다락방 상자 안에 있다.'],
+        ['나', '사진첩 사이에서 녹슨 열쇠 하나가 툭 떨어졌다. 다락방으로 향하는 열쇠였다.'],
+    ],
+    item: { icon: '🗝️', name: '녹슨 열쇠', desc: '사진첩 사이에서 떨어진 다락방 열쇠.', got: '녹슨 열쇠를 손에 넣었다.' },
+    exitCue: '(문을 열고 다락방으로 올라가자.)',
+},
+{
+    room: '다락방', scene: 'attic', voice: '편지', hotspot: 'chest', docTitle: '상자 속 서류 — 손으로 그린 가계도',
+    script: [
+        ['나', '다락방 문은 오랫동안 열리지 않은 듯 뻑뻑했다. 안으로 들어서자 낡은 트렁크와 상자들이 어둠 속에 쌓여 있다.'],
+    ],
+    cue: '(열쇠에 맞는 자물쇠가 달린 상자를 찾아 열어 보자.)',
+    afterOpen: [
+        ['나', '열쇠에 맞는 자물쇠를 찾아 상자 하나를 열자, 빛바랜 서류 뭉치와 함께 손으로 그린 가계도가 나타났다 — 증조부모님의 자녀들, 그리고 그 자녀들의 자녀들까지 이어지는, 훨씬 더 자세한 기록이다.'],
+        ['나', '(서재에서 알아낸 대로, 이 가계도의 "보조개" 형질은 우성이다.)'],
+    ],
+    reward: [
+        ['나', '상자 맨 밑바닥, 종이들 사이에 눌려 있던 낡은 열쇠 하나를 발견했다. 빛바랜 리본이 묶여 있고, 그 끝에 작은 쪽지가 달려 있다.'],
+        ['쪽지', '핏줄은 거짓말을 하지 않는다.'],
+        ['나', '어쩐지 서늘한 문장이었다.'],
+    ],
+    item: { icon: '🎀', name: '리본 묶인 열쇠', desc: '쪽지가 달려 있다. "핏줄은 거짓말을 하지 않는다."', got: '리본 묶인 열쇠를 손에 넣었다.' },
+    exitCue: '(문을 열고 지하 저장고로 내려가자.)',
+},
+{
+    room: '지하 저장고', scene: 'cellar', voice: '할머니의 메모', hotspot: 'letters', docTitle: '편지 뭉치 속 혈액형 메모',
+    script: [
+        ['나', '계단을 내려갈수록 공기가 서늘해졌다. 지하 저장고 선반에는 먼지 쌓인 와인병들이 줄지어 있고, 그 뒤편 벽돌 틈으로 리본에 묶인 편지 뭉치가 삐져나와 있다.'],
+    ],
+    cue: '(벽돌 틈의 편지 뭉치를 조심스럽게 잡아당겨 보자.)',
+    afterOpen: [
+        ['나', '조심스럽게 잡아당기자, 가족들의 이름과 혈액형이 빼곡히 적힌 메모가 함께 딸려 나온다.'],
+    ],
+    reward: [
+        ['나', '편지 묶음 맨 밑에서 발견한 한 장. 잉크가 번져 있었다.'],
+        ['할머니의 편지', '셋째 아이가 B형이라는 소식을 듣던 그날 밤, 나는 한숨도 잘 수 없었다...'],
+        ['나', '그 뒤로는 아무것도 적혀 있지 않았다.'],
+        ['나', '이게 무슨 뜻일까? 문득 엄마 생각이 났다. 답은 갤러리에 있을지도 모른다. 골동품 방으로 가는 열쇠를 발견했다.'],
+    ],
+    item: { icon: '✉️', name: '번진 편지', desc: '"셋째 아이가 B형이라는 소식을 듣던 그날 밤, 나는 한숨도 잘 수 없었다..."', got: '잉크가 번진 편지를 챙겼다.' },
+    exitCue: '(문을 열고 골동품 방으로 가자.)',
+},
+{
+    room: '골동품 방', scene: 'antique', voice: '할머니의 메모', hotspot: 'drawer', docTitle: '교과서 속 예시 — 가계도 A',
+    docTitles: [null, '교과서 속 예시 — 가계도 B'],
+    script: [
+        ['나', '복도 끝, 오래된 화장대가 놓인 작은 방.'],
+    ],
+    cue: '(화장대 서랍을 열어 보자.)',
+    afterOpen: [
+        ['나', '서랍을 열자 좀먹은 생물 교과서 한 권이 나온다. 표지에는 이니셜이 새겨져 있다 — 아마도 할머니가 학생이던 시절의 것이리라.'],
+        ['나', '페이지 사이에 끼워진 손글씨 메모의 제목은 "반성유전 구별법"이었다.'],
+    ],
+    reward: [
+        ['나', '교과서를 덮으려는 순간, 마지막 페이지 여백에 적힌 글씨가 눈에 들어온다. 다른 페이지보다 훨씬 진하고, 힘주어 쓴 것처럼 보였다.'],
+        ['할머니의 메모', '혈액형은 절대 거짓말을 하지 않는다. 갤러리의 초상화들을 다시 보라.'],
+        ['나', '서랍 안쪽에서 갤러리로 통하는 열쇠를 발견했다.'],
+    ],
+    item: { icon: '📗', name: '낡은 생물 교과서', desc: '할머니의 이니셜이 새겨져 있다. 마지막 장: "혈액형은 절대 거짓말을 하지 않는다."', got: '낡은 생물 교과서를 챙겼다.' },
+    exitCue: '(문을 열고 초상화 갤러리로 가자.)',
+},
+{
+    room: '초상화 갤러리', scene: 'gallery', voice: '할머니의 메모', hotspot: 'portraits', docTitle: '초상화 뒷면의 기록 — 4대 가계도',
+    script: [
+        ['나', '가장 안쪽 방의 묵직한 문을 열자, 액자들이 나를 내려다보고 있었다. 4대에 걸친 가족의 초상화가 벽을 가득 채우고 있다.'],
+    ],
+    cue: '(초상화를 하나씩 들어 뒷면을 살펴보자.)',
+    afterOpen: [
+        ['나', '조심스럽게 액자를 하나씩 들어보니, 뒷면마다 이름과 혈액형이 잉크로 적혀 있다. 마치 누군가 이 벽 전체를 증거물로 남겨둔 것처럼.'],
+        ['나', '여기까지 오는 동안 알아낸 것들을 하나씩 되짚어본다. 이 벽 앞에 서면, 엄마에게도 마침내 제대로 설명해줄 수 있을 것 같았다.'],
+    ],
+    reward: [
+        ['나', '가슴이 쿵쾅거렸다. 이 모든 걸 어떻게 받아들여야 할지 알 수 없었다.'],
+        ['나', '그때, 갤러리 구석 액자 틀 사이로 무언가 삐져나와 있는 게 보였다.'],
+    ],
+    exit: 'letter',
+    exitCue: '(기울어진 액자 틀 사이의 종이를 꺼내 보자.)',
+},
+];
+const CHAPTERS = ROOMS.map((r, i) => Object.assign({}, r, PUZZLES[i]));
 
-/* ============ 상태 관리 ============ */
-let state = { chapter:0, question:0, stage:'intro', unlocked:0 };
+const ENDING = [
+    ['나', '조심스럽게 액자 틀을 들추자, 빛바랜 편지 한 장이 나왔다. 할머니가 남긴, 이 저택에서 가장 오래되고 가장 낡은 글씨였다.'],
+    ['할머니의 편지', '전쟁이 끝나갈 무렵, 부모를 잃고 홀로 남겨진 이웃집 아이를 우리는 우리 아이로 받아들이기로 했단다.'],
+    ['할머니의 편지', '핏줄은 이어지지 않았지만, 그 아이는 누구보다 이 가족을 사랑했고 우리도 그랬어.'],
+    ['나', '그 아래, 다른 날짜로 덧붙여진 짧은 문장이 있었다. 잉크 색이 달랐다.'],
+    ['할머니의 편지', '언젠가 이 이야기가 잘못된 방식으로 네 엄마에게 전해졌다는 걸 알았을 때, 나는 그 아이를 지키려다 정작 가장 가까운 사람의 마음을 놓쳐버렸다는 걸 깨달았다.'],
+    ['할머니의 편지', '그걸 어떻게 다시 말해야 할지 몰라서, 나는 그만 입을 닫아버렸어. 미안하다는 말조차, 제때 하지 못한 채로.'],
+    ['나', '가슴 한쪽이 저릿했다. 엄마가 왜 그토록 이 집을, 할머니를 밀어냈는지 — 이제는 알 것 같았다.'],
+    ['나', '상처받은 건 엄마였고, 그 상처를 어떻게 풀어야 할지 몰랐던 건 할머니였다.'],
+    ['나', '휴대폰을 꺼내 엄마의 번호를 눌렀다. 무슨 말부터 해야 할지는 아직 모르겠다.'],
+    ['나', '하지만 이제는 알고 있는 것이 하나 있었다 — 가족을 만드는 것은 핏줄이 아니라 함께 나눈 시간과 사랑이라는 것, 그리고 그 말을 제때 전하지 못한 후회가 얼마나 오래 사람을 붙잡아 둘 수 있는지도.'],
+    ['나', '전화 연결음이 울리기 시작했다.'],
+];
+const ROMAN = ['Ⅰ', 'Ⅱ', 'Ⅲ', 'Ⅳ', 'Ⅴ'];
+const SPEAKER_KIND = { '할머니의 편지': 'gran', '할머니의 메모': 'gran', '쪽지': 'gran', '편지': 'gran', '풀이': 'sol', '획득': 'item' };
 
-function saveProgress() {
-    try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); } catch(e) {}
+/* 긴 문단을 대화창 한 칸에 들어갈 만큼 문장 단위로 나눈다 */
+function chunk(text, max = 140) {
+    if (text.length <= max) return [text];
+    const parts = text.match(/[^.!?…]*[.!?…]+["'”)]?\s*|[^.!?…]+$/g) || [text];
+    const out = [];
+    let cur = '';
+    for (const p of parts) {
+        if (cur && (cur + p).length > max) { out.push(cur.trim()); cur = p; }
+        else cur += p;
+    }
+    if (cur.trim()) out.push(cur.trim());
+    return out;
 }
-function loadProgress() {
+
+/* 한 방의 진행을 '장면 단위(beat)' 목록으로 펼친다 */
+function buildBeats(ci) {
+    const ch = CHAPTERS[ci], B = [];
+    const say = (who, text) => chunk(text).forEach(t => B.push({ t: 'say', who, text: t }));
+    ch.script.forEach(([w, t]) => say(w, t));
+    B.push({ t: 'wait', target: ch.hotspot, text: ch.cue });
+    B.push({ t: 'doc', ped: ch.pedigree, hl: [], title: ch.docTitle });
+    ch.afterOpen.forEach(([w, t]) => say(w, t));
+    ch.questions.forEach((q, qi) => {
+        const title = (ch.docTitles && ch.docTitles[qi]) || ch.docTitle;
+        B.push({ t: 'doc', ped: q.pedigreeOverride || ch.pedigree, hl: q.highlight || [], title });
+        (q.setup || '').split('\n').filter(Boolean).forEach(line => say(/^["“]/.test(line) ? ch.voice : '나', line));
+        B.push({ t: 'q', q, qi, n: ch.questions.length });
+        say('풀이', q.explanation);
+    });
+    B.push({ t: 'doc', ped: null });
+    ch.reward.forEach(([w, t]) => say(w, t));
+    if (ch.item) B.push({ t: 'item', item: ch.item });
+    B.push({ t: 'wait', target: ch.exit || 'door', text: ch.exitCue });
+    B.push({ t: ci === CHAPTERS.length - 1 ? 'end' : 'next' });
+    return B;
+}
+
+/* ============ 저장 ============ */
+let state = { chapter: 0, beat: 0 };
+let beats = [];
+let playing = false;
+function save() { if (!playing) return; try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); } catch (e) {} }
+function loadSave() {
     try {
-        const raw = localStorage.getItem(SAVE_KEY);
-        if (!raw) return null;
-        return JSON.parse(raw);
-    } catch(e) { return null; }
+        const s = JSON.parse(localStorage.getItem(SAVE_KEY));
+        if (s && Number.isInteger(s.chapter) && s.chapter >= 0 && s.chapter < CHAPTERS.length && Number.isInteger(s.beat) && s.beat >= 0) return s;
+    } catch (e) {}
+    return null;
 }
-function resetProgress() {
-    try { localStorage.removeItem(SAVE_KEY); } catch(e) {}
-    state = { chapter:0, question:0, stage:'intro', unlocked:0 };
-}
+function clearSave() { try { localStorage.removeItem(SAVE_KEY); } catch (e) {} }
 
 /* ============ 화면 요소 ============ */
-const titleScreen = document.getElementById('titleScreen');
-const gameScreen = document.getElementById('gameScreen');
-const endScreen = document.getElementById('endScreen');
-const resetBtn = document.getElementById('resetBtn');
-const startNewBtn = document.getElementById('startNewBtn');
-const continueBtn = document.getElementById('continueBtn');
-const roomMap = document.getElementById('roomMap');
-const progressBar = document.getElementById('progressBar');
-const storyLabel = document.getElementById('storyLabel');
-const storyArt = document.getElementById('storyArt');
-const storyText = document.getElementById('storyText');
-const pedSvg = document.getElementById('pedSvg');
-const qPanel = document.getElementById('qPanel');
-const qLabel = document.getElementById('qLabel');
-const qPrompt = document.getElementById('qPrompt');
-const qChoices = document.getElementById('qChoices');
-const qFeedback = document.getElementById('qFeedback');
-const qHint = document.getElementById('qHint');
-const hintBtn = document.getElementById('hintBtn');
-const nextBtn = document.getElementById('nextBtn');
-const legendBtn = document.getElementById('legendBtn');
-const legendModal = document.getElementById('legendModal');
-const legendCloseBtn = document.getElementById('legendCloseBtn');
-const answerModal = document.getElementById('answerModal');
-const answerExplain = document.getElementById('answerExplain');
-const answerNextBtn = document.getElementById('answerNextBtn');
-const setupModal = document.getElementById('setupModal');
-const setupText = document.getElementById('setupText');
-const setupContinueBtn = document.getElementById('setupContinueBtn');
-const endText = document.getElementById('endText');
-const restartBtn = document.getElementById('restartBtn');
+const frame = $('frame'), sceneEl = $('scene'), sceneTitle = $('sceneTitle');
+const fader = $('fader'), chapterCard = $('chapterCard');
+const roomLabel = $('roomLabel'), inv = $('inv'), resetBtn = $('resetBtn');
+const viewport = $('viewport'), doc = $('doc'), docTitle = $('docTitle'), docFold = $('docFold'), docTab = $('docTab'), pedSvg = $('pedSvg');
+const dialog = $('dialog'), dlgWho = $('dlgWho'), dlgText = $('dlgText'), dlgChoices = $('dlgChoices');
+const dlgTools = $('dlgTools'), hintBtn = $('hintBtn'), dlgNote = $('dlgNote'), dlgAdv = $('dlgAdv');
 
-CHAPTERS.forEach(ch => {
-    const chip = document.createElement('div');
-    chip.className = 'room-chip';
-    chip.innerHTML = `<span class="emoji">${ch.emoji}</span>${ch.room}`;
-    roomMap.appendChild(chip);
-});
-
-function showScreen(name) {
-    titleScreen.hidden = name !== 'title';
-    gameScreen.hidden = name !== 'game';
-    endScreen.hidden = name !== 'end';
-    resetBtn.hidden = name === 'title';
-}
-
-function renderProgressBar() {
-    progressBar.innerHTML = '';
-    CHAPTERS.forEach((ch, i) => {
-        const dot = document.createElement('div');
-        dot.className = 'dot' + (i < state.chapter ? ' done' : (i === state.chapter ? ' current' : ''));
-        dot.textContent = i < state.chapter ? '✓' : ch.emoji;
-        progressBar.appendChild(dot);
-    });
-    const name = document.createElement('span');
-    name.className = 'room-name';
-    name.textContent = CHAPTERS[state.chapter] ? CHAPTERS[state.chapter].room : '';
-    progressBar.appendChild(name);
-}
-
-function currentPedigree(ch, q) {
-    if (q && q.pedigreeOverride) return q.pedigreeOverride;
-    return ch.pedigree;
-}
-
-function renderChapter() {
-    const ch = CHAPTERS[state.chapter];
-    renderProgressBar();
-    storyArt.innerHTML = ch.art || '';
-
-    if (state.stage === 'intro') {
-        storyLabel.textContent = `${ch.emoji} ${ch.room}`;
-        storyText.className = 'story-text';
-        storyText.textContent = ch.intro;
-        qPanel.hidden = false;
-        qLabel.textContent = '문제';
-        qPrompt.textContent = '이야기를 다 읽었다면, 아래 버튼을 눌러 첫 번째 문제를 확인하세요.';
-        qChoices.innerHTML = '';
-        qFeedback.hidden = true;
-        qHint.hidden = true;
-        hintBtn.hidden = true;
-        nextBtn.hidden = false;
-        nextBtn.textContent = '문제 풀기 시작 →';
-        nextBtn.onclick = () => { state.question = 0; state.stage = 'question'; saveProgress(); renderChapter(); };
-        renderPedigree(pedSvg, currentPedigree(ch, null), []);
-        return;
-    }
-
-    if (state.stage === 'question') {
-        const q = ch.questions[state.question];
-        storyLabel.textContent = `${ch.emoji} ${ch.room}`;
-        storyText.className = 'story-text';
-        storyText.textContent = ch.intro;
-        renderPedigree(pedSvg, currentPedigree(ch, q), q.highlight);
-
-        if (q.setup) {
-            setupText.textContent = q.setup;
-            setupModal.hidden = false;
-        } else {
-            setupModal.hidden = true;
-        }
-
-        qPanel.hidden = false;
-        qLabel.textContent = `문제 ${state.question + 1} / ${ch.questions.length}`;
-        qPrompt.textContent = q.prompt;
-        qFeedback.hidden = true;
-        qHint.hidden = true;
-        qHint.textContent = q.hint;
-        hintBtn.hidden = false;
-        hintBtn.textContent = '힌트 보기';
-        hintBtn.onclick = () => { qHint.hidden = false; };
-        nextBtn.hidden = true;
-
-        qChoices.innerHTML = '';
-        let solved = false;
-        q.choices.forEach(choice => {
-            const btn = document.createElement('button');
-            btn.className = 'choice-btn';
-            btn.textContent = choice.text;
-            btn.onclick = () => {
-                if (solved) return;
-                if (choice.correct) {
-                    solved = true;
-                    btn.classList.add('correct');
-                    Array.from(qChoices.children).forEach(b => b.disabled = true);
-                    qFeedback.hidden = true;
-                    const isLast = state.question === ch.questions.length - 1;
-                    answerExplain.textContent = q.explanation;
-                    answerNextBtn.textContent = isLast ? '방을 나서다 →' : '다음 문제 →';
-                    answerNextBtn.onclick = () => {
-                        answerModal.hidden = true;
-                        if (isLast) {
-                            state.stage = 'reward';
-                        } else {
-                            state.question += 1;
-                        }
-                        saveProgress();
-                        renderChapter();
-                    };
-                    answerModal.hidden = false;
-                } else {
-                    btn.classList.add('wrong-tried');
-                    qFeedback.hidden = false;
-                    qFeedback.className = 'feedback bad';
-                    qFeedback.textContent = '✗ 다시 생각해보세요. 필요하다면 힌트를 확인해보세요.';
-                }
-            };
-            qChoices.appendChild(btn);
-        });
-        return;
-    }
-
-    if (state.stage === 'reward') {
-        storyLabel.textContent = `${ch.emoji} ${ch.room} — 해결!`;
-        storyText.className = 'story-text reward';
-        storyText.textContent = ch.reward;
-        qPanel.hidden = true;
-        renderPedigree(pedSvg, currentPedigree(ch, null), []);
-
-        const isLastChapter = state.chapter === CHAPTERS.length - 1;
-        qPanel.hidden = false;
-        qLabel.textContent = '다음';
-        qPrompt.textContent = isLastChapter ? '모든 방을 살펴보았다. 마지막 진실을 확인할 준비가 되었나요?' : '다음 방으로 향할 준비가 되었나요?';
-        qChoices.innerHTML = '';
-        qFeedback.hidden = true;
-        qHint.hidden = true;
-        hintBtn.hidden = true;
-        nextBtn.hidden = false;
-        nextBtn.textContent = isLastChapter ? '진실을 마주하다 →' : '다음 방으로 →';
-        nextBtn.onclick = () => {
-            if (isLastChapter) {
-                showScreen('end');
-                endText.textContent = END_TEXT;
-                resetProgress();
-                return;
-            }
-            state.chapter += 1;
-            state.unlocked = Math.max(state.unlocked, state.chapter);
-            state.question = 0;
-            state.stage = 'intro';
-            saveProgress();
-            renderChapter();
+/* ============ 장면 ============ */
+const sceneCache = {};
+function renderScene(name) {
+    if (!sceneCache[name]) {
+        const sc = SCENES[name]();
+        sceneCache[name] = {
+            url: 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">${sc.bg}</svg>`),
+            fg: sc.fg,
         };
-        return;
+    }
+    const { url, fg } = sceneCache[name];
+    sceneEl.innerHTML = `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><image href="${url}" x="0" y="0" width="1600" height="900" preserveAspectRatio="none"/>${fg}</svg>`;
+    sceneTitle.hidden = true;
+    // 누를 수 있는 곳마다 점선 고리를 둘러 알려준다
+    const ring = (el, bb) => el.appendChild(svgEl('ellipse', { class: 'hs-ring', cx: bb.x + bb.width / 2, cy: bb.y + bb.height / 2, rx: bb.width / 2 + 22, ry: bb.height / 2 + 22 }));
+    sceneEl.querySelectorAll('[data-hs]').forEach(el => {
+        const hits = el.querySelectorAll('.hit');
+        if (hits.length) hits.forEach(h => ring(el, h.getBBox()));
+        else ring(el, el.getBBox());
+    });
+}
+
+let docOpen = false;
+function setDoc(b, quiet) {
+    if (!b.ped) { docOpen = false; doc.hidden = true; docTab.hidden = true; viewport.classList.remove('doc-open'); return; }
+    docOpen = true;
+    viewport.classList.add('doc-open');
+    docTitle.textContent = b.title || '가계도';
+    renderPedigree(pedSvg, b.ped, b.hl);
+    doc.classList.toggle('quiet', !!quiet);
+    doc.hidden = false;
+    docTab.hidden = true;
+}
+docFold.addEventListener('click', e => { e.stopPropagation(); doc.hidden = true; docTab.hidden = false; viewport.classList.remove('doc-open'); });
+docTab.addEventListener('click', e => { e.stopPropagation(); doc.classList.add('quiet'); doc.hidden = false; docTab.hidden = true; viewport.classList.add('doc-open'); });
+
+function renderHeader(label, sub, itemCount, popLast) {
+    roomLabel.innerHTML = '';
+    roomLabel.append(label);
+    if (sub) { const s = document.createElement('small'); s.textContent = sub; roomLabel.appendChild(s); }
+    inv.innerHTML = '';
+    if (itemCount < 0) return;
+    const items = CHAPTERS.filter(c => c.item).map(c => c.item);
+    items.forEach((it, i) => {
+        const slot = document.createElement('button');
+        slot.className = 'slot';
+        if (i < itemCount) {
+            slot.classList.add('filled');
+            if (popLast && i === itemCount - 1) slot.classList.add('new');
+            slot.textContent = it.icon;
+            slot.setAttribute('aria-label', `${it.name}: ${it.desc}`);
+            const tip = document.createElement('span');
+            tip.className = 'tip';
+            tip.innerHTML = '<b></b>';
+            tip.firstChild.textContent = it.name;
+            tip.append(it.desc);
+            slot.appendChild(tip);
+        } else {
+            slot.disabled = true;
+            slot.setAttribute('aria-label', '빈 칸');
+        }
+        inv.appendChild(slot);
+    });
+}
+function itemsBefore(ci) { return CHAPTERS.slice(0, ci).filter(c => c.item).length; }
+
+/* ============ 대화창 ============ */
+const dlg = { mode: 'idle', typing: false, timer: null, full: '', afterType: null, onAdvance: null };
+function setWho(name) {
+    dlgWho.textContent = name || '';
+    dlgWho.hidden = !name;
+    dlgWho.dataset.kind = SPEAKER_KIND[name] || (name && name.startsWith('수수께끼') ? 'q' : 'me');
+}
+function typeText(str, cls) {
+    clearInterval(dlg.timer);
+    dlgText.className = 'dlg-text' + (cls ? ' ' + cls : '');
+    dlg.full = str;
+    if (reduceMotion) { dlgText.textContent = str; dlg.typing = true; finishTyping(); return; }
+    let n = 0;
+    dlg.typing = true;
+    dlgText.textContent = '';
+    dlg.timer = setInterval(() => {
+        n += 1;
+        dlgText.textContent = str.slice(0, n);
+        if (n >= str.length) finishTyping();
+    }, 24);
+}
+function finishTyping() {
+    clearInterval(dlg.timer);
+    dlgText.textContent = dlg.full;
+    dlg.typing = false;
+    const cb = dlg.afterType;
+    dlg.afterType = null;
+    if (cb) cb();
+}
+function clearDialog() {
+    dlgChoices.innerHTML = '';
+    dlgTools.hidden = true;
+    dlgNote.textContent = '';
+    dlgNote.className = 'dlg-note';
+    dlgAdv.hidden = true;
+}
+function say(who, text, next) {
+    clearDialog();
+    dlg.mode = 'line';
+    setWho(who);
+    dlg.onAdvance = next;
+    dlg.afterType = () => { dlgAdv.hidden = false; };
+    typeText(text, SPEAKER_KIND[who] === 'gran' ? 'gran' : '');
+}
+function advance() {
+    if (dlg.typing) { finishTyping(); return; }
+    if (dlg.mode === 'line' && dlg.onAdvance) {
+        const f = dlg.onAdvance;
+        dlg.onAdvance = null;
+        dlg.mode = 'idle';
+        f();
     }
 }
+function renderChoices(list) {
+    dlgChoices.innerHTML = '';
+    list.forEach((c, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'choice';
+        btn.textContent = c.text;
+        btn.style.animationDelay = (i * 70) + 'ms';
+        btn.addEventListener('click', e => { e.stopPropagation(); c.pick(btn); });
+        dlgChoices.appendChild(btn);
+    });
+    const first = dlgChoices.querySelector('.choice');
+    if (first && !matchMedia('(hover: none)').matches) first.focus({ preventScroll: true });
+}
+dialog.addEventListener('click', e => { if (!e.target.closest('button')) advance(); });
 
-function startGame(fromSave) {
-    if (!fromSave) resetProgress();
-    showScreen('game');
-    renderChapter();
+/* ============ 진행 ============ */
+let pending = null;
+function waitFor(b, done) {
+    clearDialog();
+    dlg.mode = 'wait';
+    setWho('');
+    typeText(b.text, 'cue');
+    const el = sceneEl.querySelector(`[data-hs="${b.target}"]`);
+    if (!el) { done(); return; }
+    el.classList.add('active');
+    el.setAttribute('tabindex', '0');
+    pending = { el, done };
+}
+function triggerHotspot(el) {
+    if (!pending || pending.el !== el) return;
+    el.classList.remove('active');
+    el.classList.add('shown');
+    el.removeAttribute('tabindex');
+    const d = pending.done;
+    pending = null;
+    if (dlg.typing) finishTyping();
+    d();
+}
+sceneEl.addEventListener('click', e => {
+    const hs = e.target.closest('.hs.active');
+    if (hs) { triggerHotspot(hs); return; }
+    advance();
+});
+doc.addEventListener('click', e => { if (!e.target.closest('button')) advance(); });
+
+function ask(b, done) {
+    clearDialog();
+    dlg.mode = 'q';
+    setWho(`수수께끼 ${b.qi + 1} / ${b.n}`);
+    dlgTools.hidden = false;
+    hintBtn.hidden = false;
+    hintBtn.onclick = e => {
+        e.stopPropagation();
+        dlgNote.className = 'dlg-note hint';
+        dlgNote.textContent = '💡 ' + b.q.hint;
+        hintBtn.hidden = true;
+    };
+    if (dialog.getBoundingClientRect().bottom > innerHeight) dialog.scrollIntoView({ block: 'end', behavior: reduceMotion ? 'auto' : 'smooth' });
+    dlg.afterType = () => renderChoices(b.q.choices.map(c => ({
+        text: c.text,
+        pick: btn => {
+            if (btn.disabled) return;
+            if (c.correct) {
+                btn.classList.add('right');
+                dlgChoices.querySelectorAll('.choice').forEach(x => x.disabled = true);
+                dlgNote.className = 'dlg-note';
+                dlgNote.textContent = '';
+                setTimeout(done, reduceMotion ? 0 : 650);
+            } else {
+                btn.classList.add('wrong');
+                btn.disabled = true;
+                dlgNote.className = 'dlg-note bad';
+                dlgNote.textContent = '…아니, 그건 아닌 것 같다. 다시 생각해 보자.' + (hintBtn.hidden ? '' : ' 막히면 힌트를 펼쳐 보자.');
+                frame.classList.remove('shake');
+                void frame.offsetWidth;
+                frame.classList.add('shake');
+            }
+        },
+    })));
+    typeText(b.q.prompt);
 }
 
-startNewBtn.addEventListener('click', () => startGame(false));
-continueBtn.addEventListener('click', () => startGame(true));
+function run(i) {
+    state.beat = i;
+    save();
+    const b = beats[i];
+    if (b.t === 'say') return say(b.who, b.text, () => run(i + 1));
+    if (b.t === 'doc') { setDoc(b); return run(i + 1); }
+    if (b.t === 'item') {
+        renderHeader(`${ROMAN[state.chapter]} · ${CHAPTERS[state.chapter].room}`, '가문의 초상', itemsBefore(state.chapter) + 1, true);
+        return say('획득', `${b.item.icon}  ${b.item.got}`, () => run(i + 1));
+    }
+    if (b.t === 'wait') return waitFor(b, () => run(i + 1));
+    if (b.t === 'q') return ask(b, () => run(i + 1));
+    if (b.t === 'next') return gotoChapter(state.chapter + 1, 0);
+    if (b.t === 'end') return playEnding();
+}
+
+function transition(card, sub, mid) {
+    clearDialog();
+    dlg.mode = 'busy';
+    clearInterval(dlg.timer);
+    dlg.typing = false;
+    setWho('');
+    dlgText.textContent = '';
+    chapterCard.innerHTML = '';
+    if (sub) { const s = document.createElement('small'); s.textContent = sub; chapterCard.appendChild(s); }
+    chapterCard.append(card);
+    fader.classList.add('on');
+    const t = reduceMotion ? 0 : 1;
+    setTimeout(mid, 750 * t);
+    setTimeout(() => fader.classList.remove('on'), 1900 * t);
+}
+
+function gotoChapter(ci, beatIdx) {
+    playing = true;
+    resetBtn.hidden = false;
+    transition(CHAPTERS[ci].room, `제${ci + 1}장 · ${ROMAN[ci]}`, () => {
+        state.chapter = ci;
+        beats = buildBeats(ci);
+        beatIdx = Math.min(beatIdx, beats.length - 1);
+        renderScene(CHAPTERS[ci].scene);
+        setDoc({ ped: null });
+        // 이어하기: 저장된 지점 전까지의 가계도·소지품·단서 상태를 조용히 되살린다
+        let gotItem = false;
+        for (let k = 0; k < beatIdx; k++) {
+            const b = beats[k];
+            if (b.t === 'doc') setDoc(b, true);
+            if (b.t === 'item') gotItem = true;
+            if (b.t === 'wait') {
+                const el = sceneEl.querySelector(`[data-hs="${b.target}"]`);
+                if (el) el.classList.add('shown');
+            }
+        }
+        renderHeader(`${ROMAN[ci]} · ${CHAPTERS[ci].room}`, '가문의 초상', itemsBefore(ci) + (gotItem ? 1 : 0), false);
+        run(beatIdx);
+    });
+}
+
+function playEnding() {
+    playing = false;
+    clearSave();
+    transition('진실', '에필로그', () => {
+        renderScene('end');
+        setDoc({ ped: null });
+        renderHeader('에필로그', '가문의 초상', itemsBefore(CHAPTERS.length), false);
+        const lines = [];
+        ENDING.forEach(([w, t]) => chunk(t).forEach(c => lines.push([w, c])));
+        let k = 0;
+        const next = () => {
+            if (k < lines.length) { const [w, t] = lines[k++]; say(w, t, next); }
+            else finale();
+        };
+        next();
+    });
+}
+
+function finale() {
+    clearDialog();
+    dlg.mode = 'menu';
+    sceneTitle.className = 'scene-title center';
+    sceneTitle.innerHTML = '<div class="kicker">EPILOGUE</div><h1>— 끝 —</h1>';
+    sceneTitle.hidden = false;
+    setWho('가문의 초상 — 완료');
+    dlg.afterType = () => {
+        const recap = document.createElement('div');
+        recap.className = 'recap';
+        ['우성 · 열성 판별', '유전자형 추론', 'ABO식 혈액형 유전', '반성유전 구별', '4세대 가계도 종합 분석'].forEach(t => {
+            const s = document.createElement('span');
+            s.textContent = '✔ ' + t;
+            recap.appendChild(s);
+        });
+        dlgChoices.appendChild(recap);
+        const again = document.createElement('div');
+        dlgChoices.appendChild(again);
+        renderChoicesInto(again, [{ text: '처음부터 다시 플레이', pick: () => showTitle() }]);
+    };
+    typeText('다섯 개의 방에서 풀어낸 유전의 단서들:');
+}
+function renderChoicesInto(container, list) {
+    list.forEach(c => {
+        const btn = document.createElement('button');
+        btn.className = 'choice';
+        btn.textContent = c.text;
+        btn.addEventListener('click', e => { e.stopPropagation(); c.pick(btn); });
+        container.appendChild(btn);
+    });
+}
+
+function showTitle() {
+    playing = false;
+    pending = null;
+    resetBtn.hidden = true;
+    renderScene('title');
+    setDoc({ ped: null });
+    sceneTitle.className = 'scene-title';
+    sceneTitle.innerHTML = '<div class="kicker">A PEDIGREE MYSTERY · 유전 가계도</div><h1>가문의 초상</h1>';
+    sceneTitle.hidden = false;
+    renderHeader('가문의 초상', '', -1, false);
+    clearDialog();
+    dlg.mode = 'menu';
+    setWho('');
+    const saved = loadSave();
+    dlg.afterType = () => {
+        const list = [{ text: '저택으로 들어가기', pick: () => { clearSave(); gotoChapter(0, 0); } }];
+        if (saved) list.push({ text: `이어서 하기 — ${ROMAN[saved.chapter]} · ${CHAPTERS[saved.chapter].room}`, pick: () => gotoChapter(saved.chapter, saved.beat) });
+        renderChoices(list);
+    };
+    typeText('엄마는 할머니의 장례식에 끝내 오지 않았다. 이유는 한 번도 말해주지 않았다.\n할머니가 남긴 편지 한 장이 나에게만 이 저택의 열쇠를 건넨다. 4대에 걸친 가족의 유전 이야기를 하나씩 풀어나가며, 두 사람 사이에 무슨 일이 있었는지 알아내야 한다.');
+}
+
+/* ============ 입력 ============ */
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !$('legendModal').hidden) { $('legendModal').hidden = true; return; }
+    if (e.key !== ' ' && e.key !== 'Enter') return;
+    const t = e.target;
+    if (t.classList && t.classList.contains('hs') && t.classList.contains('active')) { e.preventDefault(); triggerHotspot(t); return; }
+    if (t.closest && t.closest('button, a')) return;
+    e.preventDefault();
+    advance();
+});
 resetBtn.addEventListener('click', () => {
-    if (confirm('진행 상황을 지우고 처음부터 다시 시작할까요?')) {
-        resetProgress();
-        showScreen('title');
-        continueBtn.hidden = true;
-    }
+    if (confirm('진행 상황을 지우고 처음부터 다시 시작할까요?')) { clearSave(); showTitle(); }
 });
-restartBtn.addEventListener('click', () => {
-    resetProgress();
-    showScreen('title');
-    continueBtn.hidden = true;
-});
-legendBtn.addEventListener('click', () => { legendModal.hidden = false; });
-legendCloseBtn.addEventListener('click', () => { legendModal.hidden = true; });
-legendModal.addEventListener('click', (e) => { if (e.target === legendModal) legendModal.hidden = true; });
-setupContinueBtn.addEventListener('click', () => { setupModal.hidden = true; });
-setupModal.addEventListener('click', (e) => { if (e.target === setupModal) setupModal.hidden = true; });
+$('legendBtn').addEventListener('click', () => { $('legendModal').hidden = false; });
+$('legendCloseBtn').addEventListener('click', () => { $('legendModal').hidden = true; });
+$('legendModal').addEventListener('click', e => { if (e.target.id === 'legendModal') e.target.hidden = true; });
 
-/* 초기화 */
-(function init() {
-    const saved = loadProgress();
-    if (saved && saved.chapter < CHAPTERS.length) {
-        state = saved;
-        continueBtn.hidden = false;
-    }
-    showScreen('title');
-})();
+showTitle();
 </script>
 </body>
 </html>
