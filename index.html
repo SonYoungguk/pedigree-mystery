@@ -182,9 +182,11 @@ button { font-family: inherit; }
 .dlg-who[data-kind="sol"] { color: var(--sol); border-color: #3f6a4a; }
 .dlg-who[data-kind="item"] { color: #f0cf7a; border-color: var(--ochre); }
 .dlg-who[data-kind="q"] { color: #e6a294; border-color: #6a3a32; }
+.dlg-who[data-kind="mom"] { color: #a9c8e8; border-color: #3a5470; }
 .dlg-text { font-size: 17px; line-height: 1.9; white-space: pre-line; }
 .dlg-text.cue { color: var(--muted); font-style: italic; }
 .dlg-text.gran { color: #f0dcae; }
+.dlg-text.mom { color: #d8e6f4; }
 .dlg-adv { position: absolute; right: 20px; bottom: 12px; color: var(--ochre); font-size: 13px; animation: bob 1s ease-in-out infinite; }
 @keyframes bob { 50% { transform: translateY(4px); } }
 .dlg-choices { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
@@ -277,7 +279,7 @@ footer { width: var(--W); margin-top: 16px; text-align: center; color: var(--dim
             <div class="doc-legend">
                 <span><i class="lg"></i>남자</span>
                 <span><i class="lg c"></i>여자</span>
-                <span><i class="lg f"></i>형질 발현</span>
+                <span id="docTraitLg"><i class="lg f"></i><span id="docTrait">형질 발현</span></span>
                 <span>⟋ 사망</span>
                 <span><i class="lg r"></i>살펴볼 사람</span>
             </div>
@@ -292,6 +294,7 @@ footer { width: var(--W); margin-top: 16px; text-align: center; color: var(--dim
         <div class="dlg-choices" id="dlgChoices"></div>
         <div class="dlg-tools" id="dlgTools" hidden>
             <button class="hint-btn" id="hintBtn">💡 힌트</button>
+            <button class="hint-btn" id="noteBtn">📖 개념 정리</button>
             <span class="dlg-note" id="dlgNote"></span>
         </div>
         <div class="dlg-adv" id="dlgAdv" hidden>▼</div>
@@ -320,7 +323,7 @@ footer { width: var(--W); margin-top: 16px; text-align: center; color: var(--dim
 
 <script>
 'use strict';
-const SAVE_KEY = 'pedigree-mystery-v2';
+const SAVE_KEY = 'pedigree-mystery-v3';
 const $ = id => document.getElementById(id);
 const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -366,6 +369,7 @@ function renderPedigree(svg, data, highlight) {
         const g = svgEl('g', { class: 'ped-person' + (hl ? ' hl' : '') });
         const cls = 'ped-shape' + (p.affected ? ' aff' : '');
         if (p.sex === 'M') g.appendChild(svgEl('rect', { x, y, width: SHAPE, height: SHAPE, class: cls }));
+        else if (p.sex === 'U') g.appendChild(svgEl('polygon', { points: `${x + SHAPE / 2},${y - 3} ${x + SHAPE + 3},${y + SHAPE / 2} ${x + SHAPE / 2},${y + SHAPE + 3} ${x - 3},${y + SHAPE / 2}`, class: cls }));
         else g.appendChild(svgEl('circle', { cx: x + SHAPE / 2, cy: y + SHAPE / 2, r: SHAPE / 2, class: cls }));
         if (p.dead) g.appendChild(svgEl('line', { x1: x - 5, y1: y + SHAPE + 5, x2: x + SHAPE + 5, y2: y - 5, class: 'ped-dead' }));
         if (hl) g.appendChild(svgEl('circle', { cx: x + SHAPE / 2, cy: y + SHAPE / 2, r: SHAPE * 0.72, class: 'ped-ring' }));
@@ -1027,10 +1031,10 @@ ${hit('drawer', '화장대 서랍', 'M612 584 H988 V632 H612Z')}${hit('door', '�
     gallery() {
         const pw = 240, ph = 300, py = 150;
         const people = [
-            { id: 'p1', x: 205, bg: '#2a3024', hair: '#2a1a12', cloth: '#1d1a24', dimple: true, label: 'Ⅰ', collar: '#e8dcc0', brooch: true },
-            { id: 'p2', x: 505, bg: '#32282a', hair: '#3a2416', cloth: '#4a1e24', dimple: true, long: true, label: 'Ⅱ' },
-            { id: 'p3', x: 855, bg: '#282a32', hair: '#20140e', cloth: '#22262e', dimple: true, long: true, label: 'Ⅲ', brooch: true },
-            { id: 'p4', x: 1155, bg: '#26302c', hair: '#5a3a1e', cloth: '#2d3a2e', dimple: false, long: true, label: 'Ⅳ', tilt: 3, collar: '#c8d0c0' },
+            { id: 'p1', x: 205, bg: '#2a3024', hair: '#2a1a12', cloth: '#1d1a24', dimple: true, label: '말순', collar: '#e8dcc0', brooch: true },
+            { id: 'p2', x: 505, bg: '#32282a', hair: '#3a2416', cloth: '#4a1e24', dimple: true, long: true, label: '순자' },
+            { id: 'p3', x: 855, bg: '#282a32', hair: '#20140e', cloth: '#22262e', dimple: false, long: true, label: '선희', brooch: true },
+            { id: 'p4', x: 1155, bg: '#26302c', hair: '#5a3a1e', cloth: '#2d3a2e', dimple: false, long: true, label: '미연', tilt: 3, collar: '#c8d0c0' },
         ];
         let frames = '', clips = '', lamps = '', lights = [{ x: 800, y: 80, r: 420, ry: 260, c: '#ffcf80', o: .3 }];
         for (const p of people) {
@@ -1087,900 +1091,423 @@ ${hit('portraits', '초상화들', ...people.map(p => rectD(p.x, py, pw, ph)))}
 };
 
 /* ============ 이야기 데이터 ============ */
-/* 문제 · 가계도 데이터 (원본 그대로) */
-const PUZZLES = [
-  {
-    "pedigree": {
-      "people": [
-        {
-          "id": "I-1",
-          "gen": 1,
-          "col": 2,
-          "sex": "M",
-          "dead": true,
-          "affected": true
-        },
-        {
-          "id": "I-2",
-          "gen": 1,
-          "col": 3,
-          "sex": "F",
-          "dead": true,
-          "affected": true
-        },
-        {
-          "id": "II-1",
-          "gen": 2,
-          "col": 1,
-          "sex": "M"
-        },
-        {
-          "id": "II-2",
-          "gen": 2,
-          "col": 2,
-          "sex": "F",
-          "affected": true
-        },
-        {
-          "id": "II-3",
-          "gen": 2,
-          "col": 3,
-          "sex": "M",
-          "affected": true
-        }
-      ],
-      "marriages": [
-        [
-          "I-1",
-          "I-2"
-        ]
-      ],
-      "childLinks": [
-        {
-          "parents": [
-            "I-1",
-            "I-2"
-          ],
-          "children": [
-            "II-1",
-            "II-2",
-            "II-3"
-          ]
-        }
-      ]
-    },
-    "questions": [
-      {
-        "highlight": [
-          "I-1"
-        ],
-        "setup": "사진첩 여백에는 정체 모를 기호들이 그려져 있다 — 네모, 동그라미, 그리고 그 안을 채운 색칠까지. 할머니가 직접 그려 넣은 것 같은 이 표시들을 먼저 이해해야, 사진 속 가족들의 이야기를 제대로 읽어낼 수 있을 것 같다.",
-        "prompt": "사진첩 속 사각형(□) 기호는 무엇을 나타낼까?",
-        "choices": [
-          {
-            "text": "여자",
-            "correct": false
-          },
-          {
-            "text": "남자",
-            "correct": true
-          },
-          {
-            "text": "보조개가 있는 사람",
-            "correct": false
-          }
-        ],
-        "explanation": "사각형(□)은 남자, 원(○)은 여자를 나타내요. 도형이 색칠되어 있으면 그 형질(여기서는 보조개)이 나타난 사람이라는 뜻이에요.",
-        "hint": "색이 칠해져 있는지 아닌지는 성별이 아니라 형질 발현 여부를 나타내요."
-      },
-      {
-        "highlight": [
-          "I-1",
-          "I-2",
-          "II-1"
-        ],
-        "setup": "기호를 이해하고 나니 사진 속 가족이 눈에 들어오기 시작한다. 맨 위에는 근엄한 표정의 부부 — 아마도 증조부모님이다. 두 분의 뺨에는 또렷한 보조개가 있다. 그 아래로 세 자녀가 나란히 서 있는데, 그중 유독 수줍게 웃고 있는 한 아이만은 뺨이 매끈하다 — 보조개가 없다.\n메모의 다음 줄이 이어진다: \"이상했다. 나도, 아이 아버지도 보조개가 있는데, 어째서 저 아이에게만 없는 걸까...\"",
-        "prompt": "증조부(I-1)와 증조모(I-2)는 둘 다 보조개가 있다. 그런데 자녀 II-1에게는 보조개가 없다.\n이 \"보조개\" 형질은 우성일까, 열성일까?",
-        "choices": [
-          {
-            "text": "우성이다",
-            "correct": true
-          },
-          {
-            "text": "열성이다",
-            "correct": false
-          },
-          {
-            "text": "이 가계도만으로는 알 수 없다",
-            "correct": false
-          }
-        ],
-        "explanation": "부모가 모두 형질이 나타나는데(보조개 있음) 자녀에게서 형질이 나타나지 않았다면, 그 형질은 우성이다. 만약 보조개가 열성이었다면, 형질이 나타난 부모는 이미 열성 대립유전자만을 가진 상태(동형접합)이므로 자녀에게도 항상 그 형질이 나타나야 한다. 그런데 형질이 나타나지 않는 자녀가 태어났으므로, 이 형질은 우성이며 부모는 겉으로 드러나지 않는 정상 대립유전자를 하나씩 숨기고 있었던 것이다.",
-        "hint": "열성 형질이라면, 그 형질을 가진 부모는 반드시 그 형질만 자녀에게 물려줄 수 있어요. 그런데 형질이 없는 자녀가 태어났다면요?"
-      }
-    ]
-  },
-  {
-    "pedigree": {
-      "people": [
-        {
-          "id": "I-1",
-          "gen": 1,
-          "col": 2,
-          "sex": "M",
-          "dead": true,
-          "affected": true
-        },
-        {
-          "id": "I-2",
-          "gen": 1,
-          "col": 3,
-          "sex": "F",
-          "dead": true,
-          "affected": true
-        },
-        {
-          "id": "II-1",
-          "gen": 2,
-          "col": 1,
-          "sex": "M"
-        },
-        {
-          "id": "II-2",
-          "gen": 2,
-          "col": 2,
-          "sex": "F",
-          "affected": true
-        },
-        {
-          "id": "II-3",
-          "gen": 2,
-          "col": 3,
-          "sex": "M",
-          "affected": true
-        },
-        {
-          "id": "II-4",
-          "gen": 2,
-          "col": 4,
-          "sex": "F"
-        },
-        {
-          "id": "III-1",
-          "gen": 3,
-          "col": 3,
-          "sex": "F",
-          "affected": true
-        },
-        {
-          "id": "III-2",
-          "gen": 3,
-          "col": 4,
-          "sex": "M"
-        }
-      ],
-      "marriages": [
-        [
-          "I-1",
-          "I-2"
-        ],
-        [
-          "II-3",
-          "II-4"
-        ]
-      ],
-      "childLinks": [
-        {
-          "parents": [
-            "I-1",
-            "I-2"
-          ],
-          "children": [
-            "II-1",
-            "II-2",
-            "II-3"
-          ]
-        },
-        {
-          "parents": [
-            "II-3",
-            "II-4"
-          ],
-          "children": [
-            "III-1",
-            "III-2"
-          ]
-        }
-      ]
-    },
-    "questions": [
-      {
-        "highlight": [
-          "I-1",
-          "I-2"
-        ],
-        "setup": "서류 맨 위, 증조부모님(I-1, I-2)의 이름 옆에 붉은 잉크로 밑줄이 그어져 있다. 두 분 모두 보조개가 있었지만, 자녀 중 하나(II-1)에게는 없었다는 사실을 누군가 여러 번 확인한 흔적이 보인다. 이 부부의 정확한 유전자형을 알아내는 것이 이 상자가 내는 첫 번째 퍼즐인 듯하다.",
-        "prompt": "보조개 대립유전자를 D(우성, 보조개)/d(열성, 정상)라 하자. I-1과 I-2는 둘 다 보조개가 있는데, 보조개가 없는 자녀(II-1)가 있다. 두 사람의 유전자형은?",
-        "choices": [
-          {
-            "text": "DD와 DD",
-            "correct": false
-          },
-          {
-            "text": "Dd와 Dd",
-            "correct": true
-          },
-          {
-            "text": "확정할 수 없다",
-            "correct": false
-          }
-        ],
-        "explanation": "자녀 II-1이 dd이려면 부모 양쪽에서 각각 d를 하나씩 물려받아야 한다. 그런데 I-1, I-2는 둘 다 보조개가 있으므로(dd가 아니므로) 반드시 Dd여야 한다.",
-        "hint": "자녀(dd)가 부모에게서 대립유전자를 하나씩 물려받는다는 점을 생각해보세요."
-      },
-      {
-        "highlight": [
-          "II-2"
-        ],
-        "setup": "서류를 넘기자 둘째 자녀 II-2의 사진이 나온다. 보조개가 선명하다. 사진 뒤에는 누군가 물음표를 잔뜩 적어 놓았다 — 이 아이의 유전자형이 정확히 무엇인지를 두고 오랫동안 논쟁이 있었던 모양이다.",
-        "prompt": "II-2는 보조개가 있다. II-2의 유전자형을 확정할 수 있을까?",
-        "choices": [
-          {
-            "text": "DD로 확정된다",
-            "correct": false
-          },
-          {
-            "text": "Dd로 확정된다",
-            "correct": false
-          },
-          {
-            "text": "DD 또는 Dd로, 확정할 수 없다",
-            "correct": true
-          }
-        ],
-        "explanation": "부모(Dd × Dd)에게서는 DD, Dd, dd인 자녀가 모두 나올 수 있다. II-2는 보조개가 있으니 dd는 아니지만, DD인지 Dd인지는 이 정보만으로 구분할 수 없다.",
-        "hint": "Dd × Dd 사이에서 태어날 수 있는 자녀의 유전자형 종류를 모두 떠올려보세요."
-      },
-      {
-        "highlight": [
-          "II-3",
-          "II-4",
-          "III-2"
-        ],
-        "setup": "상자 바닥에서 훨씬 나중에 쓰인 편지 한 장이 나온다. II-3(둘째 II-2의 형제)이 결혼해 낳은 아이 III-2에 대한 기록이다. \"우리 아이는 보조개 없이 태어났다. 남편도 나도 보조개가 있는데...\" — 어딘가 익숙한 문장이다. 이 편지가 II-3의 유전자형을 확정할 결정적인 단서를 쥐고 있는 듯하다.",
-        "prompt": "II-3도 보조개가 있다. 배우자 II-4는 보조개가 없다(dd). 그런데 둘 사이에서 태어난 III-2는 보조개가 없다(dd). II-3의 유전자형을 확정할 수 있을까?",
-        "choices": [
-          {
-            "text": "DD로 확정된다",
-            "correct": false
-          },
-          {
-            "text": "Dd로 확정된다",
-            "correct": true
-          },
-          {
-            "text": "확정할 수 없다",
-            "correct": false
-          }
-        ],
-        "explanation": "배우자 II-4는 dd이므로 자녀에게 항상 d만 물려준다. 자녀 III-2가 dd이려면 아버지 II-3에게서도 d를 받아야 한다. 만약 II-3이 DD였다면, dd인 II-4와의 자녀는 모두 Dd(보조개 있음)만 나오고 dd인 자녀는 절대 나올 수 없다. 그런데 III-2가 dd로 태어났으므로, II-3은 반드시 Dd여야 한다. — 자녀의 표현형이 애매했던 조상의 유전자형을 확정해 준 것이다.",
-        "hint": "배우자 II-4가 자녀에게 줄 수 있는 대립유전자는 무엇뿐인지 생각해보고, 만약 II-3이 DD였다면 이 부부의 자녀가 모두 어떤 형질을 나타낼지 떠올려보세요."
-      },
-      {
-        "highlight": [
-          "III-1"
-        ],
-        "setup": "편지의 마지막 문단에는 III-1(III-2의 형제)에 대한 이야기도 있다. \"III-1에게는 나처럼 보조개가 있다. 다행이라고 해야 할지...\" 이 한 줄에서, III-1의 유전자형까지 확정할 수 있을 것 같다.",
-        "prompt": "III-1은 보조개가 있다(부모: II-3=Dd, II-4=dd). III-1의 유전자형은?",
-        "choices": [
-          {
-            "text": "DD로 확정된다",
-            "correct": false
-          },
-          {
-            "text": "Dd로 확정된다",
-            "correct": true
-          },
-          {
-            "text": "확정할 수 없다",
-            "correct": false
-          }
-        ],
-        "explanation": "부모가 Dd(II-3) × dd(II-4)이므로 자녀는 Dd 또는 dd만 나올 수 있고 DD는 절대 나올 수 없다. III-1은 보조개가 있으니 dd가 아니고, 따라서 반드시 Dd이다.",
-        "hint": "Dd × dd 사이에서 나올 수 있는 자녀의 유전자형에는 애초에 DD가 없다는 점에 주목하세요."
-      }
-    ]
-  },
-  {
-    "pedigree": {
-      "people": [
-        {
-          "id": "I-1",
-          "gen": 1,
-          "col": 2,
-          "sex": "M",
-          "dead": true,
-          "affected": true,
-          "info": "A형"
-        },
-        {
-          "id": "I-2",
-          "gen": 1,
-          "col": 3,
-          "sex": "F",
-          "dead": true,
-          "affected": true,
-          "info": "B형"
-        },
-        {
-          "id": "II-1",
-          "gen": 2,
-          "col": 1,
-          "sex": "M",
-          "info": "O형"
-        },
-        {
-          "id": "II-2",
-          "gen": 2,
-          "col": 2,
-          "sex": "F",
-          "affected": true,
-          "info": "AB형"
-        },
-        {
-          "id": "II-3",
-          "gen": 2,
-          "col": 3,
-          "sex": "M",
-          "affected": true,
-          "info": "O형"
-        }
-      ],
-      "marriages": [
-        [
-          "I-1",
-          "I-2"
-        ]
-      ],
-      "childLinks": [
-        {
-          "parents": [
-            "I-1",
-            "I-2"
-          ],
-          "children": [
-            "II-1",
-            "II-2",
-            "II-3"
-          ]
-        }
-      ]
-    },
-    "questions": [
-      {
-        "highlight": [
-          "I-1",
-          "I-2",
-          "II-1",
-          "II-2"
-        ],
-        "setup": "편지 맨 위에는 증조부모님의 이름이 적혀 있다 — 증조부는 A형, 증조모는 B형. 그 아래로 세 자녀의 혈액형이 나열되어 있는데, 유독 두 개에 별표가 그려져 있다: O형과 AB형. 마치 누군가 그 조합을 이상하게 여겼던 것처럼.",
-        "prompt": "ABO식 혈액형의 대립유전자를 A, B, o라 하자(A와 B 사이에는 우열이 없고, 둘 다 o에 대해서는 우성이다). 증조부(A형)와 증조모(B형) 사이에서 O형(II-1)과 AB형(II-2) 자녀가 모두 태어났다. 두 분의 유전자형은?",
-        "choices": [
-          {
-            "text": "AA 와 BB",
-            "correct": false
-          },
-          {
-            "text": "Ao 와 Bo",
-            "correct": true
-          },
-          {
-            "text": "확정할 수 없다",
-            "correct": false
-          }
-        ],
-        "explanation": "자녀 중 O형(oo)이 있으므로 두 분 모두 o 대립유전자를 하나씩 가지고 있어야 한다. 또한 AB형(AB) 자녀가 있으므로 한 분은 A를, 다른 한 분은 B를 물려주었어야 한다. 따라서 증조부는 Ao, 증조모는 Bo로 확정된다.",
-        "hint": "O형과 AB형 자녀가 각각 태어나려면 부모가 어떤 대립유전자를 가지고 있어야 하는지 따로따로 생각해보세요."
-      },
-      {
-        "highlight": [
-          "II-1"
-        ],
-        "setup": "편지 아래쪽에는 누군가 급하게 휘갈겨 쓴 듯한 메모가 있다. \"만약 O형인 아이가 자라서 A형인 사람과 결혼한다면, 그 아이들도 B형일 수 있을까? 확인해봐야겠다.\" 글씨체가 점점 흐트러지는 게, 무언가에 쫓기듯 써 내려간 것 같았다.",
-        "prompt": "만약 O형인 II-1이 A형인 사람과 결혼한다면, 그 자녀가 B형일 수 있을까?",
-        "choices": [
-          {
-            "text": "가능하다",
-            "correct": false
-          },
-          {
-            "text": "불가능하다",
-            "correct": true
-          }
-        ],
-        "explanation": "II-1(O형)의 유전자형은 oo이고, A형인 배우자는 AA 또는 Ao이다. 어느 경우든 부모 중 누구도 B 대립유전자를 갖고 있지 않으므로, B형(자녀가 B를 가져야 함) 자녀는 절대 태어날 수 없다.",
-        "hint": "B형 자녀가 태어나려면 부모 중 적어도 한 명은 B 대립유전자를 가지고 있어야 해요."
-      }
-    ]
-  },
-  {
-    "pedigree": {
-      "people": [
-        {
-          "id": "A-부",
-          "gen": 1,
-          "col": 1,
-          "sex": "M"
-        },
-        {
-          "id": "A-모",
-          "gen": 1,
-          "col": 2,
-          "sex": "F",
-          "affected": true
-        },
-        {
-          "id": "A-아들",
-          "gen": 2,
-          "col": 1,
-          "sex": "M"
-        },
-        {
-          "id": "A-딸",
-          "gen": 2,
-          "col": 2,
-          "sex": "F"
-        }
-      ],
-      "marriages": [
-        [
-          "A-부",
-          "A-모"
-        ]
-      ],
-      "childLinks": [
-        {
-          "parents": [
-            "A-부",
-            "A-모"
-          ],
-          "children": [
-            "A-아들",
-            "A-딸"
-          ]
-        }
-      ]
-    },
-    "questions": [
-      {
-        "highlight": [
-          "A-모",
-          "A-아들"
-        ],
-        "setup": "첫 번째 페이지에 그려진 예시 가계도 옆에, 할머니로 추정되는 필체의 메모가 있다. \"이 가계도를 보고 처음엔 헷갈렸다. 색맹인 어머니에게서 정상인 아들이 태어날 수 있을까?\"",
-        "prompt": "[가계도 A] 색맹인 어머니(A-모)와 정상인 아버지 사이에서 정상인 아들(A-아들)이 태어났다. 이 형질은 반성유전(X염색체 열성 유전)일 수 있을까?",
-        "choices": [
-          {
-            "text": "그렇다, 반성유전일 수 있다",
-            "correct": false
-          },
-          {
-            "text": "아니다, 반성유전일 수 없다",
-            "correct": true
-          }
-        ],
-        "explanation": "반성유전(X염색체 열성)이라면 색맹인 어머니의 유전자형은 XaXa이다. 아들은 어머니로부터 반드시 X염색체 하나를 물려받으므로, 아들의 유전자형은 항상 XaY — 즉 아들도 반드시 색맹이어야 한다. 그런데 아들이 정상이므로, 이 형질은 반성유전일 수 없고 상염색체 유전이다.",
-        "hint": "아들은 어머니에게서 X염색체를 반드시 하나 물려받는다는 사실을 떠올려보세요."
-      },
-      {
-        "highlight": [],
-        "setup": "다음 페이지에는 또 다른 예시가 있다. 메모는 이렇게 이어진다: \"이번엔 반대야. 부모님은 모두 정상인데, 아들만 색맹으로 태어났어. 이것만으로 반성유전인지 알 수 있을까?\"",
-        "prompt": "[가계도 B] 정상인 부모 사이에서 색맹인 아들과 정상인 딸이 태어났다. 이 가계도만으로 반성유전 여부를 확정할 수 있을까?",
-        "choices": [
-          {
-            "text": "반성유전으로 확정된다",
-            "correct": false
-          },
-          {
-            "text": "상염색체 유전으로 확정된다",
-            "correct": false
-          },
-          {
-            "text": "확정할 수 없다 (둘 다 가능하다)",
-            "correct": true
-          }
-        ],
-        "explanation": "정상인 부모에게서 형질이 나타난 자녀가 태어난 경우, 상염색체 열성 유전이어도(부모가 모두 보인자 Aa), 반성유전 열성(어머니가 보인자 XAXa)이어도 똑같이 설명된다. 따라서 이 가계도 하나만으로는 어느 쪽인지 확정할 수 없다.",
-        "hint": "\"발현되지 않은 부모에게서 발현된 자녀\"라는 패턴은 상염색체 열성과 반성유전 열성 모두에서 나타날 수 있어요.",
-        "pedigreeOverride": {
-          "people": [
-            {
-              "id": "B-부",
-              "gen": 1,
-              "col": 1,
-              "sex": "M"
-            },
-            {
-              "id": "B-모",
-              "gen": 1,
-              "col": 2,
-              "sex": "F"
-            },
-            {
-              "id": "B-아들",
-              "gen": 2,
-              "col": 1,
-              "sex": "M",
-              "affected": true
-            },
-            {
-              "id": "B-딸",
-              "gen": 2,
-              "col": 2,
-              "sex": "F"
-            }
-          ],
-          "marriages": [
-            [
-              "B-부",
-              "B-모"
-            ]
-          ],
-          "childLinks": [
-            {
-              "parents": [
-                "B-부",
-                "B-모"
-              ],
-              "children": [
-                "B-아들",
-                "B-딸"
-              ]
-            }
-          ]
-        }
-      }
-    ]
-  },
-  {
-    "pedigree": {
-      "people": [
-        {
-          "id": "I-1",
-          "gen": 1,
-          "col": 2,
-          "sex": "M",
-          "dead": true,
-          "affected": true,
-          "info": "A형"
-        },
-        {
-          "id": "I-2",
-          "gen": 1,
-          "col": 3,
-          "sex": "F",
-          "dead": true,
-          "affected": true,
-          "info": "B형"
-        },
-        {
-          "id": "II-1",
-          "gen": 2,
-          "col": 1,
-          "sex": "M",
-          "info": "O형"
-        },
-        {
-          "id": "II-2",
-          "gen": 2,
-          "col": 2,
-          "sex": "F",
-          "affected": true,
-          "info": "AB형"
-        },
-        {
-          "id": "II-3",
-          "gen": 2,
-          "col": 3,
-          "sex": "M",
-          "affected": true,
-          "info": "O형"
-        },
-        {
-          "id": "II-4",
-          "gen": 2,
-          "col": 4,
-          "sex": "F",
-          "info": "B형"
-        },
-        {
-          "id": "III-1",
-          "gen": 3,
-          "col": 3,
-          "sex": "F",
-          "affected": true,
-          "info": "B형"
-        },
-        {
-          "id": "III-2",
-          "gen": 3,
-          "col": 4,
-          "sex": "M",
-          "info": ""
-        },
-        {
-          "id": "III-3",
-          "gen": 3,
-          "col": 2,
-          "sex": "M",
-          "info": "O형"
-        },
-        {
-          "id": "IV-1",
-          "gen": 4,
-          "col": 1,
-          "sex": "F",
-          "info": "B형"
-        },
-        {
-          "id": "IV-2",
-          "gen": 4,
-          "col": 2,
-          "sex": "M",
-          "info": "O형"
-        },
-        {
-          "id": "IV-3",
-          "gen": 4,
-          "col": 3,
-          "sex": "F",
-          "info": "A형?!"
-        }
-      ],
-      "marriages": [
-        [
-          "I-1",
-          "I-2"
-        ],
-        [
-          "II-3",
-          "II-4"
-        ],
-        [
-          "III-3",
-          "III-1"
-        ]
-      ],
-      "childLinks": [
-        {
-          "parents": [
-            "I-1",
-            "I-2"
-          ],
-          "children": [
-            "II-1",
-            "II-2",
-            "II-3"
-          ]
-        },
-        {
-          "parents": [
-            "II-3",
-            "II-4"
-          ],
-          "children": [
-            "III-1",
-            "III-2"
-          ]
-        },
-        {
-          "parents": [
-            "III-3",
-            "III-1"
-          ],
-          "children": [
-            "IV-1",
-            "IV-2",
-            "IV-3"
-          ]
-        }
-      ]
-    },
-    "questions": [
-      {
-        "highlight": [
-          "II-3",
-          "II-4",
-          "III-1"
-        ],
-        "setup": "가장 최근 세대의 초상화 앞에 서기 전, 먼저 그 앞 세대부터 확인해야 할 것 같다. III-1의 액자 뒷면 — \"B형\"이라 적힌 글씨 밑에, 누군가 연필로 작은 계산을 끄적여 놓았다. 아버지 II-3의 혈액형이 O형이라는 사실과 겹쳐 보면, 무언가 확정할 수 있을 것 같다.",
-        "prompt": "앞서 밝혀낸 대로 II-3은 O형(oo)이다. 딸 III-1은 B형인데, III-1의 유전자형은 무엇으로 확정될까?",
-        "choices": [
-          {
-            "text": "BB",
-            "correct": false
-          },
-          {
-            "text": "Bo",
-            "correct": true
-          },
-          {
-            "text": "확정할 수 없다",
-            "correct": false
-          }
-        ],
-        "explanation": "아버지 II-3이 oo이므로, 자녀는 아버지에게서 반드시 o를 물려받는다. B형인 III-1은 어머니 II-4에게서 B를 물려받았을 것이므로, 유전자형은 Bo로 확정된다(BB라면 아버지에게서도 B를 받아야 하는데 아버지는 o만 줄 수 있다).",
-        "hint": "아버지 II-3(oo)이 자녀에게 줄 수 있는 대립유전자는 o 하나뿐이라는 점을 생각해보세요."
-      },
-      {
-        "highlight": [
-          "III-1",
-          "III-3"
-        ],
-        "setup": "III-1과 그 남편 III-3의 초상화 밑에는 나란히 걸린 세 개의 작은 액자가 있다 — 세 자녀의 초상화다. 그런데 그 앞에 서기 전, 이 부부에게서 대체 어떤 혈액형의 자녀가 태어날 수 있었는지부터 계산해두는 편이 좋을 것 같다.",
-        "prompt": "III-1(Bo, B형)과 남편 III-3(oo, O형) 사이에서 나올 수 있는 자녀의 혈액형은 모두 몇 가지이며 무엇일까?",
-        "choices": [
-          {
-            "text": "A형, AB형 두 가지",
-            "correct": false
-          },
-          {
-            "text": "B형, O형 두 가지",
-            "correct": true
-          },
-          {
-            "text": "A형, B형, O형, AB형 네 가지 모두",
-            "correct": false
-          }
-        ],
-        "explanation": "III-3(oo)은 자녀에게 항상 o만 물려준다. III-1(Bo)은 자녀에게 B 또는 o를 물려준다. 따라서 자녀의 유전자형은 Bo(B형) 또는 oo(O형)만 가능하며, A형이나 AB형은 절대 나올 수 없다.",
-        "hint": "아버지 III-3이 줄 수 있는 대립유전자와 어머니 III-1이 줄 수 있는 대립유전자를 각각 나열해서 조합해보세요."
-      },
-      {
-        "highlight": [
-          "III-1",
-          "III-3",
-          "IV-3"
-        ],
-        "setup": "드디어 세 번째 액자, 셋째 아이 IV-3의 초상화 앞에 섰다. 다른 두 초상화와 달리 이 액자의 뒷면은 다른 색 잉크로, 마치 나중에 다시 확인하듯 적혀 있다: \"A형.\" 손끝이 떨렸다. 방금 계산한 것과 맞지 않는다.",
-        "prompt": "그런데 셋째 IV-3의 초상화 뒷면에는 \"A형\"이라고 또렷이 적혀 있었다. IV-3은 III-1과 III-3의 생물학적 친자녀일 수 있을까?",
-        "choices": [
-          {
-            "text": "있다, 친자녀일 수 있다",
-            "correct": false
-          },
-          {
-            "text": "없다, 친자녀일 수 없다",
-            "correct": true
-          }
-        ],
-        "explanation": "앞서 확인했듯 III-1과 III-3 사이에서는 B형 또는 O형 자녀만 나올 수 있다. A형은 부모 중 누구도 물려줄 수 없는 A 대립유전자를 필요로 하므로, IV-3은 이 두 사람의 생물학적 친자녀일 수 없다.",
-        "hint": "두 번째 문제에서 이미 이 부부의 자녀가 가질 수 있는 혈액형을 모두 구해두었어요."
-      }
-    ]
-  }
-];
+// 가족: 외증조부모(Ao × Bo, 둘 다 보조개 Dd) → 큰외할아버지(O, dd) · 이모할머니(AB) · 할머니(Bo, Dd)
+//       할머니 × 외할아버지(oo, dd, 적록색맹) → 외삼촌(B, Dd) · 엄마(A, dd — 두 살 때 입양) · 이모(O, dd)
+//       엄마(보인자) × 아빠 → 나 · 동생(적록색맹)
+const P = (id, gen, col, sex, o = {}) => Object.assign({ id, gen, col, sex }, o);
 
-/* 방마다 바뀌는 장면 · 대사 · 단서 */
-const ROOMS = [
-{
-    room: '서재', scene: 'study', voice: '할머니의 메모', hotspot: 'album', docTitle: '사진첩 속 가계도',
-    script: [
-        ['나', '할머니의 장례식 날, 엄마는 끝내 오지 않았다. "그 집엔 발도 들이고 싶지 않다"는 말만 남긴 채.'],
-        ['나', '평생 과학 선생님이었던 할머니와 엄마 사이에 대체 무슨 일이 있었던 건지, 나는 한 번도 제대로 들은 적이 없다. 그저 어릴 때부터 어렴풋이 느꼈다 — 두 사람 사이엔 절대 건드려서는 안 되는 무언가가 있다는 것을.'],
-        ['나', '변호사가 건넨 유언장에는 뜻밖의 문장이 적혀 있었다. "이 집과 그 안의 모든 것은, 내 손주인 너에게만 남긴다." 그리고 봉투 하나. 겉면에 낯익은 글씨로 내 이름이 적혀 있었다.'],
-        ['나', '망설이다 봉투를 열었다.'],
-        ['할머니의 편지', '너에게 이 편지를 쓴다. 네 엄마에게는 끝내 하지 못한 이야기가 있어. 살아서는 도저히 입이 떨어지지 않았단다.'],
-        ['할머니의 편지', '그래서 대신, 내가 평생 믿어온 방식으로 남긴다 — 이 집 곳곳에 숨겨둔 우리 가족의 유전 이야기 속에. 하나씩 풀어나가다 보면, 언젠가 너도 알게 될 거야. 내가 왜 그런 선택을 했는지.'],
-        ['할머니의 편지', '그리고 진실을 마주할 준비가 되면, 부디 네 엄마에게도 전해주렴.'],
-        ['나', '편지는 거기서 끝나 있었다.'],
-        ['나', '현관문을 열자, 낯설고도 익숙한 냄새가 훅 끼쳐왔다. 삐걱거리는 계단을 지나 서재 문을 열자, 오래된 종이와 먼지 냄새가 방 안 가득했다.'],
-        ['나', '책장 한켠, 가죽으로 묶인 사진첩이 유독 눈에 띈다 — 누군가 최근까지 계속 꺼내 보았던 것처럼, 먼지가 그 부분만 얇게 앉아 있었다.'],
+const PED_ALBUM = {
+    trait: '보조개 있음',
+    people: [
+        P('외증조부', 1, 2, 'M', { dead: true, affected: true }),
+        P('외증조모', 1, 3, 'F', { dead: true, affected: true }),
+        P('큰외할아버지', 2, 1, 'M', { dead: true }),
+        P('할머니', 2, 2, 'F', { dead: true, affected: true }),
+        P('이모할머니', 2, 3, 'F', { affected: true }),
     ],
-    cue: '(책장 한켠의 가죽 사진첩을 눌러 꺼내 보자.)',
+    marriages: [['외증조부', '외증조모']],
+    childLinks: [{ parents: ['외증조부', '외증조모'], children: ['큰외할아버지', '할머니', '이모할머니'] }],
+};
+
+const PED_ATTIC = {
+    trait: '보조개 있음',
+    people: [
+        P('외증조부', 1, 2, 'M', { dead: true, affected: true }),
+        P('외증조모', 1, 3, 'F', { dead: true, affected: true }),
+        P('큰외할아버지', 2, 1, 'M', { dead: true }),
+        P('이모할머니', 2, 2, 'F', { affected: true }),
+        P('할머니', 2, 3, 'F', { dead: true, affected: true }),
+        P('외할아버지', 2, 4, 'M', { dead: true }),
+        P('외삼촌', 3, 3, 'M', { affected: true }),
+        P('엄마', 3, 4, 'F'),
+        P('이모', 3, 5, 'F'),
+    ],
+    marriages: [['외증조부', '외증조모'], ['할머니', '외할아버지']],
+    childLinks: [
+        { parents: ['외증조부', '외증조모'], children: ['큰외할아버지', '이모할머니', '할머니'] },
+        { parents: ['할머니', '외할아버지'], children: ['외삼촌', '엄마', '이모'] },
+    ],
+};
+
+const PED_BLOOD = {
+    trait: null,
+    people: [
+        P('외증조부', 1, 2, 'M', { dead: true, info: 'A형' }),
+        P('외증조모', 1, 3, 'F', { dead: true, info: 'B형' }),
+        P('큰외할아버지', 2, 1, 'M', { dead: true, info: 'O형' }),
+        P('이모할머니', 2, 2, 'F', { info: 'AB형' }),
+        P('할머니', 2, 3, 'F', { dead: true, info: 'B형' }),
+    ],
+    marriages: [['외증조부', '외증조모']],
+    childLinks: [{ parents: ['외증조부', '외증조모'], children: ['큰외할아버지', '이모할머니', '할머니'] }],
+};
+
+const PED_COLOR = {
+    trait: '적록색맹',
+    people: [
+        P('외할아버지', 1, 1.5, 'M', { dead: true, affected: true }),
+        P('할머니', 1, 2.5, 'F', { dead: true }),
+        P('외삼촌', 2, 1, 'M'),
+        P('이모', 2, 2, 'F'),
+        P('엄마', 2, 3, 'F'),
+        P('아빠', 2, 4, 'M'),
+        P('나', 3, 3, 'U'),
+        P('동생', 3, 4, 'M', { affected: true }),
+    ],
+    marriages: [['외할아버지', '할머니'], ['엄마', '아빠']],
+    childLinks: [
+        { parents: ['외할아버지', '할머니'], children: ['외삼촌', '이모', '엄마'] },
+        { parents: ['엄마', '아빠'], children: ['나', '동생'] },
+    ],
+};
+
+const PED_GALLERY = {
+    trait: '보조개 있음',
+    people: [
+        P('외증조부', 1, 2, 'M', { dead: true, affected: true, info: 'A형' }),
+        P('외증조모', 1, 3, 'F', { dead: true, affected: true, info: 'B형' }),
+        P('큰외할아버지', 2, 1, 'M', { dead: true, info: 'O형' }),
+        P('이모할머니', 2, 2, 'F', { affected: true, info: 'AB형' }),
+        P('할머니', 2, 3, 'F', { dead: true, affected: true, info: 'B형' }),
+        P('외할아버지', 2, 4, 'M', { dead: true, info: 'O형' }),
+        P('외삼촌', 3, 2, 'M', { affected: true, info: 'B형' }),
+        P('이모', 3, 3, 'F', { info: 'O형' }),
+        P('엄마', 3, 4, 'F', { info: 'A형' }),
+        P('아빠', 3, 5, 'M'),
+        P('나', 4, 4, 'U'),
+        P('동생', 4, 5, 'M'),
+    ],
+    marriages: [['외증조부', '외증조모'], ['할머니', '외할아버지'], ['엄마', '아빠']],
+    childLinks: [
+        { parents: ['외증조부', '외증조모'], children: ['큰외할아버지', '이모할머니', '할머니'] },
+        { parents: ['할머니', '외할아버지'], children: ['외삼촌', '이모', '엄마'] },
+        { parents: ['엄마', '아빠'], children: ['나', '동생'] },
+    ],
+};
+
+/* 방마다: 장면 · 대사 · 단서 · 추리 (setup 은 [화자, 대사] 목록, realize 는 정답 뒤 주인공의 깨달음, note 는 펼쳐 보는 개념 정리) */
+const CHAPTERS = [
+{
+    room: '서재', scene: 'study', hotspot: 'album', docTitle: '사진첩 — 할머니가 그린 가계도', pedigree: PED_ALBUM,
+    script: [
+        ['나', '할머니의 장례식에 엄마는 끝내 오지 않았다. 조문객들이 엄마 안부를 물을 때마다 나는 같은 거짓말을 했다. 몸이 좀 안 좋으시대요.'],
+        ['나', '내가 기억하는 한, 엄마와 할머니는 한 번도 같은 식탁에 앉은 적이 없다. 이유를 물으면 엄마는 늘 같은 대답을 했다. "그 사람은 선생님이었지, 엄마가 아니었어."'],
+        ['나', '사흘 뒤 변호사가 봉투 하나를 건넸다. 언덕 위의 오래된 집과 그 안의 모든 것을 나에게 남긴다는 유언장. 그리고 할머니 글씨로 내 이름이 적힌 편지.'],
+        ['할머니의 편지', '미안하다. 네 엄마에게 했어야 할 말을, 결국 너에게 맡기게 되는구나.'],
+        ['할머니의 편지', '나는 사십 년 동안 아이들에게 과학은 거짓말을 하지 않는다고 가르쳤다. 그래서 내 거짓말도 숨기지 못하고 전부 적어 두었다. 그 기록이 다 그 집에 있다.'],
+        ['할머니의 편지', '다 보고 나서도 네 엄마에게 전할 마음이 생기거든, 그때 전해 다오. 아니라면 태워도 좋다.'],
+        ['나', '현관문은 생각보다 쉽게 열렸다. 오래된 종이 냄새, 아직 멈추지 않은 괘종시계 소리. 누군가 어제까지 살던 집 같았다.'],
+        ['나', '서재 책장 한가운데, 가죽 사진첩 하나만 먼지가 얇았다. 할머니가 마지막까지 꺼내 보던 것이리라.'],
+    ],
+    cue: '(책장의 가죽 사진첩을 꺼내 보자.)',
     afterOpen: [
-        ['나', '표지를 넘기자 빛바랜 흑백 사진들과 함께, 할머니의 필체로 보이는 메모가 끼워져 있다.'],
-        ['할머니의 메모', '이 집안 사람들은 대대로 뺨에 보조개가 있다. 그런데 아주 가끔, 보조개 없이 태어나는 아이가 있었다...'],
-        ['나', '메모는 거기서 끊겨 있었다. 나머지는 사진첩 속 가계도를 스스로 읽어내야 알 수 있을 것 같다.'],
+        ['나', '첫 장에는 빛바랜 가족사진과 함께, 할머니가 사진 밑에 그려 둔 작은 그림이 있었다. 선으로 이어진 네모와 동그라미. 몇 개는 붉게 칠해져 있다.'],
+        ['나', '생물 선생님다운 버릇이었다. 할머니는 사진마다 이렇게 가계도를 그려 두었다.'],
+    ],
+    questions: [
+        {
+            highlight: ['외증조부', '큰외할아버지'],
+            setup: [['나', '도형마다 밑에 이름이 적혀 있다. 네모 밑에는 "아버지"와 "정호 오빠". 동그라미 밑에는 "어머니", "순옥", 그리고 "나".']],
+            prompt: '할머니가 그린 네모와 동그라미는 무엇을 뜻할까?',
+            choices: [
+                { text: '네모는 여자, 동그라미는 남자', correct: false },
+                { text: '네모는 남자, 동그라미는 여자', correct: true },
+                { text: '네모는 보조개가 있는 사람', correct: false },
+            ],
+            realize: '네모는 남자, 동그라미는 여자. 붉게 칠한 건… 사진을 다시 보니, 웃을 때 보조개가 패는 사람들이었다.',
+            note: '가계도에서 네모(□)는 남자, 동그라미(○)는 여자를 나타낸다. 도형을 색칠하면 그 형질(여기서는 보조개)이 나타난 사람이다. 가로선은 부부, 아래로 내려오는 선은 자녀 관계이고, 도형을 가로지르는 사선은 세상을 떠난 사람이다.',
+            hint: '색칠은 성별과 상관없이 칠해져 있어요. 이름을 보면 성별을 알 수 있어요.',
+        },
+        {
+            highlight: ['외증조부', '외증조모', '큰외할아버지'],
+            setup: [
+                ['할머니의 메모', '아버지도 어머니도 웃으면 뺨이 패였다. 그런데 큰오빠 정호만은 매끈했다. 동네 사람들은 오빠가 대체 누구를 닮았느냐고 수군댔다.'],
+                ['나', '메모 끝에는 연필로 꾹꾹 눌러쓴 한 줄이 있었다. "닮지 않았다고 남의 자식은 아니다."'],
+            ],
+            prompt: '두 분 모두 보조개가 있는데, 큰외할아버지만 없다. 그렇다면 보조개는 우성일까, 열성일까?',
+            choices: [
+                { text: '우성이다', correct: true },
+                { text: '열성이다', correct: false },
+                { text: '이것만으로는 알 수 없다', correct: false },
+            ],
+            realize: '보조개는 우성이다. 두 분은 "보조개 없음"을 하나씩 몰래 갖고 있었고, 큰외할아버지는 그걸 둘 다 물려받았을 뿐이다. 남의 자식이 아니었다.',
+            note: '부모가 모두 형질을 나타내는데 형질이 없는 자녀가 태어났다면, 그 형질은 우성이다. 보조개가 열성이었다면 보조개가 있는 부모는 열성 유전자만 둘 가졌을 테니, 자녀도 모두 보조개가 있어야 한다. 보조개 없는 아이가 태어났으므로 보조개는 우성이고, 부모는 겉으로 드러나지 않는 "보조개 없음" 유전자를 하나씩 숨기고 있었다.',
+            hint: '보조개가 열성이라면, 보조개가 있는 부모는 "보조개" 유전자만 물려줄 수 있어요. 그런데 보조개 없는 아이가 태어났다면?',
+        },
     ],
     reward: [
-        ['할머니의 메모', '그 후로도 이 보조개는 몇 대에 걸쳐 대물림되었다. 자세한 기록은 다락방 상자 안에 있다.'],
-        ['나', '사진첩 사이에서 녹슨 열쇠 하나가 툭 떨어졌다. 다락방으로 향하는 열쇠였다.'],
+        ['나', '그 문장을 오래 들여다봤다. 엄마도 보조개가 없다. 어릴 적 사진첩을 보다가 나는 왜 엄마를 하나도 안 닮았냐고 물은 적이 있다. 엄마는 대답 대신 사진첩을 덮었다.'],
+        ['나', '사진첩 뒤표지 안쪽에 작은 열쇠가 테이프로 붙어 있었다. 꼬리표에는 할머니 글씨로 "다락".'],
     ],
-    item: { icon: '🗝️', name: '녹슨 열쇠', desc: '사진첩 사이에서 떨어진 다락방 열쇠.', got: '녹슨 열쇠를 손에 넣었다.' },
-    exitCue: '(문을 열고 다락방으로 올라가자.)',
+    item: { icon: '🗝️', name: '다락방 열쇠', desc: '사진첩 뒤표지에 붙어 있던 열쇠. 꼬리표: "다락"', got: '다락방 열쇠를 손에 넣었다.' },
+    after: [
+        ['엄마', '외삼촌한테 들었어. 그 집에 갔다며.'],
+        ['나', '답장을 쓰다가 지웠다.'],
+    ],
+    exitCue: '(문을 나서 다락방으로 올라가자.)',
 },
 {
-    room: '다락방', scene: 'attic', voice: '편지', hotspot: 'chest', docTitle: '상자 속 서류 — 손으로 그린 가계도',
+    room: '다락방', scene: 'attic', hotspot: 'chest', docTitle: '상자 속 — 집안 가계도', pedigree: PED_ATTIC,
     script: [
-        ['나', '다락방 문은 오랫동안 열리지 않은 듯 뻑뻑했다. 안으로 들어서자 낡은 트렁크와 상자들이 어둠 속에 쌓여 있다.'],
+        ['나', '다락방 계단은 한 칸 오를 때마다 비명을 질렀다. 흰 천을 덮어 둔 가구들 사이로, 둥근 창의 달빛이 먼지를 비추고 있었다.'],
+        ['나', '창 아래, 놋쇠 자물쇠가 달린 나무 상자가 하나 있었다.'],
     ],
-    cue: '(열쇠에 맞는 자물쇠가 달린 상자를 찾아 열어 보자.)',
+    cue: '(열쇠로 나무 상자를 열어 보자.)',
     afterOpen: [
-        ['나', '열쇠에 맞는 자물쇠를 찾아 상자 하나를 열자, 빛바랜 서류 뭉치와 함께 손으로 그린 가계도가 나타났다 — 증조부모님의 자녀들, 그리고 그 자녀들의 자녀들까지 이어지는, 훨씬 더 자세한 기록이다.'],
-        ['나', '(서재에서 알아낸 대로, 이 가계도의 "보조개" 형질은 우성이다.)'],
+        ['나', '상자 안에는 할머니의 교무수첩이 해마다 한 권씩 묶여 있었고, 맨 위에 커다란 종이가 접혀 있었다. 펼치자 집안 전체의 가계도가 나왔다. 외삼촌과 엄마, 막내 이모의 이름까지.'],
+        ['나', '귀퉁이에 할머니의 작은 글씨가 있었다. "보조개 D, 없음 d."'],
+    ],
+    questions: [
+        {
+            highlight: ['외증조부', '외증조모'],
+            setup: [['나', '외증조할아버지와 외증조할머니 이름 옆에는, 무언가를 몇 번이나 썼다 지운 자국이 있다.']],
+            prompt: '두 분 다 보조개가 있는데 큰외할아버지는 없다(dd). 두 분은 각각 어떤 유전자를 갖고 있었을까?',
+            choices: [
+                { text: 'DD와 DD', correct: false },
+                { text: 'Dd와 Dd', correct: true },
+                { text: '알 수 없다', correct: false },
+            ],
+            realize: '큰외할아버지가 d를 둘 받으려면, 두 분 모두 d를 하나씩 갖고 있어야 한다. Dd와 Dd. 할머니가 지웠다 다시 쓴 글자도 그것이었다.',
+            note: '자녀(dd)는 부모에게서 d를 하나씩 받는다. 두 분은 보조개가 있으니 dd는 아니고, d를 하나씩 가져야 하므로 둘 다 Dd이다.',
+            hint: 'dd인 아이는 부모 양쪽에서 무엇을 하나씩 받았을까요?',
+        },
+        {
+            highlight: ['할머니'],
+            setup: [['나', '할머니 자신의 이름 옆에는 물음표 하나가 덩그러니 붙어 있었다.']],
+            prompt: '할머니도 보조개가 있다. 외증조부모님(Dd × Dd)만 보고, 할머니가 DD인지 Dd인지 알 수 있을까?',
+            choices: [
+                { text: 'DD로 확정된다', correct: false },
+                { text: 'Dd로 확정된다', correct: false },
+                { text: '아직은 알 수 없다', correct: true },
+            ],
+            realize: 'Dd인 부모에게서는 DD도 Dd도 나올 수 있다. 할머니도 처음에는 자기 유전자를 몰랐던 것이다.',
+            note: 'Dd × Dd 사이에서는 DD, Dd, dd가 모두 나올 수 있다. 할머니는 보조개가 있으니 dd는 아니지만, DD인지 Dd인지는 부모만 보고는 정할 수 없다.',
+            hint: 'Dd × Dd에서 태어날 수 있는 아이의 유전자형을 모두 떠올려 보세요.',
+        },
+        {
+            highlight: ['할머니', '외할아버지', '이모'],
+            setup: [
+                ['나', '물음표 옆에, 다른 펜으로 나중에 덧쓴 글씨가 있었다. "선희가 태어나고서야 알았다."'],
+                ['나', '막내 이모 선희. 이모도, 외할아버지도 보조개가 없다.'],
+            ],
+            prompt: '외할아버지는 dd, 막내 이모도 dd다. 이제 할머니의 유전자형은?',
+            choices: [
+                { text: 'DD', correct: false },
+                { text: 'Dd', correct: true },
+                { text: '여전히 알 수 없다', correct: false },
+            ],
+            realize: '이모가 d를 둘 받으려면 할머니에게서도 d를 받아야 한다. 할머니는 Dd였다. 딸 하나가 엄마의 유전자를 알려 준 셈이다.',
+            note: '외할아버지(dd)는 자녀에게 d만 준다. 이모가 dd이려면 할머니에게서도 d를 받아야 한다. 할머니가 DD였다면 자녀는 모두 Dd(보조개 있음)였을 것이다. 따라서 할머니는 Dd다. 자녀의 표현형이 부모의 유전자형을 확정해 준 것이다.',
+            hint: '외할아버지가 줄 수 있는 건 d뿐이에요. 할머니가 DD였다면 이모는 어떻게 태어났을까요?',
+        },
+        {
+            highlight: ['외삼촌'],
+            setup: [['나', '외삼촌 영호의 이름 옆에는 아무 표시도 없었다. 할머니에게는 너무 쉬운 문제였던 모양이다.']],
+            prompt: '외삼촌은 보조개가 있다. 할머니(Dd)와 외할아버지(dd) 사이에서 태어났다면, 외삼촌의 유전자형은?',
+            choices: [
+                { text: 'DD', correct: false },
+                { text: 'Dd', correct: true },
+                { text: '알 수 없다', correct: false },
+            ],
+            realize: '외할아버지는 d밖에 줄 수 없으니, 보조개가 있는 외삼촌은 Dd일 수밖에 없다.',
+            note: 'Dd × dd에서는 Dd와 dd만 나오고 DD는 나올 수 없다. 보조개가 있는 외삼촌은 dd가 아니므로 Dd로 확정된다.',
+            hint: 'Dd × dd에서 나올 수 있는 유전자형에 DD가 있는지 확인해 보세요.',
+        },
     ],
     reward: [
-        ['나', '상자 맨 밑바닥, 종이들 사이에 눌려 있던 낡은 열쇠 하나를 발견했다. 빛바랜 리본이 묶여 있고, 그 끝에 작은 쪽지가 달려 있다.'],
-        ['쪽지', '핏줄은 거짓말을 하지 않는다.'],
-        ['나', '어쩐지 서늘한 문장이었다.'],
+        ['나', '그리고 엄마. 엄마도 보조개가 없다. 할머니가 Dd, 외할아버지가 dd라면 이상할 게 하나도 없다. 나도 모르게 숨을 내쉬었다.'],
+        ['나', '그런데 이상했다. 엄마는 이모보다 네 살이 많다. 보조개 없는 딸이 이미 있었는데, 할머니는 왜 "선희가 태어나고서야 알았다"고 썼을까.'],
+        ['나', '상자 바닥에서 사진 한 장이 나왔다. 한복을 입은 아이. 뒷면에 적힌 "미연, 우리 집에 온 날" 위에 줄이 그어져 있고, 그 옆에 "미연, 첫돌".'],
     ],
-    item: { icon: '🎀', name: '리본 묶인 열쇠', desc: '쪽지가 달려 있다. "핏줄은 거짓말을 하지 않는다."', got: '리본 묶인 열쇠를 손에 넣었다.' },
+    item: { icon: '📷', name: '엄마의 어릴 적 사진', desc: '뒷면: "미연, 우리 집에 온 날" — 줄을 긋고 "미연, 첫돌"이라고 고쳐 썼다.', got: '엄마의 어릴 적 사진을 챙겼다.' },
+    after: [
+        ['엄마', '할머니 물건, 아무것도 건드리지 마.'],
+    ],
     exitCue: '(문을 열고 지하 저장고로 내려가자.)',
 },
 {
-    room: '지하 저장고', scene: 'cellar', voice: '할머니의 메모', hotspot: 'letters', docTitle: '편지 뭉치 속 혈액형 메모',
+    room: '지하 저장고', scene: 'cellar', hotspot: 'letters', docTitle: '"3학년 생물 — 혈액형 실험" 수업 자료', pedigree: PED_BLOOD,
     script: [
-        ['나', '계단을 내려갈수록 공기가 서늘해졌다. 지하 저장고 선반에는 먼지 쌓인 와인병들이 줄지어 있고, 그 뒤편 벽돌 틈으로 리본에 묶인 편지 뭉치가 삐져나와 있다.'],
+        ['나', '지하로 내려가는 계단에는 와인 냄새와 곰팡이 냄새가 뒤섞여 있었다. 할머니는 술을 마시지 않았다. 이 병들은 외할아버지가 남긴 것이리라.'],
+        ['나', '벽감 안 촛대 옆에, 붉은 끈으로 묶은 종이 꾸러미가 놓여 있었다. 겉장에는 "3학년 생물 — 혈액형 실험".'],
     ],
-    cue: '(벽돌 틈의 편지 뭉치를 조심스럽게 잡아당겨 보자.)',
+    cue: '(끈을 풀고 종이 꾸러미를 살펴보자.)',
     afterOpen: [
-        ['나', '조심스럽게 잡아당기자, 가족들의 이름과 혈액형이 빼곡히 적힌 메모가 함께 딸려 나온다.'],
+        ['나', '할머니가 수업에 쓰던 자료였다. 맨 위 장에는 예시로 쓴 우리 집안의 혈액형이 적혀 있었다. 할머니는 정말로 자기 가족을 칠판에 그렸던 것이다.'],
+    ],
+    questions: [
+        {
+            highlight: ['외증조부', '외증조모', '큰외할아버지', '이모할머니'],
+            setup: [
+                ['나', '외증조할아버지 A형, 외증조할머니 B형. 그 아래로 큰외할아버지 O형, 이모할머니 AB형.'],
+                ['할머니의 메모', '우리 집 하나로 ABO의 거의 모든 경우를 보여 줄 수 있다. 아이들이 좋아한다. (A와 B는 o보다 우성, A와 B 사이에는 우열이 없다.)'],
+            ],
+            prompt: 'A형과 B형 사이에서 O형 아이와 AB형 아이가 모두 태어났다. 외증조부모님의 유전자형은?',
+            choices: [
+                { text: 'AA와 BB', correct: false },
+                { text: 'Ao와 Bo', correct: true },
+                { text: '알 수 없다', correct: false },
+            ],
+            realize: 'O형 아이가 있으니 두 분 다 o를 숨기고 있었고, AB형 아이가 있으니 한 분은 A를, 한 분은 B를 줬다. 외증조할아버지는 Ao, 외증조할머니는 Bo.',
+            note: 'O형(oo) 자녀가 있으므로 두 분 모두 o를 하나씩 가지고 있어야 한다. AB형 자녀가 있으므로 한 분은 A를, 다른 한 분은 B를 물려주었다. 따라서 A형인 외증조할아버지는 Ao, B형인 외증조할머니는 Bo로 확정된다.',
+            hint: 'O형 아이와 AB형 아이가 각각 태어나려면 부모가 무엇을 가지고 있어야 하는지, 따로따로 생각해 보세요.',
+        },
+        {
+            highlight: ['할머니'],
+            setup: [['나', '그 아래 할머니 이름. B형. 이름 둘레에 빨간 펜으로 동그라미가 쳐져 있었다.']],
+            prompt: '할머니는 B형이다. 아버지(Ao)와 어머니(Bo)에게서 하나씩 받았다면, 할머니의 유전자형은?',
+            choices: [
+                { text: 'BB', correct: false },
+                { text: 'Bo', correct: true },
+                { text: '알 수 없다', correct: false },
+            ],
+            realize: '아버지에게서 받을 수 있는 건 A 아니면 o. A를 받았다면 B형일 수 없다. 할머니는 아버지에게서 o를, 어머니에게서 B를 받았다. Bo.',
+            note: '할머니는 아버지(Ao)에게서 A 또는 o를, 어머니(Bo)에게서 B 또는 o를 받는다. B형이 되려면 A가 없어야 하므로 아버지에게서는 o를 받았다. 그리고 B형이니 어머니에게서 B를 받았다. 따라서 Bo다. BB가 되려면 아버지도 B를 가지고 있어야 한다.',
+            hint: '외증조할아버지(Ao)가 줄 수 있는 건 A 아니면 o예요. 할머니가 A를 받았다면 혈액형이 무엇이었을까요?',
+        },
     ],
     reward: [
-        ['나', '편지 묶음 맨 밑에서 발견한 한 장. 잉크가 번져 있었다.'],
-        ['할머니의 편지', '셋째 아이가 B형이라는 소식을 듣던 그날 밤, 나는 한숨도 잘 수 없었다...'],
-        ['나', '그 뒤로는 아무것도 적혀 있지 않았다.'],
-        ['나', '이게 무슨 뜻일까? 문득 엄마 생각이 났다. 답은 갤러리에 있을지도 모른다. 골동품 방으로 가는 열쇠를 발견했다.'],
+        ['나', '꾸러미 맨 아래에 수업 자료와는 다른 종이가 섞여 있었다. 줄 공책을 찢어 낸 한 장. 둥글둥글한 글씨. 엄마의 글씨였다.'],
+        ['엄마의 일기', '오늘 생물 시간에 혈액형 실험을 했다. 내 건 A형이 나왔다. 민지가 큰 소리로 말했다. "선생님은 B형이고 아저씨는 O형이라며. 그럼 미연이는 어떻게 A형이야?"'],
+        ['엄마의 일기', '집에 와서 엄마한테 물었다. 엄마는 시험지를 채점하면서, 고개도 들지 않고 말했다. "검사가 잘못된 거야."'],
+        ['나', '일기는 거기서 끝나 있었다. 1991년 4월. 엄마가 열다섯 살이던 봄이었다.'],
     ],
-    item: { icon: '✉️', name: '번진 편지', desc: '"셋째 아이가 B형이라는 소식을 듣던 그날 밤, 나는 한숨도 잘 수 없었다..."', got: '잉크가 번진 편지를 챙겼다.' },
+    item: { icon: '✉️', name: '엄마의 일기 한 장', desc: '1991년 4월. "검사가 잘못된 거야."', got: '엄마의 일기를 조심스럽게 접어 챙겼다.' },
+    after: [
+        ['엄마', '…뭘 찾았는데?'],
+        ['나', '답장하지 못했다. 아직은.'],
+    ],
     exitCue: '(문을 열고 골동품 방으로 가자.)',
 },
 {
-    room: '골동품 방', scene: 'antique', voice: '할머니의 메모', hotspot: 'drawer', docTitle: '교과서 속 예시 — 가계도 A',
-    docTitles: [null, '교과서 속 예시 — 가계도 B'],
+    room: '골동품 방', scene: 'antique', hotspot: 'drawer', docTitle: '할머니의 수업 노트 — "적록색맹, 우리 집"', pedigree: PED_COLOR,
     script: [
-        ['나', '복도 끝, 오래된 화장대가 놓인 작은 방.'],
+        ['나', '복도 끝 작은 방. 할머니의 화장대와 괘종시계, 유리장 안의 표본병들. 병 하나가 나를 보고 있는 것 같아 얼른 눈을 돌렸다.'],
+        ['나', '화장대 서랍 손잡이만 손때가 묻어 반들반들했다.'],
     ],
     cue: '(화장대 서랍을 열어 보자.)',
     afterOpen: [
-        ['나', '서랍을 열자 좀먹은 생물 교과서 한 권이 나온다. 표지에는 이니셜이 새겨져 있다 — 아마도 할머니가 학생이던 시절의 것이리라.'],
-        ['나', '페이지 사이에 끼워진 손글씨 메모의 제목은 "반성유전 구별법"이었다.'],
+        ['나', '서랍 안에는 할머니의 수업 노트가 있었다. 표지에는 "적록색맹 — 우리 집". 첫 장에 외할아버지의 이름이 있었다.'],
+        ['할머니의 메모', '덕수 씨는 평생 빨간 넥타이와 초록 넥타이를 구별하지 못했다. 그래서 내가 매일 아침 골라 주었다.'],
+        ['나', '그리고 다음 장에는 내 동생 이름이 있었다. 동생은 초등학생 때 적록색맹 판정을 받았다. 아빠도 엄마도 색은 멀쩡히 구별하는데.'],
+    ],
+    questions: [
+        {
+            highlight: ['엄마', '아빠', '동생'],
+            setup: [['할머니의 메모', '적록색맹 유전자는 X 염색체에 있다. 아들은 아버지에게서 Y를, 어머니에게서 X를 받는다.']],
+            prompt: '아빠도 엄마도 색맹이 아닌데 동생은 적록색맹이다. 동생의 색맹 유전자는 누구에게서 왔을까?',
+            choices: [
+                { text: '아빠에게서', correct: false },
+                { text: '엄마에게서', correct: true },
+                { text: '누구에게서 왔는지 알 수 없다', correct: false },
+            ],
+            realize: '아들의 X는 엄마에게서만 온다. 엄마는 색맹이 아니지만, 색맹 유전자를 하나 숨긴 보인자였다.',
+            note: '적록색맹 유전자는 X 염색체에 있다(반성유전). 아들은 아버지에게서 Y를, 어머니에게서 X를 받으므로 아들의 색맹 유전자는 반드시 어머니에게서 온 것이다. 어머니는 색맹이 아니므로 정상 X와 색맹 X를 하나씩 가진 보인자(XAXa)다. 반성유전 열성 형질이 정상인 어머니를 거쳐 아들에게 나타나는 것은 이 때문이다.',
+            hint: '동생이 아빠에게서 받은 성염색체는 X일까요, Y일까요?',
+        },
+        {
+            highlight: ['외할아버지', '엄마'],
+            setup: [['나', '노트에는 할머니가 그린 화살표가 있었다. 외할아버지에게서 엄마로, 엄마에게서 동생으로.']],
+            prompt: '외할아버지는 적록색맹(XaY)이었고, 엄마는 색맹이 아니다. 엄마가 외할아버지의 친딸이라면, 엄마는 반드시 보인자일까?',
+            choices: [
+                { text: '반드시 보인자다', correct: true },
+                { text: '보인자일 수도, 아닐 수도 있다', correct: false },
+                { text: '알 수 없다', correct: false },
+            ],
+            realize: '딸은 아버지에게서 반드시 X를 받는다. 외할아버지의 X에는 색맹 유전자가 있으니, 친딸이라면 엄마는 보인자일 수밖에 없다. 화살표가 들어맞는다. 숨이 조금 쉬어졌다.',
+            note: '딸은 아버지와 어머니에게서 X를 하나씩 받는다. 아버지(XaY)가 줄 수 있는 X는 Xa뿐이므로 그의 딸은 모두 Xa를 하나 이상 가진다. 어머니에게서 정상 X를 받으면 보인자(XAXa), Xa를 받으면 색맹(XaXa)이 된다. 엄마는 색맹이 아니므로, 친딸이라면 보인자다.',
+            hint: '딸은 아버지에게서 X와 Y 중 무엇을 받을까요?',
+        },
+        {
+            highlight: ['엄마'],
+            setup: [
+                ['나', '그런데 화살표 옆에 물음표가 붙어 있었다. 그리고 빨간 펜으로 크게 쓴 한 줄.'],
+                ['할머니의 메모', '들어맞는다고 해서 증명된 것은 아니다.'],
+            ],
+            prompt: '엄마가 보인자라는 사실은, 엄마가 외할아버지의 친딸이라는 증거가 될까?',
+            choices: [
+                { text: '증거가 된다', correct: false },
+                { text: '증거가 되지 않는다 — 다른 데서 왔을 수도 있다', correct: true },
+            ],
+            realize: '엄마의 색맹 유전자는 엄마의 어머니에게서 왔을 수도 있다. 들어맞는 것과 증명되는 것은 다르다. 할머니가 수업 때마다 하던 말이라고, 엄마가 언젠가 말한 적이 있다.',
+            note: '엄마가 보인자라는 것은 "외할아버지의 친딸"이라는 가설과 들어맞는다. 하지만 엄마의 색맹 유전자는 어머니 쪽에서 왔을 수도 있다. 가설과 들어맞는 결과는 그 가설을 지지할 뿐 증명하지는 못한다. 반대로 가설과 들어맞지 않는 결과는 하나만으로도 가설을 부정할 수 있다.',
+            hint: '보인자가 되는 길이 외할아버지에게서 Xa를 받는 것 하나뿐일까요?',
+        },
     ],
     reward: [
-        ['나', '교과서를 덮으려는 순간, 마지막 페이지 여백에 적힌 글씨가 눈에 들어온다. 다른 페이지보다 훨씬 진하고, 힘주어 쓴 것처럼 보였다.'],
-        ['할머니의 메모', '혈액형은 절대 거짓말을 하지 않는다. 갤러리의 초상화들을 다시 보라.'],
-        ['나', '서랍 안쪽에서 갤러리로 통하는 열쇠를 발견했다.'],
+        ['나', '노트를 덮으려는데, 뒤표지 안쪽에 무언가 적혀 있었다. 다른 페이지보다 훨씬 진하게, 몇 번이고 덧쓴 글씨.'],
+        ['할머니의 메모', '혈액형은 들어맞지 않는다. 그건 처음부터 알고 있었다. 갤러리에 다 걸어 두었다.'],
+        ['나', '서랍 깊숙한 곳에서 갤러리 열쇠가 나왔다.'],
     ],
-    item: { icon: '📗', name: '낡은 생물 교과서', desc: '할머니의 이니셜이 새겨져 있다. 마지막 장: "혈액형은 절대 거짓말을 하지 않는다."', got: '낡은 생물 교과서를 챙겼다.' },
+    item: { icon: '📗', name: '할머니의 수업 노트', desc: '뒤표지: "혈액형은 들어맞지 않는다. 그건 처음부터 알고 있었다."', got: '할머니의 수업 노트를 챙겼다.' },
+    after: [
+        ['엄마', '거기 계속 있을 거니?'],
+        ['나', '응, 이라고만 보냈다.'],
+    ],
     exitCue: '(문을 열고 초상화 갤러리로 가자.)',
 },
 {
-    room: '초상화 갤러리', scene: 'gallery', voice: '할머니의 메모', hotspot: 'portraits', docTitle: '초상화 뒷면의 기록 — 4대 가계도',
+    room: '초상화 갤러리', scene: 'gallery', hotspot: 'portraits', docTitle: '초상화 뒷면의 기록', pedigree: PED_GALLERY,
     script: [
-        ['나', '가장 안쪽 방의 묵직한 문을 열자, 액자들이 나를 내려다보고 있었다. 4대에 걸친 가족의 초상화가 벽을 가득 채우고 있다.'],
+        ['나', '가장 안쪽 방. 벽에는 네 점의 초상화가 걸려 있었다. 외증조할머니, 할머니, 막내 이모, 그리고 맨 끝에 엄마.'],
+        ['나', '엄마의 초상화만 비스듬히 기울어 있었다. 누군가 몇 번이고 떼어 보았다가 다시 건 것처럼.'],
     ],
-    cue: '(초상화를 하나씩 들어 뒷면을 살펴보자.)',
+    cue: '(초상화를 하나씩 내려 뒷면을 살펴보자.)',
     afterOpen: [
-        ['나', '조심스럽게 액자를 하나씩 들어보니, 뒷면마다 이름과 혈액형이 잉크로 적혀 있다. 마치 누군가 이 벽 전체를 증거물로 남겨둔 것처럼.'],
-        ['나', '여기까지 오는 동안 알아낸 것들을 하나씩 되짚어본다. 이 벽 앞에 서면, 엄마에게도 마침내 제대로 설명해줄 수 있을 것 같았다.'],
+        ['나', '액자 뒷면마다 할머니 글씨로 이름과 혈액형이 적혀 있었다. 다락방의 가계도와 지하실의 혈액형, 골동품 방의 노트가 이 벽 위에서 한 장으로 겹쳐졌다.'],
+    ],
+    questions: [
+        {
+            highlight: ['할머니', '외할아버지', '외삼촌', '이모'],
+            setup: [['나', '할머니는 Bo, 외할아버지는 O형. 두 분의 결혼사진 액자 아래에 작은 놋쇠 판이 붙어 있었다. "1972년 봄."']],
+            prompt: '할머니(Bo)와 외할아버지(oo) 사이에서 태어날 수 있는 아이의 혈액형은?',
+            choices: [
+                { text: 'A형과 AB형', correct: false },
+                { text: 'B형과 O형', correct: true },
+                { text: 'A, B, AB, O형 모두', correct: false },
+            ],
+            realize: '외할아버지는 o만, 할머니는 B 아니면 o를 줄 수 있다. 아이는 B형 아니면 O형. 외삼촌은 B형, 이모는 O형. 들어맞는다.',
+            note: '외할아버지(oo)는 자녀에게 항상 o를 준다. 할머니(Bo)는 B 또는 o를 준다. 따라서 자녀는 Bo(B형) 또는 oo(O형)만 가능하며, A형이나 AB형은 나올 수 없다.',
+            hint: '두 분이 각각 줄 수 있는 유전자를 적어 놓고 짝지어 보세요.',
+        },
+        {
+            highlight: ['엄마'],
+            setup: [['나', '마지막으로 엄마의 초상화를 내렸다. 뒷면에는 다른 액자와 같은 글씨로, 하지만 훨씬 작게 적혀 있었다. "미연, A형."']],
+            prompt: '엄마는 A형이다. 엄마가 할머니와 외할아버지 사이에서 태어났을 수 있을까?',
+            choices: [
+                { text: '있다', correct: false },
+                { text: '없다', correct: true },
+            ],
+            realize: '두 분 누구에게도 A가 없다. 엄마는 할머니가 낳은 딸이 아니다. 그날의 검사는 잘못되지 않았다.',
+            note: '할머니(Bo)와 외할아버지(oo) 사이에서는 B형과 O형만 나온다. A형이 되려면 부모 중 누군가에게서 A를 받아야 하는데, 두 사람 모두 A가 없다. 색맹처럼 들어맞는 증거는 여러 개가 모여도 증명이 되지 않지만, 이렇게 들어맞지 않는 증거는 하나만으로도 가설을 부정한다.',
+            hint: '앞에서 두 분 사이에서 나올 수 있는 혈액형을 이미 구했어요.',
+        },
     ],
     reward: [
-        ['나', '가슴이 쿵쾅거렸다. 이 모든 걸 어떻게 받아들여야 할지 알 수 없었다.'],
-        ['나', '그때, 갤러리 구석 액자 틀 사이로 무언가 삐져나와 있는 게 보였다.'],
+        ['나', '손이 떨렸다. 열다섯 살의 엄마가 교실에서 들은 말이 맞았다. 그리고 그날 밤 할머니가 한 말은 거짓말이었다.'],
+        ['나', '엄마의 액자를 다시 걸려다가, 액자 틀 뒤에 끼워진 봉투를 발견했다.'],
     ],
+    after: [],
     exit: 'letter',
-    exitCue: '(기울어진 액자 틀 사이의 종이를 꺼내 보자.)',
+    exitCue: '(액자 틀 뒤의 봉투를 꺼내 보자.)',
 },
 ];
-const CHAPTERS = ROOMS.map((r, i) => Object.assign({}, r, PUZZLES[i]));
 
 const ENDING = [
-    ['나', '조심스럽게 액자 틀을 들추자, 빛바랜 편지 한 장이 나왔다. 할머니가 남긴, 이 저택에서 가장 오래되고 가장 낡은 글씨였다.'],
-    ['할머니의 편지', '전쟁이 끝나갈 무렵, 부모를 잃고 홀로 남겨진 이웃집 아이를 우리는 우리 아이로 받아들이기로 했단다.'],
-    ['할머니의 편지', '핏줄은 이어지지 않았지만, 그 아이는 누구보다 이 가족을 사랑했고 우리도 그랬어.'],
-    ['나', '그 아래, 다른 날짜로 덧붙여진 짧은 문장이 있었다. 잉크 색이 달랐다.'],
-    ['할머니의 편지', '언젠가 이 이야기가 잘못된 방식으로 네 엄마에게 전해졌다는 걸 알았을 때, 나는 그 아이를 지키려다 정작 가장 가까운 사람의 마음을 놓쳐버렸다는 걸 깨달았다.'],
-    ['할머니의 편지', '그걸 어떻게 다시 말해야 할지 몰라서, 나는 그만 입을 닫아버렸어. 미안하다는 말조차, 제때 하지 못한 채로.'],
-    ['나', '가슴 한쪽이 저릿했다. 엄마가 왜 그토록 이 집을, 할머니를 밀어냈는지 — 이제는 알 것 같았다.'],
-    ['나', '상처받은 건 엄마였고, 그 상처를 어떻게 풀어야 할지 몰랐던 건 할머니였다.'],
-    ['나', '휴대폰을 꺼내 엄마의 번호를 눌렀다. 무슨 말부터 해야 할지는 아직 모르겠다.'],
-    ['나', '하지만 이제는 알고 있는 것이 하나 있었다 — 가족을 만드는 것은 핏줄이 아니라 함께 나눈 시간과 사랑이라는 것, 그리고 그 말을 제때 전하지 못한 후회가 얼마나 오래 사람을 붙잡아 둘 수 있는지도.'],
-    ['나', '전화 연결음이 울리기 시작했다.'],
+    ['나', '봉투 겉면에는 "미연에게"라고 적혀 있었다. 우표는 붙어 있었지만, 한 번도 부치지 않은 편지였다.'],
+    ['할머니의 편지', '미연아. 1978년 겨울, 학교 앞 보육원에 불이 났다. 그날 밤 네가 우리 집에 왔다. 두 살이었고, 울지도 않았다.'],
+    ['할머니의 편지', '언젠가 말하려고 했다. 네가 열 살이 되면, 열다섯이 되면. 그런데 그날 네가 실험 결과지를 들고 와서 물었을 때, 나는 고개를 들 수가 없었다.'],
+    ['할머니의 편지', '나는 평생 아이들에게 과학은 거짓말을 하지 않는다고 가르쳤다. 그리고 그날 밤, 그 과학을 빌려 너에게 거짓말을 했다. 네가 화난 건 그거였지. 우리가 너를 낳지 않았다는 게 아니라.'],
+    ['할머니의 편지', '너는 내 보조개도, 내 혈액형도 닮지 않았다. 그런데 시험지를 채점할 때 빨간 펜을 쥐는 모양은 나와 똑같더구나. 그건 어디서 왔을까. 나는 그 답을 모른다. 처음으로, 모르는 게 좋다.'],
+    ['나', '편지를 두 번 읽었다. 그리고 엄마에게 전화를 걸었다.'],
+    ['나', '신호가 오래 갔다. 끊으려는 순간, 엄마가 받았다.'],
+    ['엄마', '…찾았구나.'],
+    ['나', '응. 할머니가 엄마한테 쓴 편지가 있어.'],
+    ['나', '수화기 너머가 한참 조용했다. 시계추 소리만 들렸다.'],
+    ['엄마', '거기 있어. 지금 갈게.'],
 ];
 const ROMAN = ['Ⅰ', 'Ⅱ', 'Ⅲ', 'Ⅳ', 'Ⅴ'];
-const SPEAKER_KIND = { '할머니의 편지': 'gran', '할머니의 메모': 'gran', '쪽지': 'gran', '편지': 'gran', '풀이': 'sol', '획득': 'item' };
+const SPEAKER_KIND = { '할머니의 편지': 'gran', '할머니의 메모': 'gran', '엄마': 'mom', '엄마의 일기': 'mom', '획득': 'item' };
 
 /* 긴 문단을 대화창 한 칸에 들어갈 만큼 문장 단위로 나눈다 */
 function chunk(text, max = 140) {
@@ -1999,21 +1526,22 @@ function chunk(text, max = 140) {
 /* 한 방의 진행을 '장면 단위(beat)' 목록으로 펼친다 */
 function buildBeats(ci) {
     const ch = CHAPTERS[ci], B = [];
-    const say = (who, text) => chunk(text).forEach(t => B.push({ t: 'say', who, text: t }));
-    ch.script.forEach(([w, t]) => say(w, t));
+    const say = (who, text, note) => chunk(text).forEach((t, i, all) => B.push({ t: 'say', who, text: t, note: i === all.length - 1 ? note : undefined }));
+    const lines = list => list.forEach(([w, t]) => say(w, t));
+    lines(ch.script);
     B.push({ t: 'wait', target: ch.hotspot, text: ch.cue });
     B.push({ t: 'doc', ped: ch.pedigree, hl: [], title: ch.docTitle });
-    ch.afterOpen.forEach(([w, t]) => say(w, t));
+    lines(ch.afterOpen);
     ch.questions.forEach((q, qi) => {
-        const title = (ch.docTitles && ch.docTitles[qi]) || ch.docTitle;
-        B.push({ t: 'doc', ped: q.pedigreeOverride || ch.pedigree, hl: q.highlight || [], title });
-        (q.setup || '').split('\n').filter(Boolean).forEach(line => say(/^["“]/.test(line) ? ch.voice : '나', line));
+        B.push({ t: 'doc', ped: q.pedigreeOverride || ch.pedigree, hl: q.highlight || [], title: ch.docTitle });
+        lines(q.setup);
         B.push({ t: 'q', q, qi, n: ch.questions.length });
-        say('풀이', q.explanation);
+        say('나', q.realize, q.note);
     });
     B.push({ t: 'doc', ped: null });
-    ch.reward.forEach(([w, t]) => say(w, t));
+    lines(ch.reward);
     if (ch.item) B.push({ t: 'item', item: ch.item });
+    lines(ch.after || []);
     B.push({ t: 'wait', target: ch.exit || 'door', text: ch.exitCue });
     B.push({ t: ci === CHAPTERS.length - 1 ? 'end' : 'next' });
     return B;
@@ -2039,7 +1567,7 @@ const fader = $('fader'), chapterCard = $('chapterCard');
 const roomLabel = $('roomLabel'), inv = $('inv'), resetBtn = $('resetBtn');
 const viewport = $('viewport'), doc = $('doc'), docTitle = $('docTitle'), docFold = $('docFold'), docTab = $('docTab'), pedSvg = $('pedSvg');
 const dialog = $('dialog'), dlgWho = $('dlgWho'), dlgText = $('dlgText'), dlgChoices = $('dlgChoices');
-const dlgTools = $('dlgTools'), hintBtn = $('hintBtn'), dlgNote = $('dlgNote'), dlgAdv = $('dlgAdv');
+const dlgTools = $('dlgTools'), hintBtn = $('hintBtn'), noteBtn = $('noteBtn'), dlgNote = $('dlgNote'), dlgAdv = $('dlgAdv');
 
 /* ============ 장면 ============ */
 const sceneCache = {};
@@ -2069,6 +1597,8 @@ function setDoc(b, quiet) {
     docOpen = true;
     viewport.classList.add('doc-open');
     docTitle.textContent = b.title || '가계도';
+    $('docTraitLg').hidden = !b.ped.trait;
+    $('docTrait').textContent = b.ped.trait || '';
     renderPedigree(pedSvg, b.ped, b.hl);
     doc.classList.toggle('quiet', !!quiet);
     doc.hidden = false;
@@ -2112,7 +1642,7 @@ const dlg = { mode: 'idle', typing: false, timer: null, full: '', afterType: nul
 function setWho(name) {
     dlgWho.textContent = name || '';
     dlgWho.hidden = !name;
-    dlgWho.dataset.kind = SPEAKER_KIND[name] || (name && name.startsWith('수수께끼') ? 'q' : 'me');
+    dlgWho.dataset.kind = SPEAKER_KIND[name] || (name && name.startsWith('나의 추리') ? 'q' : 'me');
 }
 function typeText(str, cls) {
     clearInterval(dlg.timer);
@@ -2139,17 +1669,31 @@ function finishTyping() {
 function clearDialog() {
     dlgChoices.innerHTML = '';
     dlgTools.hidden = true;
+    noteBtn.hidden = true;
     dlgNote.textContent = '';
     dlgNote.className = 'dlg-note';
     dlgAdv.hidden = true;
 }
-function say(who, text, next) {
+function say(who, text, next, note) {
     clearDialog();
     dlg.mode = 'line';
     setWho(who);
     dlg.onAdvance = next;
     dlg.afterType = () => { dlgAdv.hidden = false; };
-    typeText(text, SPEAKER_KIND[who] === 'gran' ? 'gran' : '');
+    if (note) {
+        // 정답 뒤의 깨달음: 교과서식 설명은 원하는 사람만 펼쳐 본다
+        dlgTools.hidden = false;
+        hintBtn.hidden = true;
+        noteBtn.hidden = false;
+        noteBtn.onclick = e => {
+            e.stopPropagation();
+            dlgNote.className = 'dlg-note hint';
+            dlgNote.textContent = note;
+            noteBtn.hidden = true;
+        };
+    }
+    const kind = SPEAKER_KIND[who];
+    typeText(text, kind === 'gran' || kind === 'mom' ? kind : '');
 }
 function advance() {
     if (dlg.typing) { finishTyping(); return; }
@@ -2208,9 +1752,10 @@ doc.addEventListener('click', e => { if (!e.target.closest('button')) advance();
 function ask(b, done) {
     clearDialog();
     dlg.mode = 'q';
-    setWho(`수수께끼 ${b.qi + 1} / ${b.n}`);
+    setWho(`나의 추리 · ${b.qi + 1}/${b.n}`);
     dlgTools.hidden = false;
     hintBtn.hidden = false;
+    noteBtn.hidden = true;
     hintBtn.onclick = e => {
         e.stopPropagation();
         dlgNote.className = 'dlg-note hint';
@@ -2246,7 +1791,7 @@ function run(i) {
     state.beat = i;
     save();
     const b = beats[i];
-    if (b.t === 'say') return say(b.who, b.text, () => run(i + 1));
+    if (b.t === 'say') return say(b.who, b.text, () => run(i + 1), b.note);
     if (b.t === 'doc') { setDoc(b); return run(i + 1); }
     if (b.t === 'item') {
         renderHeader(`${ROMAN[state.chapter]} · ${CHAPTERS[state.chapter].room}`, '가문의 초상', itemsBefore(state.chapter) + 1, true);
@@ -2323,21 +1868,30 @@ function finale() {
     sceneTitle.className = 'scene-title center';
     sceneTitle.innerHTML = '<div class="kicker">EPILOGUE</div><h1>— 끝 —</h1>';
     sceneTitle.hidden = false;
-    setWho('가문의 초상 — 완료');
+    setWho('');
+    dlg.afterType = () => renderChoices([
+        { text: '처음부터 다시', pick: () => showTitle() },
+        { text: '📖 이 이야기에 쓰인 과학', pick: () => showConcepts() },
+    ]);
+    typeText('엄마가 오기까지 두 시간. 나는 할머니의 서재에 불을 켜 두었다.');
+}
+function showConcepts() {
+    clearDialog();
+    setWho('선생님용 정리');
     dlg.afterType = () => {
         const recap = document.createElement('div');
         recap.className = 'recap';
-        ['우성 · 열성 판별', '유전자형 추론', 'ABO식 혈액형 유전', '반성유전 구별', '4세대 가계도 종합 분석'].forEach(t => {
-            const s = document.createElement('span');
-            s.textContent = '✔ ' + t;
-            recap.appendChild(s);
+        ['가계도 기호 읽기 — 서재', '우성 · 열성 판별 — 서재', '유전자형 추론 — 다락방', 'ABO식 혈액형 유전 — 지하 저장고 · 갤러리', '반성유전(적록색맹) — 골동품 방', '증거와 증명의 차이 — 골동품 방 · 갤러리'].forEach(t => {
+            const sp = document.createElement('span');
+            sp.textContent = '✔ ' + t;
+            recap.appendChild(sp);
         });
         dlgChoices.appendChild(recap);
         const again = document.createElement('div');
         dlgChoices.appendChild(again);
-        renderChoicesInto(again, [{ text: '처음부터 다시 플레이', pick: () => showTitle() }]);
+        renderChoicesInto(again, [{ text: '처음부터 다시', pick: () => showTitle() }]);
     };
-    typeText('다섯 개의 방에서 풀어낸 유전의 단서들:');
+    typeText('다섯 개의 방에 쓰인 중학교 3학년 유전 개념입니다. 각 추리 뒤의 "📖 개념 정리"에서 자세한 설명을 볼 수 있어요.');
 }
 function renderChoicesInto(container, list) {
     list.forEach(c => {
@@ -2368,7 +1922,7 @@ function showTitle() {
         if (saved) list.push({ text: `이어서 하기 — ${ROMAN[saved.chapter]} · ${CHAPTERS[saved.chapter].room}`, pick: () => gotoChapter(saved.chapter, saved.beat) });
         renderChoices(list);
     };
-    typeText('엄마는 할머니의 장례식에 끝내 오지 않았다. 이유는 한 번도 말해주지 않았다.\n할머니가 남긴 편지 한 장이 나에게만 이 저택의 열쇠를 건넨다. 4대에 걸친 가족의 유전 이야기를 하나씩 풀어나가며, 두 사람 사이에 무슨 일이 있었는지 알아내야 한다.');
+    typeText('할머니가 돌아가셨다. 엄마는 장례식에 오지 않았다.\n할머니는 언덕 위의 집을 나에게 남겼다. 그리고 편지 한 장. "네 엄마에게 했어야 할 말이, 그 집에 다 있다."');
 }
 
 /* ============ 입력 ============ */
