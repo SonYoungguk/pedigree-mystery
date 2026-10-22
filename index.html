@@ -386,7 +386,7 @@ function renderPedigree(svg, data, highlight) {
 }
 
 /* ============ 장면 그림 (1600 × 900) ============ */
-// 정적인 배경(bg)은 질감·조명 필터를 듬뿍 써서 이미지 한 장으로 굽고,
+// 화풍: 평면 그림책풍. 정적인 배경(bg)은 깨끗한 면과 은은한 조명으로 이미지 한 장으로 굽고,
 // 움직이는 것(불꽃·시계추·까마귀)과 누를 수 있는 곳(핫스팟)만 그 위 SVG(fg)에 둔다.
 function rng(seed) { return () => (seed = (seed * 16807) % 2147483647) / 2147483647; }
 const f1 = n => (+n).toFixed(1);
@@ -399,35 +399,9 @@ const rectD = (x, y, w, h) => `M${f1(x)} ${f1(y)}h${f1(w)}v${f1(h)}h${f1(-w)}Z`;
 const hit = (id, label, ...ds) => `<g class="hs" data-hs="${id}" role="button" aria-label="${label}">${ds.map(d => `<path class="hit" d="${d}"/>`).join('')}</g>`;
 const shadow = (cx, cy, rx, ry, o = .55) => `<ellipse cx="${f1(cx)}" cy="${f1(cy)}" rx="${f1(rx)}" ry="${f1(ry)}" fill="#000" opacity="${o}" filter="url(#b12)"/>`;
 
-// 질감 필터 · 공용 그라디언트 (배경 문서 안에서만 쓰인다)
+// 흐림 필터 · 공용 그라디언트 (배경 문서 안에서만 쓰인다)
 function kit(o = {}) {
-    const grain = (id, bf, seed, k, b) => `<filter id="${id}" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
-<feTurbulence type="fractalNoise" baseFrequency="${bf}" numOctaves="3" seed="${seed}" result="t"/>
-<feColorMatrix in="t" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  ${k} 0 0 0 ${b}" result="a"/>
-<feComposite in="a" in2="SourceAlpha" operator="in" result="d"/>
-<feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="d"/></feMerge></filter>`;
     return `<defs>
-${grain('wood', '0.004 0.09', 4, 1.5, -0.5)}
-${grain('woodV', '0.09 0.004', 6, 1.5, -0.5)}
-<filter id="mottle" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
- <feTurbulence type="fractalNoise" baseFrequency="0.0032" numOctaves="4" seed="11" result="t"/>
- <feColorMatrix in="t" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1.7 0 0 0 -0.62" result="a"/>
- <feComposite in="a" in2="SourceAlpha" operator="in" result="d"/>
- <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="3" result="t2"/>
- <feColorMatrix in="t2" type="matrix" values="0 0 0 0 1  0 0 0 0 .95  0 0 0 0 .85  0.5 0 0 0 -0.3" result="a2"/>
- <feComposite in="a2" in2="SourceAlpha" operator="in" result="d2"/>
- <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="d"/><feMergeNode in="d2"/></feMerge></filter>
-<filter id="emboss" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
- <feGaussianBlur in="SourceAlpha" stdDeviation="1.6" result="b"/>
- <feDiffuseLighting in="b" surfaceScale="2.6" diffuseConstant="1.1" lighting-color="#ffffff" result="l"><feDistantLight azimuth="235" elevation="50"/></feDiffuseLighting>
- <feComposite in="SourceGraphic" in2="l" operator="arithmetic" k1="1.15" result="lit"/>
- <feComposite in="lit" in2="SourceAlpha" operator="in"/></filter>
-<filter id="bevel" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
- <feGaussianBlur in="SourceAlpha" stdDeviation="2.4" result="b"/>
- <feSpecularLighting in="b" surfaceScale="5" specularConstant="1" specularExponent="26" lighting-color="#fff0c8" result="s"><feDistantLight azimuth="${o.az || 225}" elevation="36"/></feSpecularLighting>
- <feComposite in="s" in2="SourceAlpha" operator="in" result="s2"/>
- <feComposite in="SourceGraphic" in2="s2" operator="arithmetic" k2="1" k3="0.7"/></filter>
-<filter id="noise" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" seed="5"/><feColorMatrix type="saturate" values="0"/></filter>
 <filter id="b4" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="4"/></filter>
 <filter id="b12" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="12"/></filter>
 <filter id="b30" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="30"/></filter>
@@ -468,9 +442,9 @@ function roomShell(o) {
         s += `<line x1="${x}" y1="${f1(ray(WL, WT, x))}" x2="${x2}" y2="${f1(ray(WR, WT, x2))}" stroke="#000" stroke-opacity=".35" stroke-width="${6 + k * 3}"/>`;
     }
     // 뒷벽
-    s += `<g filter="url(#mottle)"><rect x="${WL}" y="${WT}" width="${WR - WL}" height="${WB - WT}" fill="${p.wall}"/>`;
+    s += `<g><rect x="${WL}" y="${WT}" width="${WR - WL}" height="${WB - WT}" fill="${p.wall}"/>`;
     if (p.paper === 'damask') {
-        s += `<rect x="${WL}" y="${WT}" width="${WR - WL}" height="${WB - WT}" fill="url(#damask)" filter="url(#emboss)"/>`;
+        s += `<rect x="${WL}" y="${WT}" width="${WR - WL}" height="${WB - WT}" fill="url(#damask)"/>`;
         for (let x = WL + 60; x < WR; x += 120) s += `<rect x="${x - 1}" y="${WT}" width="2" height="${WB - WT}" fill="#000" opacity=".12"/>`;
     }
     if (p.paper === 'brick') {
@@ -485,30 +459,30 @@ function roomShell(o) {
     if (p.paper === 'planks') {
         for (let x = WL; x < WR; x += 66) {
             const v = (r() - .5) * 18;
-            s += `<rect x="${x}" y="${WT}" width="64" height="${WB - WT}" fill="rgb(${58 + v | 0},${42 + v * .8 | 0},${32 + v * .6 | 0})" filter="url(#woodV)"/><rect x="${x + 63}" y="${WT}" width="3" height="${WB - WT}" fill="#000" opacity=".55"/>`;
+            s += `<rect x="${x}" y="${WT}" width="64" height="${WB - WT}" fill="rgb(${58 + v | 0},${42 + v * .8 | 0},${32 + v * .6 | 0})"/><rect x="${x + 63}" y="${WT}" width="3" height="${WB - WT}" fill="#000" opacity=".55"/>`;
         }
     }
     s += `</g>`;
     // 옆벽
-    s += `<g filter="url(#mottle)"><polygon points="${L}" fill="${p.wall}"/><polygon points="${R}" fill="${p.wall}"/></g>`;
+    s += `<g><polygon points="${L}" fill="${p.wall}"/><polygon points="${R}" fill="${p.wall}"/></g>`;
     if (p.paper === 'brick') for (let y = WT + 32; y < WB; y += 32) {
         s += `<line x1="${WL}" y1="${y}" x2="0" y2="${yl(y)}" stroke="#140c0a" stroke-width="3"/><line x1="${WR}" y1="${y}" x2="1600" y2="${yr(y)}" stroke="#140c0a" stroke-width="3"/>`;
     }
     s += `<polygon points="${L}" fill="#000" opacity="${p.side}"/><polygon points="${R}" fill="#000" opacity="${p.side + .06}"/>`;
     // 몰딩
     if (p.crown !== false) {
-        s += `<rect x="${WL}" y="${WT}" width="${WR - WL}" height="24" fill="${p.trimHi}" filter="url(#bevel)"/><rect x="${WL}" y="${WT + 24}" width="${WR - WL}" height="8" fill="#000" opacity=".4"/>`;
+        s += `<rect x="${WL}" y="${WT}" width="${WR - WL}" height="24" fill="${p.trimHi}"/><rect x="${WL}" y="${WT + 24}" width="${WR - WL}" height="8" fill="#000" opacity=".4"/>`;
         s += `<polygon points="0,${yl(WT)} ${WL},${WT} ${WL},${WT + 24} 0,${yl(WT + 24)}" fill="${p.trimHi}"/><polygon points="1600,${yr(WT)} ${WR},${WT} ${WR},${WT + 24} 1600,${yr(WT + 24)}" fill="${p.trimHi}"/>`;
         s += `<polygon points="0,${yl(WT)} ${WL},${WT} ${WL},${WT + 24} 0,${yl(WT + 24)}" fill="#000" opacity=".45"/><polygon points="1600,${yr(WT)} ${WR},${WT} ${WR},${WT + 24} 1600,${yr(WT + 24)}" fill="#000" opacity=".5"/>`;
     }
     if (p.wains) {
-        s += `<rect x="${WL}" y="540" width="${WR - WL}" height="${WB - 540}" fill="${p.trim}" filter="url(#wood)"/>`;
+        s += `<rect x="${WL}" y="540" width="${WR - WL}" height="${WB - 540}" fill="${p.trim}"/>`;
         const n = Math.floor((WR - WL - 24) / 150), x0 = WL + ((WR - WL) - (n * 150 - 24)) / 2;
         for (let i = 0; i < n; i++) {
             const x = x0 + i * 150;
-            s += `<rect x="${x}" y="566" width="126" height="102" fill="${p.trim}" filter="url(#bevel)"/><path d="M${x} 668 V566 H${x + 126}" stroke="#000" stroke-opacity=".5" stroke-width="3" fill="none"/><path d="M${x + 126} 566 V668 H${x}" stroke="${p.trimHi}" stroke-width="2" fill="none" opacity=".7"/>`;
+            s += `<rect x="${x}" y="566" width="126" height="102" fill="${p.trim}"/><path d="M${x} 668 V566 H${x + 126}" stroke="#000" stroke-opacity=".5" stroke-width="3" fill="none"/><path d="M${x + 126} 566 V668 H${x}" stroke="${p.trimHi}" stroke-width="2" fill="none" opacity=".7"/>`;
         }
-        s += `<rect x="${WL}" y="528" width="${WR - WL}" height="16" fill="${p.trimHi}" filter="url(#bevel)"/><rect x="${WL}" y="544" width="${WR - WL}" height="5" fill="#000" opacity=".4"/>`;
+        s += `<rect x="${WL}" y="528" width="${WR - WL}" height="16" fill="${p.trimHi}"/><rect x="${WL}" y="544" width="${WR - WL}" height="5" fill="#000" opacity=".4"/>`;
         for (const [side, X, Y] of [['l', 0, yl], ['r', 1600, yr]]) {
             const W = side === 'l' ? WL : WR;
             s += `<polygon points="${X},${Y(540)} ${W},540 ${W},${WB} ${X},${Y(WB)}" fill="${p.trim}"/><polygon points="${X},${Y(528)} ${W},528 ${W},544 ${X},${Y(544)}" fill="${p.trimHi}"/>`;
@@ -520,7 +494,7 @@ function roomShell(o) {
     // 마루
     const FL = `0,${yl(WB)} ${WL},${WB} ${WR},${WB} 1600,${yr(WB)} 1600,900 0,900`;
     if (p.floorType === 'wood') {
-        s += `<polygon points="${FL}" fill="${p.floor}" filter="url(#woodV)"/>`;
+        s += `<polygon points="${FL}" fill="${p.floor}"/>`;
         for (let xb = WL - 300; xb <= WR + 300; xb += 62) {
             s += `<line x1="${f1(fx(xb, WB))}" y1="${WB}" x2="${f1(fx(xb, 900))}" y2="900" stroke="#000" stroke-opacity=".5" stroke-width="2.2"/>`;
             const y = 712 + r() * 170;
@@ -528,12 +502,12 @@ function roomShell(o) {
         }
     } else if (p.floorType === 'jangpan') {
         // 콩기름 먹인 장판: 누런 종이 이음새와 은은한 광택
-        s += `<polygon points="${FL}" fill="${p.floor}" filter="url(#mottle)"/>`;
+        s += `<polygon points="${FL}" fill="${p.floor}"/>`;
         for (let xb = WL - 360; xb <= WR + 360; xb += 120) s += `<line x1="${f1(fx(xb, WB))}" y1="${WB}" x2="${f1(fx(xb, 900))}" y2="900" stroke="#5a3a1a" stroke-opacity=".35" stroke-width="1.6"/>`;
         for (const y of [728, 776, 846]) s += `<line x1="0" y1="${y}" x2="1600" y2="${y}" stroke="#5a3a1a" stroke-opacity=".3" stroke-width="1.6"/>`;
         s += `<polygon points="${FL}" fill="url(#sheen)" style="mix-blend-mode:screen" opacity=".5"/>`;
     } else {
-        s += `<polygon points="${FL}" fill="${p.floor}" filter="url(#mottle)"/>`;
+        s += `<polygon points="${FL}" fill="${p.floor}"/>`;
         const rows = [700, 724, 758, 806, 872, 960];
         for (let i = 0; i < rows.length - 1; i++) {
             const y0 = rows[i], y1 = rows[i + 1], off = (i % 2) * 70;
@@ -557,7 +531,7 @@ function rug(o) {
     const P = (xb, y) => `${f1(fx(xb, y))},${y}`;
     const poly = (a, b, ya, yb) => `${P(a, ya)} ${P(b, ya)} ${P(b, yb)} ${P(a, yb)}`;
     let s = `<polygon points="${poly(x1, x2, y1, y2)}" fill="#000" opacity=".4" filter="url(#b4)" transform="translate(0 6)"/>`;
-    s += `<g filter="url(#mottle)"><polygon points="${poly(x1, x2, y1, y2)}" fill="${c}"/>
+    s += `<g><polygon points="${poly(x1, x2, y1, y2)}" fill="${c}"/>
 <polygon points="${poly(x1 + 26, x2 - 26, y1 + 7, y2 - 12)}" fill="none" stroke="${c2}" stroke-width="5"/>
 <polygon points="${poly(x1 + 48, x2 - 48, y1 + 13, y2 - 24)}" fill="${c2}" opacity=".22"/>
 <polygon points="${poly(x1 + 48, x2 - 48, y1 + 13, y2 - 24)}" fill="none" stroke="${c2}" stroke-width="2.5" opacity=".7"/></g>`;
@@ -567,7 +541,7 @@ function rug(o) {
     return s;
 }
 
-// 광원 주변만 밝게 남기고 나머지를 어둡게 덮은 뒤, 따뜻한 빛과 그레인을 얹는다
+// 광원 주변은 밝게, 나머지는 옅게 어둡게 덮고 따뜻한 빛을 얹는다
 function lighting(lights, amb = .7, tint = '#05030a') {
     let defs = '', mask = '', glow = '';
     lights.forEach((l, i) => {
@@ -577,8 +551,8 @@ function lighting(lights, amb = .7, tint = '#05030a') {
         glow += `<ellipse cx="${l.x}" cy="${l.y}" rx="${f1(l.r * .7)}" ry="${f1((l.ry || l.r) * .7)}" fill="url(#lg${i})" style="mix-blend-mode:screen"/>`;
     });
     return `<defs>${defs}<mask id="lm" maskUnits="userSpaceOnUse" x="0" y="0" width="1600" height="900"><rect width="1600" height="900" fill="#fff"/>${mask}</mask></defs>
-<rect width="1600" height="900" fill="${tint}" opacity="${amb}" mask="url(#lm)"/>${glow}
-<rect width="1600" height="900" filter="url(#noise)" opacity=".2" style="mix-blend-mode:overlay"/>`;
+<rect width="1600" height="900" fill="${tint}" opacity="${f1(amb * .42)}" mask="url(#lm)"/>${glow}
+<rect width="1600" height="900" fill="#f0d8b0" opacity=".06"/>`;
 }
 
 /* ---- 소품 ---- */
@@ -586,7 +560,7 @@ function bookcase(x, y, w, h, seed, gapRow) {
     const r = rng(seed), rows = Math.max(2, Math.round((h - 70) / 118)), rh = (h - 70) / rows;
     const pal = ['#7a2a2a', '#3d4a3a', '#8a6a32', '#2e3a52', '#5a3352', '#a08a5a', '#5a3020', '#2c2a2a', '#6a5a3a', '#40302a'];
     let s = `<rect x="${x - 40}" y="${y}" width="${w + 20}" height="${h}" fill="#000" opacity=".45" filter="url(#b30)"/>`;
-    s += `<g filter="url(#wood)"><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#4a2c1c"/>
+    s += `<g><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#4a2c1c"/>
 <rect x="${x - 18}" y="${y - 30}" width="${w + 36}" height="34" fill="#5a3622"/><rect x="${x - 10}" y="${y + h - 36}" width="${w + 20}" height="36" fill="#40261a"/></g>
 <rect x="${x - 18}" y="${y - 30}" width="${w + 36}" height="6" fill="#8a5a36" opacity=".7"/><rect x="${x - 18}" y="${y - 2}" width="${w + 36}" height="7" fill="#000" opacity=".4"/>
 <rect x="${x + 16}" y="${y + 14}" width="${w - 32}" height="${h - 52}" fill="#110906"/>`;
@@ -616,7 +590,7 @@ function bookcase(x, y, w, h, seed, gapRow) {
             cx += bw + (lean ? 6 : 0);
         }
         s += `<rect x="${x + 16}" y="${f1(top)}" width="${w - 32}" height="26" fill="url(#vshade)" opacity=".0"/><rect x="${x + 16}" y="${f1(top)}" width="${w - 32}" height="18" fill="#000" opacity=".45"/>`;
-        s += `<rect x="${x + 10}" y="${f1(bot - 12)}" width="${w - 20}" height="14" fill="#5a3622" filter="url(#wood)"/><rect x="${x + 10}" y="${f1(bot - 12)}" width="${w - 20}" height="3" fill="#9a6a42" opacity=".6"/>`;
+        s += `<rect x="${x + 10}" y="${f1(bot - 12)}" width="${w - 20}" height="14" fill="#5a3622"/><rect x="${x + 10}" y="${f1(bot - 12)}" width="${w - 20}" height="3" fill="#9a6a42" opacity=".6"/>`;
         if (gapRow === k) {
             const ax = x + w * .48, aw = w * .44, fy = bot - 12;
             hot = rectD(ax - 8, fy - 62, aw + 16, 62);
@@ -633,9 +607,9 @@ function bookcase(x, y, w, h, seed, gapRow) {
 
 function door(x, y, w, h, o = {}) {
     const c = o.c || '#5a3422';
-    let s = `<rect x="${x - 24}" y="${y - 30}" width="${w + 48}" height="${h + 30}" fill="${o.frame || '#4a2c1c'}" filter="url(#bevel)"/>
+    let s = `<rect x="${x - 24}" y="${y - 30}" width="${w + 48}" height="${h + 30}" fill="${o.frame || '#4a2c1c'}"/>
 <rect x="${x - 6}" y="${y - 8}" width="${w + 12}" height="${h + 8}" fill="#0c0705"/>
-<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}" filter="url(#woodV)"/>`;
+<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${c}"/>`;
     if (o.iron) {
         for (let xx = x; xx < x + w; xx += w / 5) s += `<rect x="${f1(xx)}" y="${y}" width="2" height="${h}" fill="#000" opacity=".5"/>`;
         for (const yy of [y + h * .18, y + h * .78]) {
@@ -645,7 +619,7 @@ function door(x, y, w, h, o = {}) {
     } else {
         const pw = (w - 54) / 2;
         for (const [px, py, ph] of [[x + 18, y + 22, h * .36], [x + 36 + pw, y + 22, h * .36], [x + 18, y + h * .47, h * .45], [x + 36 + pw, y + h * .47, h * .45]]) {
-            s += `<rect x="${f1(px)}" y="${f1(py)}" width="${f1(pw)}" height="${f1(ph)}" fill="${c}" filter="url(#bevel)"/><rect x="${f1(px)}" y="${f1(py)}" width="${f1(pw)}" height="${f1(ph)}" fill="none" stroke="#000" stroke-opacity=".45" stroke-width="3"/>`;
+            s += `<rect x="${f1(px)}" y="${f1(py)}" width="${f1(pw)}" height="${f1(ph)}" fill="${c}"/><rect x="${f1(px)}" y="${f1(py)}" width="${f1(pw)}" height="${f1(ph)}" fill="none" stroke="#000" stroke-opacity=".45" stroke-width="3"/>`;
         }
     }
     s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#hshade)"/>
@@ -701,7 +675,7 @@ function painting(x, y, w, h, o) {
     const eye = dx => `<path d="M${f1(cx + dx - 9 * k)} ${f1(hy)} Q${f1(cx + dx)} ${f1(hy - 8 * k)} ${f1(cx + dx + 9 * k)} ${f1(hy)} Q${f1(cx + dx)} ${f1(hy + 5 * k)} ${f1(cx + dx - 9 * k)} ${f1(hy)}Z" fill="#070505"/><circle cx="${f1(cx + dx - 2 * k)}" cy="${f1(hy - 2 * k)}" r="${f1(1.6 * k)}" fill="#fff" opacity=".75"/>`;
     return `<g${o.tilt ? ` transform="rotate(${o.tilt} ${f1(cx)} ${y})"` : ''}>
 <rect x="${x - 6}" y="${y + 10}" width="${w + 12}" height="${h}" fill="#000" opacity=".55" filter="url(#b12)" transform="translate(8 10)"/>
-<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#gold)" filter="url(#bevel)"/>
+<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#gold)"/>
 <rect x="${x + 12}" y="${y + 12}" width="${w - 24}" height="${h - 24}" fill="#5e4520"/><rect x="${x + 12}" y="${y + 12}" width="${w - 24}" height="${h - 24}" fill="none" stroke="#e8c878" stroke-width="2" opacity=".6"/>
 <rect x="${x + 20}" y="${y + 20}" width="${w - 40}" height="${h - 40}" fill="${o.bg}"/>
 <g clip-path="url(#clip-${o.id})">
@@ -723,7 +697,7 @@ ${hairTop}
 </g>
 <rect x="${x + 20}" y="${y + 20}" width="${w - 40}" height="${h - 40}" fill="url(#canvasVig)"/>
 <path d="M${x + 22} ${y + 22} L${x + w * .5} ${y + 22} L${x + 22} ${y + h * .45}Z" fill="#fff" opacity=".05"/>
-${o.label ? `<rect x="${f1(cx - 32)}" y="${y + h + 12}" width="64" height="20" fill="url(#gold)" filter="url(#bevel)"/><text x="${f1(cx)}" y="${y + h + 27}" text-anchor="middle" font-size="14" font-family="serif" fill="#2a1c12">${o.label}</text>` : ''}
+${o.label ? `<rect x="${f1(cx - 32)}" y="${y + h + 12}" width="64" height="20" fill="url(#gold)"/><text x="${f1(cx)}" y="${y + h + 27}" text-anchor="middle" font-size="14" font-family="serif" fill="#2a1c12">${o.label}</text>` : ''}
 </g>`;
 }
 const paintingClip = (x, y, w, h, id) => `<clipPath id="clip-${id}"><rect x="${x + 20}" y="${y + 20}" width="${w - 40}" height="${h - 40}"/></clipPath>`;
@@ -788,14 +762,14 @@ function bwPhoto(x, y, w, h, o) {
 <g${o.tilt ? ` transform="rotate(${o.tilt} ${f1(x + w / 2)} ${y})"` : ''}>
 <rect x="${x}" y="${y + 6}" width="${w}" height="${h}" fill="#000" opacity=".55" filter="url(#b12)" transform="translate(8 8)"/>
 <line x1="${f1(x + w / 2)}" y1="${y - 40}" x2="${x + 14}" y2="${y + 2}" stroke="#1a120c" stroke-width="1.5" opacity=".6"/><line x1="${f1(x + w / 2)}" y1="${y - 40}" x2="${x + w - 14}" y2="${y + 2}" stroke="#1a120c" stroke-width="1.5" opacity=".6"/><circle cx="${f1(x + w / 2)}" cy="${y - 40}" r="4" fill="url(#brass)"/>
-<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${o.frame || '#3a2418'}" filter="url(#bevel)"/>
+<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${o.frame || '#3a2418'}"/>
 <rect x="${ix}" y="${iy}" width="${iw}" height="${ih}" fill="#e6dcc4"/>
 <rect x="${f1(px)}" y="${f1(py)}" width="${f1(pw)}" height="${f1(ph)}" fill="url(#bwBg)"/>
 <g clip-path="url(#clip-${o.id})">${o.backdrop || ''}${people}</g>
 <rect x="${f1(px)}" y="${f1(py)}" width="${f1(pw)}" height="${f1(ph)}" fill="#8a5a2a" opacity=".24" style="mix-blend-mode:multiply"/>
 <rect x="${f1(px)}" y="${f1(py)}" width="${f1(pw)}" height="${f1(ph)}" fill="url(#canvasVig)"/>
 <path d="M${ix} ${iy} L${f1(ix + iw * .55)} ${iy} L${ix} ${f1(iy + ih * .5)}Z" fill="#fff" opacity=".07"/>
-${o.plaque ? `<rect x="${f1(x + w / 2 - 54)}" y="${y + h + 12}" width="108" height="22" fill="url(#gold)" filter="url(#bevel)"/><text x="${f1(x + w / 2)}" y="${y + h + 28}" text-anchor="middle" font-size="13" font-family="serif" fill="#2a1c12">${o.plaque}</text>` : ''}
+${o.plaque ? `<rect x="${f1(x + w / 2 - 54)}" y="${y + h + 12}" width="108" height="22" fill="url(#gold)"/><text x="${f1(x + w / 2)}" y="${y + h + 28}" text-anchor="middle" font-size="13" font-family="serif" fill="#2a1c12">${o.plaque}</text>` : ''}
 </g>`;
 }
 
@@ -807,8 +781,8 @@ const lampGlow = (x, y, r = 170) => `<g pointer-events="none"><ellipse cx="${x}"
 
 function blackboard(x, y, w, h) {
     return `<rect x="${x - 6}" y="${y + 8}" width="${w + 12}" height="${h}" fill="#000" opacity=".5" filter="url(#b12)" transform="translate(6 6)"/>
-<rect x="${x - 12}" y="${y - 12}" width="${w + 24}" height="${h + 24}" fill="#5a3a22" filter="url(#wood)"/>
-<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#1f3428" filter="url(#mottle)"/>
+<rect x="${x - 12}" y="${y - 12}" width="${w + 24}" height="${h + 24}" fill="#5a3a22"/>
+<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#1f3428"/>
 <ellipse cx="${x + w * .4}" cy="${y + h * .5}" rx="${w * .35}" ry="${h * .3}" fill="#e8ece0" opacity=".05" filter="url(#b12)"/>
 <g stroke="#e8ece0" stroke-width="3" fill="none" opacity=".55" stroke-linecap="round">
  <rect x="${x + 40}" y="${y + 30}" width="26" height="26"/><circle cx="${x + 120}" cy="${y + 43}" r="13"/><path d="M${x + 66} ${y + 43} H${x + 107} M${x + 87} ${y + 43} V${y + 82} M${x + 50} ${y + 82} H${x + 130} M${x + 50} ${y + 82} V${y + 98} M${x + 130} ${y + 82} V${y + 98}"/>
@@ -897,21 +871,21 @@ function studyScene(o = {}) {
         + bc.s
         + bwPhoto(540, 176, 140, 176, { id: 'granStudy', people: [{ x: .5, y: .12, age: 'mid', sex: 'F', perm: true, glasses: true, dimple: true, cloth: '#5a5650', smile: true }], k: .62 })
         + `<rect x="700" y="80" width="200" height="360" fill="#000" opacity=".45" filter="url(#b30)" transform="translate(-30 10)"/>
-<g filter="url(#wood)"><path d="M716 96 L800 52 L884 96Z" fill="#4a2c1c"/><rect x="726" y="94" width="148" height="340" rx="12" fill="#4a2c1c"/></g>
+<g><path d="M716 96 L800 52 L884 96Z" fill="#4a2c1c"/><rect x="726" y="94" width="148" height="340" rx="12" fill="#4a2c1c"/></g>
 <rect x="726" y="94" width="148" height="340" rx="12" fill="url(#hshade)"/>
-<circle cx="800" cy="176" r="64" fill="url(#gold)" filter="url(#bevel)"/><circle cx="800" cy="176" r="56" fill="#e6dab8"/><circle cx="800" cy="176" r="56" fill="url(#canvasVig)" opacity=".6"/>
+<circle cx="800" cy="176" r="64" fill="url(#gold)"/><circle cx="800" cy="176" r="56" fill="#e6dab8"/><circle cx="800" cy="176" r="56" fill="url(#canvasVig)" opacity=".6"/>
 ${clockTicks}<line x1="800" y1="176" x2="782" y2="146" stroke="#1a120c" stroke-width="5" stroke-linecap="round"/><line x1="800" y1="176" x2="806" y2="128" stroke="#1a120c" stroke-width="3" stroke-linecap="round"/><circle cx="800" cy="176" r="5" fill="#1a120c"/>
 <rect x="758" y="256" width="84" height="164" fill="#0b0604"/><rect x="758" y="256" width="84" height="164" fill="none" stroke="url(#gold)" stroke-width="4"/>`
         + blackboard(950, 150, 250, 170)
         + dr.s
         + shadow(800, 792, 330, 26, .7)
-        + `<g filter="url(#wood)"><polygon points="560,598 1040,598 1066,630 534,630" fill="#5a3622"/><rect x="534" y="630" width="532" height="18" fill="#3a2216"/>
+        + `<g><polygon points="560,598 1040,598 1066,630 534,630" fill="#5a3622"/><rect x="534" y="630" width="532" height="18" fill="#3a2216"/>
 <rect x="556" y="648" width="488" height="130" fill="#46281a"/></g>
 <polygon points="560,598 1040,598 1066,630 534,630" fill="#fff" opacity=".05"/><rect x="534" y="630" width="532" height="3" fill="#9a6a42" opacity=".6"/>
 <rect x="556" y="648" width="488" height="130" fill="url(#vshade)"/>
-<rect x="580" y="666" width="200" height="44" fill="#4a2c1c" filter="url(#bevel)"/><rect x="820" y="666" width="200" height="44" fill="#4a2c1c" filter="url(#bevel)"/>
+<rect x="580" y="666" width="200" height="44" fill="#4a2c1c"/><rect x="820" y="666" width="200" height="44" fill="#4a2c1c"/>
 <rect x="660" y="684" width="40" height="9" rx="4" fill="url(#brass)"/><rect x="900" y="684" width="40" height="9" rx="4" fill="url(#brass)"/>
-<rect x="580" y="724" width="440" height="40" fill="#3a2216" filter="url(#bevel)"/>
+<rect x="580" y="724" width="440" height="40" fill="#3a2216"/>
 ${[0, 1, 2, 3].map(i => `<rect x="${592 + i * 3}" y="${590 - i * 13}" width="104" height="13" fill="${['#3a4a3a', '#6a2a2a', '#2e3a52', '#8a6a32'][i]}"/><rect x="${592 + i * 3}" y="${590 - i * 13}" width="104" height="13" fill="url(#vshade)"/>`).join('')}
 <text x="646" y="558" text-anchor="middle" font-family="serif" font-size="10" fill="#e8dcc0" opacity=".7">생물 3</text>
 <path d="M712 606 L842 596 L854 612 L724 620Z" fill="url(#paper)"/><path d="M736 608 L830 600 M740 614 L806 608" stroke="#8a2a2a" stroke-width="2" opacity=".7"/>
@@ -989,8 +963,7 @@ ${persimmons}
 <rect x="1320" y="420" width="12" height="400" fill="#0a080a"/><path d="M1326 440 Q1300 430 1286 452" stroke="#0a080a" stroke-width="8" fill="none"/><path d="M1270 452 H1302 L1296 464 H1276Z" fill="#1a1416"/>
 <ellipse cx="1286" cy="470" rx="120" ry="140" fill="url(#streetGlow)"/><ellipse cx="1286" cy="465" rx="12" ry="5" fill="#fff4cc"/>
 <polygon points="1270,466 1302,466 1400,820 1170,820" fill="#ffe0a0" opacity=".06"/>
-<path d="M0 420 Q400 440 700 410 T1320 440" stroke="#050404" stroke-width="2" fill="none"/>
-<rect width="1600" height="900" filter="url(#noise)" opacity=".18" style="mix-blend-mode:overlay"/>`,
+<path d="M0 420 Q400 440 700 410 T1320 440" stroke="#050404" stroke-width="2" fill="none"/>`,
             fg: `${FG_DEFS}<defs><radialGradient id="fogG"><stop offset="0" stop-color="#cfc8de" stop-opacity=".16"/><stop offset="1" stop-color="#cfc8de" stop-opacity="0"/></radialGradient></defs>
 ${stars}${crow(392, 412, .6)}
 <ellipse class="fog" cx="420" cy="820" rx="820" ry="70" fill="url(#fogG)"/><ellipse class="fog fog2" cx="1200" cy="850" rx="760" ry="60" fill="url(#fogG)"/>`,
@@ -1018,27 +991,27 @@ ${stars}${crow(392, 412, .6)}
             }
         }
         const bg = kit({ lx: 800, ly: 250, defs: EXTRA }) + roomShell({ wall: '#3a2a20', paper: 'planks', wains: false, crown: false, floor: '#4a3020', ceil: '#0e0907', side: .5 })
-            + `<polygon points="0,0 800,0 800,60 ${WL},330 0,${yl(330)}" fill="#1e140e" filter="url(#wood)"/><polygon points="1600,0 800,0 800,60 ${WR},330 1600,${yr(330)}" fill="#1a110c" filter="url(#wood)"/>
+            + `<polygon points="0,0 800,0 800,60 ${WL},330 0,${yl(330)}" fill="#1e140e"/><polygon points="1600,0 800,0 800,60 ${WR},330 1600,${yr(330)}" fill="#1a110c"/>
 ${rafters}
 <path d="M${WL} 330 L800 60 L${WR} 330" stroke="#4a301c" stroke-width="22" fill="none"/><path d="M${WL} 330 L800 60 L${WR} 330" stroke="#000" stroke-width="30" opacity=".35" fill="none" filter="url(#b12)"/>
 <defs><radialGradient id="moonwin" cx=".62" cy=".38" r=".7"><stop offset="0" stop-color="#5a6a8a"/><stop offset=".5" stop-color="#26304a"/><stop offset="1" stop-color="#101424"/></radialGradient>
 <linearGradient id="beam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b8c8e8" stop-opacity=".28"/><stop offset="1" stop-color="#b8c8e8" stop-opacity="0"/></linearGradient></defs>
-<circle cx="800" cy="236" r="104" fill="#2a1a10" filter="url(#bevel)"/><circle cx="800" cy="236" r="88" fill="url(#moonwin)"/>
+<circle cx="800" cy="236" r="104" fill="#2a1a10"/><circle cx="800" cy="236" r="88" fill="url(#moonwin)"/>
 <circle cx="832" cy="208" r="26" fill="#efe8d4"/><circle cx="822" cy="200" r="6" fill="#d8d0b8"/>
 <path d="M800 148 V324 M712 236 H888" stroke="#2a1a10" stroke-width="9"/><circle cx="800" cy="236" r="88" fill="none" stroke="#1a100a" stroke-width="6"/>
-<rect x="0" y="292" width="1600" height="30" fill="#4a301c" filter="url(#wood)"/><rect x="0" y="292" width="1600" height="4" fill="#8a5a36" opacity=".5"/><rect x="0" y="322" width="1600" height="12" fill="#000" opacity=".4" filter="url(#b4)"/>
-<rect x="364" y="322" width="34" height="440" fill="#3e2818" filter="url(#woodV)"/><rect x="364" y="322" width="34" height="440" fill="url(#hshade)"/>
-<rect x="1222" y="322" width="34" height="440" fill="#3e2818" filter="url(#woodV)"/><rect x="1222" y="322" width="34" height="440" fill="url(#hshade)"/>
+<rect x="0" y="292" width="1600" height="30" fill="#4a301c"/><rect x="0" y="292" width="1600" height="4" fill="#8a5a36" opacity=".5"/><rect x="0" y="322" width="1600" height="12" fill="#000" opacity=".4" filter="url(#b4)"/>
+<rect x="364" y="322" width="34" height="440" fill="#3e2818"/><rect x="364" y="322" width="34" height="440" fill="url(#hshade)"/>
+<rect x="1222" y="322" width="34" height="440" fill="#3e2818"/><rect x="1222" y="322" width="34" height="440" fill="url(#hshade)"/>
 ${shadow(381, 764, 40, 8)}${shadow(1239, 764, 40, 8)}`
             + shadow(290, 726, 150, 18, .65)
-            + `<g filter="url(#wood)" stroke="#1d120a" stroke-width="3"><rect x="170" y="620" width="230" height="106" fill="#6a4a30"/><rect x="196" y="526" width="176" height="94" fill="#7a5638"/></g>
+            + `<g stroke="#1d120a" stroke-width="3"><rect x="170" y="620" width="230" height="106" fill="#6a4a30"/><rect x="196" y="526" width="176" height="94" fill="#7a5638"/></g>
 <path d="M170 656 H400 M196 560 H372" stroke="#c8b48a" stroke-width="9" opacity=".5"/><rect x="170" y="620" width="230" height="106" fill="url(#vshade)"/><rect x="196" y="526" width="176" height="94" fill="url(#vshade)"/>
 <text x="284" y="604" text-anchor="middle" font-family="serif" font-size="17" fill="#2a1a0e" opacity=".75">교무수첩 1972–</text>`
             + `<g transform="translate(212 452)"><rect x="0" y="54" width="140" height="20" fill="#2a1a10"/><path d="M14 54 Q20 0 70 4 Q110 6 118 30 L124 54Z" fill="#1a1a1c"/><path d="M70 4 L70 -14 M58 -14 H82" stroke="#3a3a3e" stroke-width="5"/><circle cx="106" cy="40" r="10" fill="#2a2a2e" stroke="#8a8a90" stroke-width="2"/><text x="40" y="44" font-family="serif" font-size="11" fill="#c9a24a" opacity=".8">SINGER</text></g>`
             + draped(462, 560, 140, 166)
             + shadow(800, 748, 170, 18, .75)
             + `<defs><linearGradient id="lid" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a5a36"/><stop offset="1" stop-color="#4a2e1a"/></linearGradient></defs>
-<g filter="url(#wood)"><rect x="664" y="636" width="272" height="112" fill="#5a3a22"/><path d="M664 638 Q800 566 936 638Z" fill="url(#lid)"/></g>
+<g><rect x="664" y="636" width="272" height="112" fill="#5a3a22"/><path d="M664 638 Q800 566 936 638Z" fill="url(#lid)"/></g>
 <rect x="664" y="636" width="272" height="112" fill="url(#vshade)"/><rect x="664" y="632" width="272" height="10" fill="#2a1a0e"/>
 <path d="M704 604 Q706 680 704 748 M896 604 Q894 680 896 748" stroke="url(#iron)" stroke-width="16" fill="none"/>
 <rect x="782" y="630" width="36" height="44" rx="5" fill="url(#brass)"/><circle cx="800" cy="646" r="5" fill="#2a1a0e"/><rect x="798" y="648" width="4" height="13" fill="#2a1a0e"/>`
@@ -1053,7 +1026,7 @@ ${shadow(381, 764, 40, 8)}${shadow(1239, 764, 40, 8)}`
 
     cellar() {
         const dr = door(1272, 380, 160, 320, { c: '#3a3a3e', iron: true, frame: '#4a4a4e' });
-        const box = (x, y, w, h, label) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#8a6a44" filter="url(#mottle)"/><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vshade)"/><path d="M${x} ${y + 8} H${x + w}" stroke="#c8b48a" stroke-width="5" opacity=".6"/>${label ? `<rect x="${x + w * .2}" y="${y + h * .4}" width="${w * .6}" height="18" fill="#e8dcc0" opacity=".85"/><text x="${x + w / 2}" y="${y + h * .4 + 13}" text-anchor="middle" font-family="serif" font-size="11" fill="#2a1a0e">${label}</text>` : ''}`;
+        const box = (x, y, w, h, label) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#8a6a44"/><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#vshade)"/><path d="M${x} ${y + 8} H${x + w}" stroke="#c8b48a" stroke-width="5" opacity=".6"/>${label ? `<rect x="${x + w * .2}" y="${y + h * .4}" width="${w * .6}" height="18" fill="#e8dcc0" opacity=".85"/><text x="${x + w / 2}" y="${y + h * .4 + 13}" text-anchor="middle" font-family="serif" font-size="11" fill="#2a1a0e">${label}</text>` : ''}`;
         const bg = kit({ lx: 800, ly: 200, defs: EXTRA }) + roomShell({ wall: '#4a3c36', paper: 'brick', wains: false, crown: false, floorType: 'stone', floor: '#3a3632', ceil: '#141210', side: .45, seed: 5 })
             + `<rect x="0" y="0" width="1600" height="40" fill="#1a1816"/>
 <rect x="0" y="62" width="1600" height="22" fill="url(#pipe)"/><rect x="0" y="100" width="1600" height="14" fill="url(#pipe)"/>${[260, 700, 1180].map(x => `<rect x="${x}" y="56" width="16" height="64" fill="#2a2622"/>`).join('')}
@@ -1061,13 +1034,13 @@ ${shadow(381, 764, 40, 8)}${shadow(1239, 764, 40, 8)}`
             + yeontan(186, 470, 5, 6)
             // 선반
             + `<rect x="560" y="300" width="480" height="420" fill="#000" opacity=".4" filter="url(#b30)" transform="translate(-20 0)"/>
-<g filter="url(#wood)"><rect x="586" y="300" width="18" height="420" fill="#5a4028"/><rect x="996" y="300" width="18" height="420" fill="#5a4028"/>
+<g><rect x="586" y="300" width="18" height="420" fill="#5a4028"/><rect x="996" y="300" width="18" height="420" fill="#5a4028"/>
 ${[400, 540, 680].map(y => `<rect x="576" y="${y}" width="448" height="16" fill="#6a4a30"/>`).join('')}</g>
 ${[400, 540, 680].map(y => `<rect x="576" y="${y}" width="448" height="3" fill="#a07a52" opacity=".6"/><rect x="604" y="${y + 16}" width="392" height="14" fill="#000" opacity=".35"/>`).join('')}
 ${box(620, 322, 120, 78, '1985')}${box(760, 336, 110, 64, '1991')}${box(886, 346, 92, 54, '')}
 <rect x="900" y="452" width="70" height="88" fill="#3a3a3e"/><rect x="900" y="452" width="70" height="88" fill="url(#cyl)"/><text x="935" y="500" text-anchor="middle" font-family="serif" font-size="11" fill="#c8c0b0" opacity=".8">현미경</text>
 <rect x="612" y="630" width="70" height="50" fill="#5a5a5e"/><rect x="612" y="630" width="70" height="50" fill="url(#cyl)"/><rect x="700" y="640" width="60" height="40" fill="#6a2a2a"/><rect x="700" y="640" width="60" height="40" fill="url(#cyl)"/>
-<rect x="800" y="600" width="100" height="80" fill="#8a6a44" filter="url(#mottle)"/><rect x="800" y="600" width="100" height="80" fill="url(#vshade)"/>`
+<rect x="800" y="600" width="100" height="80" fill="#8a6a44"/><rect x="800" y="600" width="100" height="80" fill="url(#vshade)"/>`
             // 수업 자료 꾸러미
             + shadow(784, 540, 84, 6, .7)
             + `<rect x="712" y="500" width="144" height="40" fill="#cfbf95"/><rect x="716" y="490" width="138" height="12" fill="#e9dcbc"/><rect x="718" y="480" width="136" height="12" fill="url(#paper)"/>
@@ -1107,7 +1080,7 @@ ${shadow(800, 744, 240, 14, .6)}
             + `<ellipse cx="962" cy="540" rx="24" ry="6" fill="url(#brass)"/><rect x="958" y="480" width="8" height="60" fill="url(#brass)"/><path d="M920 486 L934 436 H990 L1004 486Z" fill="url(#clothShade)"/>`
             // 장식장 + 표본병
             + `<rect x="1050" y="250" width="200" height="460" fill="#000" opacity=".5" filter="url(#b30)" transform="translate(-26 0)"/>
-<g filter="url(#wood)"><rect x="1052" y="236" width="196" height="24" fill="#3e2416"/><rect x="1060" y="260" width="180" height="440" fill="#40261a"/></g>
+<g><rect x="1052" y="236" width="196" height="24" fill="#3e2416"/><rect x="1060" y="260" width="180" height="440" fill="#40261a"/></g>
 <rect x="1074" y="276" width="152" height="300" fill="#121a18"/>
 <defs><linearGradient id="murk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a8a4a" stop-opacity=".5"/><stop offset="1" stop-color="#3a4a2a" stop-opacity=".9"/></linearGradient></defs>
 <rect x="1088" y="320" width="34" height="52" rx="5" fill="url(#murk)"/><rect x="1086" y="312" width="38" height="10" fill="url(#iron)"/>
@@ -1117,7 +1090,7 @@ ${shadow(800, 744, 240, 14, .6)}
 <rect x="1150" y="420" width="26" height="60" rx="4" fill="#5a3a5a" opacity=".85"/><rect x="1186" y="446" width="30" height="34" fill="url(#gold)"/>
 <path d="M1074 372 H1226 M1074 480 H1226" stroke="#3e2416" stroke-width="7"/><path d="M1150 276 V576" stroke="#3e2416" stroke-width="7"/>
 <path d="M1080 280 L1110 280 L1080 420Z M1156 280 L1180 280 L1156 400Z" fill="#fff" opacity=".07"/>
-<rect x="1074" y="592" width="152" height="94" fill="#3a2216" filter="url(#bevel)"/>
+<rect x="1074" y="592" width="152" height="94" fill="#3a2216"/>
 <rect x="1052" y="236" width="196" height="464" fill="url(#hshade)"/>`
             + `<rect x="420" y="740" width="150" height="40" rx="10" fill="#7a2a2a" transform="skewX(-12)"/><rect x="420" y="740" width="150" height="40" rx="10" fill="url(#vshade)" transform="skewX(-12)"/>`
             + dr.s
@@ -1139,7 +1112,7 @@ ${hit('drawer', '화장대 서랍', 'M612 584 H988 V632 H612Z')}${hit('door', '�
             + frames.map(f => bwPhoto(f.x, f.y, f.w, f.h, f)).join('')
             + sofa(540, 560, 520)
             + `<g transform="translate(1340 300)"><rect x="-4" y="60" width="8" height="400" fill="url(#brass)"/><ellipse cx="0" cy="460" rx="40" ry="8" fill="url(#brass)"/><path d="M-60 66 L-40 0 H40 L60 66Z" fill="url(#clothShade)"/></g>
-<g transform="translate(180 600)">${shadow(80, 104, 90, 10, .6)}<rect x="0" y="0" width="160" height="100" fill="#3a2216" filter="url(#wood)"/><rect x="0" y="0" width="160" height="100" fill="url(#vshade)"/><rect x="20" y="-46" width="70" height="46" rx="6" fill="#1a1a1c"/><rect x="28" y="-40" width="54" height="34" rx="4" fill="#2a3230"/><circle cx="110" cy="-12" r="10" fill="#c8c0b0" opacity=".6"/></g>`
+<g transform="translate(180 600)">${shadow(80, 104, 90, 10, .6)}<rect x="0" y="0" width="160" height="100" fill="#3a2216"/><rect x="0" y="0" width="160" height="100" fill="url(#vshade)"/><rect x="20" y="-46" width="70" height="46" rx="6" fill="#1a1a1c"/><rect x="28" y="-40" width="54" height="34" rx="4" fill="#2a3230"/><circle cx="110" cy="-12" r="10" fill="#c8c0b0" opacity=".6"/></g>`
             + lighting([{ x: 1340, y: 360, r: 560, ry: 480, c: '#ffcf80', o: .4, core: .15 }, { x: 650, y: 260, r: 360, ry: 220, c: '#ffd890', o: .16 }, { x: 314, y: 290, r: 200, ry: 220, c: '#ffd890', o: .12 }], .7);
         return { bg, fg: `${FG_DEFS}${lampGlow(1340, 366, 200)}
 ${crow(668, 520, .9)}
